@@ -70,15 +70,37 @@
             alert(`Erreur: ${error}`);
         }
     }
+
+    async function writeToFile(name: string | null, content: string | null) {
+        if (!name || content === null) return;
+
+        const response = await fetch('/api/writeFile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                fileName: './data/' + name,
+                content
+            })
+        });
+
+        if (response.ok) {
+            await invalidateAll();
+            await getFileContent(name);
+        } else {
+            const error = await response.json();
+            alert(`Erreur lors de l'écriture du fichier: ${error.error}`);
+        }
+    }
 </script>
 
 
 {#snippet fileEntry(name: string)}
-    <button onclick={() => getFileContent(name)} class="group relative p-3 text-sm font-bold text-black bg-yellow-300 
+    <button onclick={() => getFileContent(name)} class=" cursor-pointer group relative p-3 text-sm font-bold text-black bg-yellow-300 
         border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] 
         hover:translate-x-0.5 hover:translate-y-0.5 transition-all duration-150 w-full text-left mb-2">
         <span class="block truncate">{name}</span>
-        <div class="absolute inset-0 bg-cyan-400 -z-10 translate-x-1 translate-y-1 border-4 border-black"></div>
     </button>
 {/snippet}
 {#snippet tabEntry(name: string)}
@@ -106,7 +128,6 @@
                 ×
             </button>
         </div>
-        <div class="absolute inset-0 bg-purple-400 -z-10 translate-x-1 translate-y-1 border-4 border-black"></div>
     </div>
 {/snippet}
 
@@ -114,11 +135,9 @@
     <div class="grid grid-cols-[350px_1fr] h-full">
         <!-- Sidebar -->
         <div class="bg-cyan-300 border-r-8 border-black relative">
-            <!-- <div class="absolute inset-0 bg-pink-400 translate-x-2 translate-y-2 -z-10"></div> -->
             <div class="grid grid-rows-[80px_auto_1fr] h-full relative z-10">
                 <div class="bg-yellow-300 border-b-8 border-black p-4 flex items-center relative">
                     <h2 class="text-2xl font-black text-black uppercase tracking-wider">FILES</h2>
-                    <!-- <div class="absolute inset-0 bg-red-400 -z-10 translate-x-1 translate-y-1"></div> -->
                 </div>
                 
                 <!-- File list -->
@@ -129,7 +148,7 @@
                 </div>
                 
                 <!-- Create file area -->
-                <div ondblclick={handleDblClick} 
+                <button ondblclick={handleDblClick}
                     class="flex justify-center items-center h-full text-black cursor-pointer relative group
                     hover:bg-lime-300 transition-colors duration-200 p-8">
                     <div class="text-center">
@@ -138,13 +157,12 @@
                     </div>
                     <div class="absolute inset-4 border-4 border-dashed border-black opacity-50 
                         group-hover:opacity-100 transition-opacity duration-200"></div>
-                </div>
+                </button>
             </div>
         </div>
 
         <!-- Main content -->
         <div class="bg-white relative">
-            <!-- <div class="absolute inset-0 bg-green-300 translate-x-2 translate-y-2 -z-10"></div> -->
             <div class="grid grid-rows-[80px_1fr] h-full relative z-10">
                 <!-- Tabs -->
                 <div class="bg-purple-200 border-b-8 border-black p-4 overflow-x-auto">
@@ -174,6 +192,9 @@
                             placeholder="Start typing..."
                         ></textarea>
                         <div class="absolute inset-4 bg-red-300 -z-10 translate-x-2 translate-y-2 border-4 border-black"></div>
+                        <button onclick={() => writeToFile(currentFile, currentFileContent)}>
+                            Save
+                        </button>
                     </div>
                 {:else}
                     <div class="flex justify-center items-center h-full relative">
