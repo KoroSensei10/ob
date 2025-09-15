@@ -1,20 +1,52 @@
-import * as fs from 'node:fs';
-
+import { mkdir, readdir } from 'node:fs/promises';
+import path from 'node:path';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ _locals }) => {
-    const files = fs.readdirSync('./data/', {
-        withFileTypes: true,
-        recursive: true
-    });
+
+const DATA_DIR = './data';
+
+export type FileTree = {
+  name: string;
+  path: string;
+  type: "dir" | "file";
+  childs: FileTree[] | null;
+};
+
+async function zed(parentPath: string): Promise<FileTree[]> {
+  const entries = await readdir(parentPath, { withFileTypes: true });
+  const childs: FileTree[] = [];
+
+  for (const e of entries) {
+    let filePath = path.join(parentPath, e.name);
+    filePath = filePath.substring(filePath.indexOf('/') + 1);
+    if (e.isFile()) {
+      childs.push({
+        name: e.name,
+        path: filePath,
+        type: "file",
+        childs: null
+      })
+    } else if (e.isDirectory()) {
+      const dirpath = path.join(parentPath, e.name);
+      childs.push({
+        name: e.name,
+        path: filePath,
+        type: "dir",
+        childs: await zed(dirpath)
+      })
+    }
+  }
+  return childs
+}
+
+export const load: PageServerLoad = async () => {
+    // Ensure data directory exists
+    await mkdir(DATA_DIR, { recursive: true });
+
+    // TODO: handle custom vault inside data folder
+    const tree = await zed(DATA_DIR);
 
     return {
-        files: files.map((file) => ({
-            name: file.name,
-            isFile: file.isFile(),
-            isDirectory: file.isDirectory(),
-            parentPath: file.parentPath,
-            extension: file.isFile() ? file.name.split('.').pop() ?? '' : ''
-        }))
-    }
+        files: tree
+    };
 };

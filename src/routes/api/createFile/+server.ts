@@ -16,9 +16,12 @@ export const POST: RequestHandler = async (data) => {
 
         // TODO: Valider request.fileName pour prévenir les attaques de directory traversal
         // Pour l'instant, on force le dossier ./data/
+        // On remplace les caractères non autorisés dans le nom de fichier
+        // TODO: On ajoute l'extension .md
+        // TODO: split les / pour créé les dossiers automatiquement
         const fileName = request.fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
         const filePath = join('./data/', fileName);
-        
+
         // Contenu du fichier (vide par défaut ou contenu fourni)
         const content = request.content || '';
         

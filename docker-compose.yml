@@ -1,0 +1,11 @@
+services:
+  ob:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - ORIGIN=http://localhost:3000
