@@ -19,7 +19,17 @@ export const POST: RequestHandler = async (data) => {
         // On remplace les caractères non autorisés dans le nom de fichier
         // TODO: On ajoute l'extension .md
         // TODO: split les / pour créé les dossiers automatiquement
-        const fileName = request.fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const filePathParts: string[] = request.fileName.split('/');
+        const sanitizedParts = filePathParts.map((part) => part.replace(/[^a-zA-Z0-9._-]/g, '_').trim());
+        const fileName = sanitizedParts.join('/');
+        
+        // On empêche les noms de fichiers vides ou avec uniquement des espaces
+        if (fileName.trim() === '') {
+            return json(
+                { error: 'fileName cannot be empty or only spaces' },
+                { status: 400 }
+            );
+        }
         const filePath = join('./data/', fileName);
 
         // Contenu du fichier (vide par défaut ou contenu fourni)

@@ -1,0 +1,15 @@
+# TODO
+
+- Drag and drop to reorder tabs
+- Drag and drop to move files in the tree
+  - needs to implement rename/cp/mv of the file
+- Right click (context) menu
+- Custom Sidebar width
+- Auto save
+- "Preview click" like vscode
+  - click on open the file in preview mode (not permanent tab)
+  - open a file in permanent tab on double click or edit
+- Commencer à gérer le mode hors-ligne
+  - Indiquer que l'on est hors ligne
+  - Empêcher certaines actions (ex: création de fichier)
+  - Permettre d'autres actions (ex: édition de fichier déjà ouvert)
