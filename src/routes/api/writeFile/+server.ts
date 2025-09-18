@@ -1,6 +1,5 @@
 import { json, type RequestHandler } from "@sveltejs/kit";
-import { writeFile, mkdir } from "node:fs/promises";
-import { dirname } from "node:path";
+import { writeFile } from "node:fs/promises";
 
 export const POST: RequestHandler = async (data) => {
     try {
@@ -26,7 +25,8 @@ export const POST: RequestHandler = async (data) => {
         const content = request.content;
         
         // Créer le dossier parent s'il n'existe pas
-        await mkdir(dirname(filePath), { recursive: true });
+        // ? pas sûre
+        // await mkdir(dirname(filePath), { recursive: true });
         
         // Écrire le contenu dans le fichier
         await writeFile(filePath, content, 'utf-8');

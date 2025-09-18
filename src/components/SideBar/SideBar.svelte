@@ -1,10 +1,11 @@
 <script lang="ts">
     import { FilePlus, FolderPlus, Plus, Settings } from "@lucide/svelte";
-    import FileTree from "./FileTree.svelte";
+    import FileTreeComp from "./FileTreeComp.svelte";
     import { invalidateAll } from "$app/navigation";
+    import type { FileTree } from "../../routes/+page.server";
 
     type Props = {
-        files: string[];
+        files: FileTree[];
         getFileContent: (name: string) => Promise<void>;
         handleContextMenu: (e: MouseEvent) => void;
     };
@@ -13,7 +14,7 @@
         files,
         getFileContent,
         handleContextMenu,
-    } = $props();
+    }: Props = $props();
 
     let newFileName: string | null = $state(null);
     let newFileInput: HTMLInputElement | null = $state(null);
@@ -60,7 +61,7 @@
 </script>
 
 <div class="bg-gray-800 border-r border-gray-700">
-    <div class="grid grid-rows-[80px_auto_1fr] h-full">
+    <div class="grid grid-rows-[80px_1fr_auto] h-full">
         <div class="bg-gray-900 border-b border-gray-700 p-4 flex items-center">
             <h2 class="text-xl font-semibold text-gray-100 uppercase tracking-wide">
                 Fichiers
@@ -68,16 +69,8 @@
         </div>
 
         <!-- File/Folder list -->
-        <FileTree files={files} {getFileContent} {handleContextMenu} />
+        <FileTreeComp files={files} {getFileContent} {handleContextMenu} {handleDblClick} />
 
-        <!-- File creation area -->
-        <button
-            aria-label="create file"
-            ondblclick={handleDblClick}
-            oncontextmenu={handleContextMenu}
-            class=""
-        >
-        </button>
         <form onsubmit={handleCreateFile} class="p-4 flex items-center gap-2">
             <input
                 bind:this={newFileInput}

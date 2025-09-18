@@ -12,6 +12,12 @@
 </script>
 
 <button
+    draggable="true"
+    ondragstart={(e) => {
+        console.log("dragging");
+        e.dataTransfer?.setData("json", JSON.stringify({ filePath: entry.path }));
+        e.stopImmediatePropagation();
+    }}
     onclick={() => getFileContent(entry.path)}
     oncontextmenu={handleContextMenu}
     class="flex items-center gap-2 p-1 px-2 cursor-pointer group relative text-gray-200 bg-gray-700
@@ -19,7 +25,7 @@
         transition-all duration-150 w-full shadow-sm"
 >
     <span class="">
-        <Type strokeWidth={2} class="w-4 stroke-purple-500" />
+        <Type strokeWidth={2} class="w-4 stroke-gray-200" />
     </span>
     <span class="block truncate">{entry.name}</span>
 </button>

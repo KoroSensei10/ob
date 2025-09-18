@@ -11,6 +11,8 @@
         lineNumbers: true,
         theme: "dark",
         compactMode: false,
+        doubleClickToOpen: false,
+        // instantOpenFileWhenClicked: true
     };
 
     let openFiles: { name: string; path: string; content: string }[] = $state(
@@ -80,6 +82,7 @@
             e.stopImmediatePropagation();
             console.log(`Saved file: ${currentFile}`);
             await writeToFile(currentFile, currentFileContent);
+            // TODO: add small feedback
         }
     }
     async function handleCloseTab(e: Event, name: string) {
@@ -123,30 +126,19 @@
 
 <div class="w-screen h-screen bg-gray-900 text-gray-200 font-sans">
     <div class="grid grid-cols-[350px_1fr] h-full">
-        <SideBar
-            files={data.files}
-            {getFileContent}
-            {handleContextMenu}
-        />
+        <SideBar files={data.files} {getFileContent} {handleContextMenu} />
 
         <!-- Main content -->
-        <div class="bg-gray-900">
-            <div class="grid grid-rows-[80px_1fr] h-full">
-                <Tabs
-                    {openFiles}
-                    {currentFile}
-                    {handleCloseTab}
-                    {getFileContent}
-                />
+        <div class="bg-gray-900 grid grid-rows-[80px_1fr] h-full">
+            <Tabs {openFiles} {currentFile} {handleCloseTab} {getFileContent} />
 
-                <Editor
-                    {OPTIONS}
-                    {openFiles}
-                    {currentFile}
-                    bind:editionAreaList
-                    {writeToFile}
-                />
-            </div>
+            <Editor
+                {OPTIONS}
+                {openFiles}
+                {currentFile}
+                bind:editionAreaList
+                {writeToFile}
+            />
         </div>
     </div>
 </div>

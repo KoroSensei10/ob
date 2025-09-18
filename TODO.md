@@ -1,11 +1,15 @@
 # TODO
 
+- [x] Drag and drop to move files in the tree
+  - [x] needs to implement rename/cp/mv of the file
+  - [ ] E2E tests for the side-bar/drag and drop
+    - [ ] mock the server calls
+    - [ ] mock the file system -> use a temp folder?
+    - [ ] -> needs multiple vault support
+- [x] Auto save
 - Drag and drop to reorder tabs
-- Drag and drop to move files in the tree
-  - needs to implement rename/cp/mv of the file
 - Right click (context) menu
 - Custom Sidebar width
-- Auto save
 - "Preview click" like vscode
   - click on open the file in preview mode (not permanent tab)
   - open a file in permanent tab on double click or edit

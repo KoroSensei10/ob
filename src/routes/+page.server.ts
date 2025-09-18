@@ -12,7 +12,7 @@ export type FileTree = {
   childs: FileTree[] | null;
 };
 
-async function zed(parentPath: string): Promise<FileTree[]> {
+async function createFileTree(parentPath: string): Promise<FileTree[]> {
   const entries = await readdir(parentPath, { withFileTypes: true });
   const childs: FileTree[] = [];
 
@@ -32,7 +32,7 @@ async function zed(parentPath: string): Promise<FileTree[]> {
         name: e.name,
         path: filePath,
         type: "dir",
-        childs: await zed(dirpath)
+        childs: await createFileTree(dirpath)
       })
     }
   }
@@ -44,7 +44,7 @@ export const load: PageServerLoad = async () => {
     await mkdir(DATA_DIR, { recursive: true });
 
     // TODO: handle custom vault inside data folder
-    const tree = await zed(DATA_DIR);
+    const tree = await createFileTree(DATA_DIR);
 
     return {
         files: tree

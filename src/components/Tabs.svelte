@@ -5,6 +5,9 @@
         getFileContent,
         handleCloseTab,
     } = $props();
+
+
+    $inspect(openFiles);
 </script>
 
 {#snippet tabEntry(name: string)}
