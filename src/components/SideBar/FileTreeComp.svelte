@@ -1,18 +1,18 @@
 <script lang="ts">
     import FileEntry from "./FileEntry.svelte";
     import FolderEntry from "./FolderEntry.svelte";
-    import type { FileTree } from "../../routes/+page.server";
     import { handleDrop } from "$lib/dragdrop";
+    import { getVaultFiles } from "$lib/files.remote";
 
     type Props = {
-        files: FileTree[];
-        getFileContent: (path: string) => void;
-        handleContextMenu: (e: MouseEvent) => void;
         handleDblClick: () => void;
     };
 
-    let { files, getFileContent, handleContextMenu, handleDblClick }: Props =
-        $props();
+    let {
+        handleDblClick
+    }: Props = $props();
+
+    let files = $derived(await getVaultFiles('.'))
 
     function onDrop(e: DragEvent) {
         handleDrop(e, { name: "root", path: ".", type: "dir", childs: files }, async (_) => {});
@@ -38,12 +38,10 @@
     <div class="flex flex-col gap-1 p-4 bg-gray-800 group text-sm">
         {#each files as entry}
             {#if entry.type === "file"}
-                <FileEntry {entry} {getFileContent} {handleContextMenu} />
+                <FileEntry {entry} />
             {:else if entry.type === "dir"}
                 <FolderEntry
-                    entry={entry as FileTree & { type: "dir" }}
-                    {getFileContent}
-                    {handleContextMenu}
+                    {entry}
                 />
             {/if}
         {/each}
@@ -58,7 +56,6 @@
     <button
         aria-label="create file"
         ondblclick={handleDblClick}
-        oncontextmenu={handleContextMenu}
         class="h-full"
     >
     </button>

@@ -1,23 +1,13 @@
 <script lang="ts">
-    import { FilePlus, FolderPlus, Plus, Settings } from "@lucide/svelte";
     import FileTreeComp from "./FileTreeComp.svelte";
     import { invalidateAll } from "$app/navigation";
-    import type { FileTree } from "../../routes/+page.server";
-
-    type Props = {
-        files: FileTree[];
-        getFileContent: (name: string) => Promise<void>;
-        handleContextMenu: (e: MouseEvent) => void;
-    };
-
-    let {
-        files,
-        getFileContent,
-        handleContextMenu,
-    }: Props = $props();
+    import { getOpenFilesContext } from "$stores/index.svelte";
+    import { FilePlus, FolderPlus, Plus, Settings, Folder, Type } from "@lucide/svelte";
 
     let newFileName: string | null = $state(null);
     let newFileInput: HTMLInputElement | null = $state(null);
+
+    const openFilesContext = getOpenFilesContext();
 
     async function handleDblClick() {
         if (newFileInput) {
@@ -48,7 +38,7 @@
                 const result = await response.json();
                 // Rafraîchir la liste des fichiers ou recharger la page
                 await invalidateAll();
-                await getFileContent(result.fileName);
+                await openFilesContext.getFileContent(result.path);
                 newFileName = null; // Clear the input field
             } else {
                 const error = await response.json();
@@ -69,7 +59,37 @@
         </div>
 
         <!-- File/Folder list -->
-        <FileTreeComp files={files} {getFileContent} {handleContextMenu} {handleDblClick} />
+        <svelte:boundary>
+            {#snippet pending()}
+                <div class="p-4 flex flex-col gap-1">
+                    <!-- Skeleton folders -->
+                    {#each Array(3) as _, i}
+                        <div class="flex items-center gap-2 p-1 px-2 bg-gray-700 border border-gray-600 rounded-lg animate-pulse">
+                            <Folder strokeWidth={2} class="w-4 stroke-gray-500 opacity-60" />
+                            <div class="h-4 bg-gray-600 rounded flex-1 max-w-32"></div>
+                        </div>
+                        <!-- Skeleton files indented under folder -->
+                        <div class="pl-6 space-y-1">
+                            {#each Array(2) as _, j}
+                                <div class="flex items-center gap-2 p-1 px-2 bg-gray-700 border border-gray-600 rounded-lg animate-pulse">
+                                    <Type strokeWidth={2} class="w-4 stroke-gray-500 opacity-60" />
+                                    <div class="h-4 bg-gray-600 rounded flex-1 max-w-24"></div>
+                                </div>
+                            {/each}
+                        </div>
+                    {/each}
+                    
+                    <!-- Skeleton standalone files -->
+                    {#each Array(2) as _, i}
+                        <div class="flex items-center gap-2 p-1 px-2 bg-gray-700 border border-gray-600 rounded-lg animate-pulse">
+                            <Type strokeWidth={2} class="w-4 stroke-gray-500 opacity-60" />
+                            <div class="h-4 bg-gray-600 rounded flex-1 max-w-28"></div>
+                        </div>
+                    {/each}
+                </div>
+            {/snippet}
+            <FileTreeComp {handleDblClick} />
+        </svelte:boundary>
 
         <form onsubmit={handleCreateFile} class="p-4 flex items-center gap-2">
             <input

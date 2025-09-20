@@ -1,17 +1,15 @@
 <script lang="ts">
-    import { Folder, FolderOpen } from "@lucide/svelte";
     import FileEntry from "./FileEntry.svelte";
     import Self from "./FolderEntry.svelte";
+    import { Folder, FolderOpen } from "@lucide/svelte";
     import { handleDrop } from "$lib/dragdrop";
-    import type { FileTree } from "../../routes/+page.server";
+    import type { FolderEntry } from "$types/files";
 
     type Props = {
-        entry: FileTree & { type: "dir" };
-        getFileContent: (path: string) => void;
-        handleContextMenu: (e: MouseEvent) => void;
+        entry: FolderEntry;
     };
 
-    let { entry, getFileContent, handleContextMenu }: Props = $props();
+    let { entry }: Props = $props();
 
     let isOpen = $state(true);
 
@@ -61,7 +59,6 @@
 >
     <button
         onclick={handleClick}
-        oncontextmenu={handleContextMenu}
         class="flex gap-2 items-center p-1 px-2 cursor-pointer group relative text-gray-200 bg-gray-700
             border border-gray-600 rounded-lg hover:bg-gray-600 hover:border-purple-500
             transition-all duration-150 w-full shadow-sm"
@@ -83,15 +80,11 @@
                     {#if child.type === "file"}
                         <FileEntry
                             entry={child}
-                            {getFileContent}
-                            {handleContextMenu}
                         />
                     {:else if child.type === "dir"}
                         <div class="flex flex-col gap-1">
                             <Self
-                                entry={child as FileTree & { type: "dir" }}
-                                {getFileContent}
-                                {handleContextMenu}
+                                entry={child}
                             />
                         </div>
                     {/if}

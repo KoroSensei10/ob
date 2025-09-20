@@ -2,11 +2,15 @@
 
 - [x] Drag and drop to move files in the tree
   - [x] needs to implement rename/cp/mv of the file
+  - [ ] handle edge cases (ex: moving a folder into itself)
+  - [ ] update all the open tabs if a file is moved/renamed
   - [ ] E2E tests for the side-bar/drag and drop
     - [ ] mock the server calls
     - [ ] mock the file system -> use a temp folder?
     - [ ] -> needs multiple vault support
 - [x] Auto save
+- [ ] Sync active file between tabs and sidebar
+  - [ ] Show active file in sidebar
 - Drag and drop to reorder tabs
 - Right click (context) menu
 - Custom Sidebar width

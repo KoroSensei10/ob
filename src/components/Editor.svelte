@@ -1,39 +1,50 @@
 <script lang="ts">
+    import { writeFileContent } from "$lib/files.remote";
+    import { getOpenFilesContext } from "$stores/index.svelte";
+    import type { FileEntry } from "$types/files";
+    import type { Options } from "$types/options";
+
     type Props = {
-        OPTIONS: {
-            autoSave: boolean;
-            lineNumbers: boolean;
-            theme: string;
-            compactMode: boolean;
-        };
-        openFiles: { name: string; path: string; content: string }[];
-        currentFile: string | null;
+        OPTIONS: Options;
         editionAreaList: (HTMLTextAreaElement | undefined)[];
-        writeToFile: (fileName: string, content: string) => Promise<void>;
     };
 
     let {
         OPTIONS,
-        openFiles,
-        currentFile,
         editionAreaList = $bindable([]),
-        writeToFile,
     }: Props = $props();
 
+    const openFilesContext = getOpenFilesContext();
+    
     let saving = $state(false);
     let saveError = $state(false);
 
+
+    function focusEditionArea(name: string) {
+        const index = openFilesContext.openFiles.findIndex((f) => f.name === name);
+        if (editionAreaList[index]) {
+            editionAreaList[index].focus();
+        }
+    }
+
     // Debounce the writeToFile calls
     let timeout: NodeJS.Timeout | null = null;
-    async function handleContentChange(name: string, content: string) {
+    async function handleContentChange(
+        e: Event,
+        file: FileEntry,
+    ) {
         if (!OPTIONS.autoSave) return;
+        if (file.content === null) return;
         saving = true;
 
         if (timeout) clearTimeout(timeout);
         timeout = setTimeout(async () => {
             try {
-                const response = await writeToFile(name, content);
-                console.log(`Saved file: ${name}`);
+                if (file.content === null) return;
+                await writeFileContent({
+                    filePath: file.path,
+                    content: file.content
+                });
             } catch (error) {
                 console.error("Error saving file:", error);
                 saveError = true;
@@ -43,6 +54,8 @@
         }, 500);
     }
 
+    const openFilesStore = getOpenFilesContext();
+
     // * editionAreaList contains the number of opened/closed files
     // the array doesn't shrink when closing files
     // so we can have undefined entries
@@ -51,19 +64,19 @@
 </script>
 
 <div class="">
-    {#if openFiles.length === 0}
+    {#if openFilesStore.openFiles.length <= 0}
         <div
             class="flex items-center justify-center h-full text-gray-400 font-medium opacity-60"
         >
             Ouvrez un fichier pour commencer à éditer...
         </div>
     {/if}
-    {#each openFiles as file, i (file.name)}
+    {#each openFilesStore.openFiles as file, i (file.path)}
         <textarea
             bind:this={editionAreaList[i]}
             bind:value={file.content}
-            oninput={() => handleContentChange(file.name, file.content)}
-            class:hidden={currentFile !== file.name}
+            oninput={(e) => handleContentChange(e, file)}
+            class:hidden={file.path !== openFilesStore.activeFile?.path}
             class="w-full h-full p-6 font-mono text-base leading-relaxed bg-gray-900
             focus:outline-none focus:ring-0
             resize-none text-gray-200 placeholder-gray-500 shadow-sm"

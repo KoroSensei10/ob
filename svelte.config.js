@@ -9,13 +9,19 @@ const config = {
 		adapter: adapter(),
 		experimental: {
 			remoteFunctions: true
+		},
+		alias: {
+			$components: 'src/components',
+			$stores: 'src/stores',
+			$types: 'src/types',
+			$utils: 'src/utils',
 		}
 	},
 	compilerOptions: {
 		experimental: {
 			async: true
 		}
-	}
+	},
 };
 
 export default config;
