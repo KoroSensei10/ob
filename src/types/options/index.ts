@@ -3,4 +3,5 @@ export type Options = {
     lineNumbers: boolean;
     theme: string;
     compactMode: boolean;
+    unfoldTreeOnOpen: boolean;
 }

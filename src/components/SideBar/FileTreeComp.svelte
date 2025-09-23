@@ -2,24 +2,25 @@
     import FileEntry from "./FileEntry.svelte";
     import FolderEntry from "./FolderEntry.svelte";
     import { handleDrop } from "$lib/dragdrop";
-    import { getVaultFiles } from "$lib/files.remote";
+    import { getVaultFilesContext } from "$stores/VaultFiles.svelte";
 
     type Props = {
-        handleDblClick: () => void;
+        handleDblClick: (e: MouseEvent | KeyboardEvent) => void;
     };
 
     let {
         handleDblClick
     }: Props = $props();
 
-    let files = $derived(await getVaultFiles('.'))
+    const vaultFilesStore = getVaultFilesContext();
+    let files = $derived(vaultFilesStore().vaultEntries);
 
     function onDrop(e: DragEvent) {
         handleDrop(e, { name: "root", path: ".", type: "dir", childs: files }, async (_) => {});
     }
 </script>
 
-<div class="flex flex-col h-full"
+<div class="h-full overflow-auto overscroll-none"
     ondragenter={(e) => {
         // Todo: style
         // e.currentTarget.classList.add("bg-gray-600");
@@ -33,6 +34,9 @@
     }}
     ondrop={onDrop}
     role="region"
+    ondblclick={(e) => {
+        handleDblClick(e);
+    }}
 >
     <!-- File/Folder list -->
     <div class="flex flex-col gap-1 p-4 bg-gray-800 group text-sm">
@@ -51,12 +55,4 @@
             ></div>
         {/if}
     </div>
-
-    <!-- File creation area -->
-    <button
-        aria-label="create file"
-        ondblclick={handleDblClick}
-        class="h-full"
-    >
-    </button>
 </div>

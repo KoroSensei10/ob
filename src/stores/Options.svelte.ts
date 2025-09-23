@@ -1,0 +1,37 @@
+import { getContext, setContext } from "svelte";
+import type { Options } from "$types/options";
+
+const defaultOptions: Options = {
+    autoSave: true,
+    lineNumbers: true,
+    theme: 'light',
+    compactMode: false,
+    unfoldTreeOnOpen: true,
+};
+
+function createOptionsStore() {
+    let options: Options = $state(defaultOptions);
+
+    return {
+        get options() {
+            return options;
+        },
+        init() {
+            // override default options with saved options from the vault
+            // then override options with saved options from localStorage
+        },
+        setOptions(newOptions: Partial<Options>) {
+            options = { ...options, ...newOptions };
+        }
+    };
+}
+
+export const optionsStore = createOptionsStore();
+
+export function setOptionsContext(store: typeof optionsStore) {
+    setContext<typeof optionsStore>('optionsStore', store);
+}
+
+export function getOptionsContext(): typeof optionsStore {
+    return getContext<typeof optionsStore>('optionsStore');
+}

@@ -1,26 +1,12 @@
 import z from "zod";
 import path, { dirname, join } from "node:path";
-import { command, form, query } from "$app/server";
+import { command, query } from "$app/server";
 import { error } from "@sveltejs/kit";
 import { writeFile, mkdir, readFile } from "node:fs/promises";
 import { move } from "fs-extra/esm";
-import { createFileTree } from "$lib";
-import type { FileEntry, FileTree } from "$types/files";
-
-
-const DATA_DIR = './data';
-
-
-export const getVaultFiles = query(z.string(), async (vaultPath): Promise<FileTree[]> => {
-    console.log(`Fetching files from vault: ${vaultPath}`);
-    // Ensure data directory exists
-    // TODO: handle custom vault inside data folder
-    console.time('generate file tree');
-    await mkdir(DATA_DIR, { recursive: true });
-    const tree = await createFileTree(DATA_DIR);
-    console.timeEnd('generate file tree');
-    return tree
-});
+import { DATA_DIR } from "./consts";
+import type { FileEntry } from "$types/files";
+import { existsSync } from "node:fs";
 
 export const getFileContent = query(z.string(), async (filePath): Promise<string> => {
     // TODO: Validate request.fileName to prevent directory traversal attacks
@@ -30,14 +16,7 @@ export const getFileContent = query(z.string(), async (filePath): Promise<string
     return file;
 });
 
-export const createFile = form(async (data): Promise<FileEntry> => {
-    const fileName = data.get('fileName');
-
-    // Validation des données d'entrée
-    if (!fileName || typeof fileName !== 'string') {
-        throw error(400, 'fileName is required and must be a string');
-    }
-
+export const createFile = command(z.string(), async (fileName): Promise<FileEntry> => {
     // TODO: Valider request.fileName pour prévenir les attaques de directory traversal
     // Pour l'instant, on force le dossier ./data/
     // On remplace les caractères non autorisés dans le nom de fichier
@@ -56,15 +35,18 @@ export const createFile = form(async (data): Promise<FileEntry> => {
     // Contenu du fichier (vide par défaut ou contenu fourni)
     const content = '';
 
-    // Créer le dossier data s'il n'existe pas
-    await mkdir(dirname(filePath), { recursive: true });
+    if (existsSync(filePath)) {
+        throw error(400, 'File already exists');
+    }
 
+    // Créer le dossier s'il n'existe pas
+    await mkdir(dirname(filePath), { recursive: true });
     // Créer le fichier
     await writeFile(filePath, content, 'utf-8');
 
     return {
-        name: saneFileName,
-        path: filePath,
+        name: sanitizedParts.pop() || 'new_file',
+        path: saneFileName,
         type: 'file',
         content: content,
         childs: null
@@ -78,7 +60,7 @@ export const writeFileContent = command(z.object({
     // Créer le dossier parent s'il n'existe pas
     // ? pas sûre
     // await mkdir(dirname(filePath), { recursive: true });
-    
+
     await writeFile(path.join(DATA_DIR, filePath), content, 'utf-8');
 })
 
@@ -87,20 +69,20 @@ export const moveFile = command(z.object({
     destFolder: z.string()
 }), async ({ entryPath, destFolder }) => {
     const entryName = path.basename(entryPath);
-    
+
     if (entryPath === destFolder) {
         return;
     }
 
     const oldPath = path.resolve(DATA_DIR, entryPath);
     const newPath = path.resolve(DATA_DIR, destFolder, entryName);
-    
+
     // Validate paths are within DATA_DIR
     const dataDir = path.resolve(DATA_DIR);
     if (!oldPath.startsWith(dataDir) || !newPath.startsWith(dataDir)) {
         throw error(400, 'Invalid path');
     }
-    
+
     if (oldPath === newPath) {
         return;
     }
@@ -115,7 +97,7 @@ export const renameFile = command(z.object({
     destFolder: z.string().optional()
 }), async ({ entryPath, newName, destFolder }) => {
     const sanitizedName = newName.replace(/[^a-zA-Z0-9._-]/g, '_').trim();
-    
+
     if (!sanitizedName) {
         throw error(400, 'New name cannot be empty');
     }
@@ -123,13 +105,13 @@ export const renameFile = command(z.object({
     const oldPath = path.resolve(DATA_DIR, entryPath);
     const targetFolder = destFolder || path.dirname(entryPath);
     const newPath = path.resolve(DATA_DIR, targetFolder, sanitizedName);
-    
+
     // Validate paths are within DATA_DIR
     const dataDir = path.resolve(DATA_DIR);
     if (!oldPath.startsWith(dataDir) || !newPath.startsWith(dataDir)) {
         throw error(400, 'Invalid path');
     }
-    
+
     if (oldPath === newPath) {
         return;
     }

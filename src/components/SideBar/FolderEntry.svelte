@@ -14,6 +14,8 @@
     let isOpen = $state(true);
 
     function handleClick(e: MouseEvent) {
+        e.preventDefault();
+        e.stopPropagation();
         isOpen = !isOpen;
         // TODO Use OPTIONS to set the behavior of click/double click
         // TODO see if usefull
@@ -59,14 +61,15 @@
 >
     <button
         onclick={handleClick}
+        ondblclick={(e) => e.stopPropagation()}
         class="flex gap-2 items-center p-1 px-2 cursor-pointer group relative text-gray-200 bg-gray-700
             border border-gray-600 rounded-lg hover:bg-gray-600 hover:border-purple-500
             transition-all duration-150 w-full shadow-sm"
     >
         {#if isOpen}
-            <FolderOpen strokeWidth={2} class="w-4 stroke-purple-500" />
+            <FolderOpen strokeWidth={2} class="w-4 stroke-purple-500 " />
         {:else}
-            <Folder strokeWidth={2} class="w-4 stroke-purple-400" />
+            <Folder strokeWidth={2} class="w-4 stroke-transparent fill-purple-400" />
         {/if}
         <span class="block truncate">{entry.name}</span>
     </button>

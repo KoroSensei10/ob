@@ -1,6 +1,6 @@
 <script lang="ts">
     import { writeFileContent } from "$lib/files.remote";
-    import { getOpenFilesContext } from "$stores/index.svelte";
+    import { getOpenFilesContext } from "$stores/OpenFiles.svelte";
     import type { FileEntry } from "$types/files";
     import type { Options } from "$types/options";
 
@@ -20,9 +20,9 @@
     let saveError = $state(false);
 
 
-    function focusEditionArea(name: string) {
-        const index = openFilesContext.openFiles.findIndex((f) => f.name === name);
-        if (editionAreaList[index]) {
+    function focusEditionArea(path: string) {
+        const index = openFilesContext.openFiles.findIndex(f => f.path === path);
+        if (index !== -1 && editionAreaList[index]) {
             editionAreaList[index].focus();
         }
     }
@@ -61,7 +61,19 @@
     // so we can have undefined entries
     // I don't know if it's serious
     // $inspect(editionAreaList);
+
+    $effect(() => {
+        focusEditionArea(openFilesStore.activeFile?.path ?? "")
+    })
 </script>
+
+<!-- <svelte:window onfocusEditionArea={() => {
+    console.log("focusEditionArea event received");
+    
+    if (openFilesStore.activeFile) {
+        focusEditionArea(openFilesStore.activeFile.path);
+    }
+}} /> -->
 
 <div class="">
     {#if openFilesStore.openFiles.length <= 0}

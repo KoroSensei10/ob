@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Type } from "@lucide/svelte";
-    import { getOpenFilesContext } from "$stores/index.svelte";
+    import { getOpenFilesContext } from "$stores/OpenFiles.svelte";
     import type { FileEntry } from "$types/files";
 
     type Props = {
@@ -16,11 +16,14 @@
     draggable="true"
     ondragstart={(e) => {
         e.dataTransfer?.setData("json", JSON.stringify({ filePath: entry.path }));
-        e.stopImmediatePropagation();
+        e.stopPropagation();
     }}
-    onclick={async () => {
+    onclick={async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         openFilesContext.getFileContent(entry);
     }}
+    ondblclick={(e) => { e.stopPropagation(); }}
     oncontextmenu={() => {}}
     class="flex items-center gap-2 p-1 px-2 cursor-pointer group relative text-gray-200
         border  rounded-lg hover:bg-gray-600 hover:border-purple-500

@@ -1,9 +1,11 @@
 <script lang="ts">
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
-    import { ActiveFileStore, setOpenFilesContext } from '$stores/index.svelte';
+    import { ActiveFileStore, setOpenFilesContext } from '$stores/OpenFiles.svelte';
 	
-	let { children } = $props();
+	let { 
+		children 
+	} = $props();
 
 	const openFilesStore = new ActiveFileStore();
 	setOpenFilesContext(openFilesStore);

@@ -1,6 +1,6 @@
 import { getFileContent } from "$lib/files.remote";
+import { getContext, setContext } from "svelte";
 import type { FileEntry } from "$types/files";
-import { getContext, setContext, tick } from "svelte";
 
 
 export class ActiveFileStore {
@@ -42,8 +42,6 @@ export class ActiveFileStore {
             this.addOpenFile(entry);
             this.activeFile = entry;
         }
-        await tick();
-        // TODO focusEditionArea(entry.name);
     }
 }
 
