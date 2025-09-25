@@ -46,12 +46,12 @@
             placeholder="Nouveau fichier..."
             class="w-full p-2 bg-gray-700
                     border border-gray-600 rounded-lg focus:outline-none
-                    focus:border-purple-400 peer"
+                    focus:border-green-400 peer"
         />
         <button
             type="submit"
             class="p-2 cursor-pointer border border-gray-600 b
-                        g-transparent peer-focus:bg-purple-500 rounded-lg"
+                        g-transparent peer-focus:bg-green-500 rounded-lg"
         >
             <Plus strokeWidth={1.6} />
         </button>
@@ -65,21 +65,21 @@
             <button
                 onclick={() => focusInput()}
                 class="cursor-pointer border border-gray-600 w-10 h-10 flex justify-center items-center rounded-lg
-                        hover:bg-gray-600 hover:border-purple-500 transition-all"
+                        hover:bg-gray-600 hover:border-green-500 transition-all"
             >
                 <FilePlus strokeWidth={1} class="text-gray-200" />
             </button>
             <button
                 onclick={() => focusInput()}
                 class="cursor-pointer border border-gray-600 w-10 h-10 flex justify-center items-center rounded-lg
-                    hover:bg-gray-600 hover:border-purple-500 transition-all"
+                    hover:bg-gray-600 hover:border-green-500 transition-all"
             >
                 <FolderPlus strokeWidth={1} class="text-gray-200" />
             </button>
         </div>
         <span
             class="border border-gray-600 w-10 h-10 flex justify-center items-center rounded-lg
-                        hover:bg-gray-600 hover:border-purple-500 transition-all cursor-pointer"
+                        hover:bg-gray-600 hover:border-green-500 transition-all cursor-pointer"
         >
             <Settings strokeWidth={1} class="text-gray-200" />
         </span>

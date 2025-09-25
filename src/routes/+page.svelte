@@ -21,8 +21,6 @@
 
     let searchBarOpen: boolean = $state(false);
 
-    let editionAreaList: HTMLTextAreaElement[] = $state([]);
-
     let vaultEntries = $derived(data.files);
     let vaultFilesFlat = $derived.by(() => {
         const files: FileEntry[] = [];
@@ -72,9 +70,9 @@
         <SideBar />
 
         <!-- Main content -->
-        <div class="bg-gray-900 grid grid-rows-[80px_1fr] h-full">
+        <div class="bg-gray-900 grid grid-rows-[auto_1fr] h-full">
             <Tabs />
-            <Editor bind:editionAreaList {OPTIONS} />
+            <Editor />
         </div>
     </div>
 </div>

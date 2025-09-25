@@ -4,6 +4,7 @@
     import { Folder, FolderOpen } from "@lucide/svelte";
     import { handleDrop } from "$lib/dragdrop";
     import type { FolderEntry } from "$types/files";
+    import Entry from "./Entry.svelte";
 
     type Props = {
         entry: FolderEntry;
@@ -59,20 +60,14 @@
     }}
     role="region"
 >
-    <button
-        onclick={handleClick}
-        ondblclick={(e) => e.stopPropagation()}
-        class="flex gap-2 items-center p-1 px-2 cursor-pointer group relative text-gray-200 bg-gray-700
-            border border-gray-600 rounded-lg hover:bg-gray-600 hover:border-purple-500
-            transition-all duration-150 w-full shadow-sm"
-    >
+    <Entry onclick={handleClick} ondblclick={(e) => e.stopPropagation()}>
         {#if isOpen}
-            <FolderOpen strokeWidth={2} class="w-4 stroke-purple-500 " />
+            <FolderOpen strokeWidth={2} class="w-4 stroke-green-500 " />
         {:else}
-            <Folder strokeWidth={2} class="w-4 stroke-transparent fill-purple-400" />
+            <Folder strokeWidth={2} class="w-4 stroke-transparent fill-green-500" />
         {/if}
-        <span class="block truncate">{entry.name}</span>
-    </button>
+        <span class="block truncate">{entry.name}</span> 
+    </Entry>
     {#if entry.childs?.length}
         <div
             class:hidden={!isOpen}

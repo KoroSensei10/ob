@@ -20,11 +20,12 @@ export class ActiveFileStore {
     set activeFile(file: FileEntry | null) {
         this._activeFile = file;
     }
-    addOpenFile(file: FileEntry) {
+    #addOpenFile(file: FileEntry) {
         if (!this._openFiles.find(f => f.path === file.path)) {
             this._openFiles.push(file);
         }
         this._activeFile = file;
+        this.activeFile = file;
     }
     closeFile(file: FileEntry) {
         this._openFiles = this._openFiles.filter(f => f.path !== file.path);
@@ -39,8 +40,7 @@ export class ActiveFileStore {
             this.activeFile = existingFile;
         } else {
             entry.content = await getFileContent("./data/" + entry.path);
-            this.addOpenFile(entry);
-            this.activeFile = entry;
+            this.#addOpenFile(entry);
         }
     }
 }

@@ -1,18 +1,12 @@
 <script lang="ts">
     import { writeFileContent } from "$lib/files.remote";
     import { getOpenFilesContext } from "$stores/OpenFiles.svelte";
+    import { getOptionsContext } from "$stores/Options.svelte";
     import type { FileEntry } from "$types/files";
-    import type { Options } from "$types/options";
 
-    type Props = {
-        OPTIONS: Options;
-        editionAreaList: (HTMLTextAreaElement | undefined)[];
-    };
+    const options = getOptionsContext();
 
-    let {
-        OPTIONS,
-        editionAreaList = $bindable([]),
-    }: Props = $props();
+    let editionAreaList: HTMLTextAreaElement[] = $state([]);
 
     const openFilesContext = getOpenFilesContext();
     
@@ -33,7 +27,7 @@
         e: Event,
         file: FileEntry,
     ) {
-        if (!OPTIONS.autoSave) return;
+        if (!options.options.autoSave) return;
         if (file.content === null) return;
         saving = true;
 
@@ -67,13 +61,6 @@
     })
 </script>
 
-<!-- <svelte:window onfocusEditionArea={() => {
-    console.log("focusEditionArea event received");
-    
-    if (openFilesStore.activeFile) {
-        focusEditionArea(openFilesStore.activeFile.path);
-    }
-}} /> -->
 
 <div class="">
     {#if openFilesStore.openFiles.length <= 0}
