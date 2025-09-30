@@ -1,5 +1,18 @@
 # TODO
 
+## Missing Mandatory features
+
+- [ ] Integrate codemirror
+- [ ] File renaming
+- [ ] File deletion
+- [ ] ! Synchronization on tabs/open editors when moving/renaming files
+- [ ] Support multiple vaults
+- [ ] Fulltext search
+- [ ] Feedback with toasts/notifications
+- [ ] Export to PDF/HTML/MD
+
+## Features to implement
+
 - [x] Drag and drop to move files in the tree
   - [x] implementation mv of the file
   - [ ] implem of cp
@@ -22,6 +35,9 @@
     - [ ] External links (to web pages)
   - [ ] Lists (ordered, unordered, task)
   - [ ] Code blocks
+  - [ ] Lists (ordered, unordered, task)
+    - [ ] Checkboxes
+    - [ ] Nested lists
   - [ ] Blockquotes
   - [ ] Inline code
   - [ ] Images

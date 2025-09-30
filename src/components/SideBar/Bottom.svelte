@@ -36,49 +36,49 @@
     }
 </script>
 
-<div>
-    <form onsubmit={handleCreateFile} class="p-4 flex items-center gap-2">
+<div class="text-sm">
+    <form onsubmit={handleCreateFile} class="p-2 px-4 flex items-center gap-4">
         <input
             bind:this={newFileInput}
             bind:value={newFileName}
             name="fileName"
             type="text"
             placeholder="Nouveau fichier..."
-            class="w-full p-2 bg-gray-700
-                    border border-gray-600 rounded-lg focus:outline-none
-                    focus:border-green-400 peer"
+            class="w-full p-2 py-1 bg-gray-700
+                    rounded-lg focus:outline-none
+                    peer focus:ring-1 focus:ring-green-500"
         />
         <button
-            type="submit"
-            class="p-2 cursor-pointer border border-gray-600 b
-                        g-transparent peer-focus:bg-green-500 rounded-lg"
+            onclick={() => focusInput()}
+            class="cursor-pointer w-8 h-8 p-1 flex justify-center items-center rounded-lg
+    hover:bg-gray-600 hover:border-green-500 transition-all"
         >
-            <Plus strokeWidth={1.6} />
+            <Plus strokeWidth={1} />
         </button>
     </form>
 
     <div
-        class="p-4 flex items-center justify-between gap-2
+        class="p-2 px-4 flex items-center justify-between gap-2
                 bg-gray-800 border-t border-gray-700"
     >
         <div class="flex gap-2 items-center">
             <button
                 onclick={() => focusInput()}
-                class="cursor-pointer border border-gray-600 w-10 h-10 flex justify-center items-center rounded-lg
+                class="cursor-pointer w-8 h-8 p-1 flex justify-center items-center rounded-lg
                         hover:bg-gray-600 hover:border-green-500 transition-all"
             >
                 <FilePlus strokeWidth={1} class="text-gray-200" />
             </button>
             <button
                 onclick={() => focusInput()}
-                class="cursor-pointer border border-gray-600 w-10 h-10 flex justify-center items-center rounded-lg
+                class="cursor-pointer w-8 h-8 p-1 flex justify-center items-center rounded-lg
                     hover:bg-gray-600 hover:border-green-500 transition-all"
             >
                 <FolderPlus strokeWidth={1} class="text-gray-200" />
             </button>
         </div>
         <span
-            class="border border-gray-600 w-10 h-10 flex justify-center items-center rounded-lg
+            class="w-8 h-8 p-1 flex justify-center items-center rounded-lg
                         hover:bg-gray-600 hover:border-green-500 transition-all cursor-pointer"
         >
             <Settings strokeWidth={1} class="text-gray-200" />

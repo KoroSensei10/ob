@@ -1,6 +1,6 @@
 <script lang="ts">
     import SideBar from "../components/SideBar/SideBar.svelte";
-    import Editor from "../components/Editor.svelte";
+    import Editor from "../components/Editor/Editor.svelte";
     import Tabs from "../components/Tabs.svelte";
     import SearchBar from "$components/SearchBar.svelte";
     import { setVaultFilesContext } from "$stores/VaultFiles.svelte";

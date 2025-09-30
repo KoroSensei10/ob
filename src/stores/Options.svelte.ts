@@ -1,4 +1,3 @@
-import { getContext, setContext } from "svelte";
 import type { Options } from "$types/options";
 
 const defaultOptions: Options = {
@@ -27,11 +26,3 @@ function createOptionsStore() {
 }
 
 export const optionsStore = createOptionsStore();
-
-export function setOptionsContext(store: typeof optionsStore) {
-    setContext<typeof optionsStore>('optionsStore', store);
-}
-
-export function getOptionsContext(): typeof optionsStore {
-    return getContext<typeof optionsStore>('optionsStore');
-}

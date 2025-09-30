@@ -1,10 +1,9 @@
 <script lang="ts">
     import { writeFileContent } from "$lib/files.remote";
     import { getOpenFilesContext } from "$stores/OpenFiles.svelte";
-    import { getOptionsContext } from "$stores/Options.svelte";
+    import { optionsStore } from "$stores/Options.svelte";
     import type { FileEntry } from "$types/files";
-
-    const options = getOptionsContext();
+    import CodeMirror from "./CodeMirror.svelte";
 
     let editionAreaList: HTMLTextAreaElement[] = $state([]);
 
@@ -27,7 +26,7 @@
         e: Event,
         file: FileEntry,
     ) {
-        if (!options.options.autoSave) return;
+        if (!optionsStore.options.autoSave) return;
         if (file.content === null) return;
         saving = true;
 
@@ -71,16 +70,10 @@
         </div>
     {/if}
     {#each openFilesStore.openFiles as file, i (file.path)}
-        <textarea
-            bind:this={editionAreaList[i]}
-            bind:value={file.content}
-            oninput={(e) => handleContentChange(e, file)}
-            class:hidden={file.path !== openFilesStore.activeFile?.path}
-            class="w-full h-full p-6 font-mono text-base leading-relaxed bg-gray-900
-            focus:outline-none focus:ring-0
-            resize-none text-gray-200 placeholder-gray-500 shadow-sm"
-            placeholder="Commencez à écrire..."
-        ></textarea>
+        <CodeMirror
+            file={file}
+            handleContentChange={handleContentChange}
+        />
     {/each}
     <div
         class="absolute bottom-4 right-4 p-2 opacity-20 flex flex-col items-center justify-center"

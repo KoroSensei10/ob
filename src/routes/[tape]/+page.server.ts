@@ -5,7 +5,7 @@ import { DATA_DIR } from "$lib/consts";
 import type { ServerLoad } from "@sveltejs/kit";
 
 export const load: ServerLoad = async ({params, depends}) => {
-    const vaultName = params.vault;
+    const tapeName = params.tape;
     depends('files');
     // console.log(`Fetching files from vault: ${vaultPath}`);
     // Ensure data directory exists
@@ -16,6 +16,6 @@ export const load: ServerLoad = async ({params, depends}) => {
     console.timeEnd('generate file tree');
     return {
         files: tree,
-        vaultName
+        tapeName
     }
 }
