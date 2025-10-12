@@ -11,11 +11,18 @@ const config = {
 			remoteFunctions: true
 		},
 		alias: {
-			$components: 'src/components',
+			$components: 'src/lib/components',
 			$stores: 'src/stores',
 			$types: 'src/types',
 			$utils: 'src/utils',
 		}
+	},
+	vitePlugin: {
+		inspector: {
+			toggleKeyCombo: 'meta-shift',
+			showToggleButton: 'always',
+			holdMode: false,
+		},
 	},
 	compilerOptions: {
 		experimental: {

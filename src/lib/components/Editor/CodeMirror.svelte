@@ -1,17 +1,25 @@
 <script lang="ts">
     import { getOpenFilesContext } from "$stores/OpenFiles.svelte";
+    import { viewportStore } from "$stores/Viewport.svelte";
     import type { FileEntry } from "$types/files";
 
     type Props = {
         file: FileEntry;
         handleContentChange: (e: Event, file: FileEntry) => Promise<void>;
     };
-    let { file, handleContentChange }: Props = $props();
+    let { file = $bindable(), handleContentChange }: Props = $props();
 
     const openFilesStore = getOpenFilesContext();
+
+    function focus(node: HTMLElement) {
+        if (node && file.path === openFilesStore.activeFile?.path) {
+            node.focus();
+        }
+    }
 </script>
 
 <textarea
+    {@attach (!viewportStore.isMobile) && focus}
     bind:value={file.content}
     oninput={(e) => handleContentChange(e, file)}
     class:hidden={file.path !== openFilesStore.activeFile?.path}

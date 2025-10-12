@@ -15,9 +15,9 @@
 
 
 <button
-    class="flex gap-2 items-center px-2 text-sm cursor-pointer group relative text-gray-200
+    class="flex gap-2 items-center p-2 md:py-0 text-sm cursor-pointer group relative text-gray-200
             rounded-sm hover:bg-gray-600 hover:border-green-500
-            transition-all duration-150 w-full shadow
+            transition-all duration-150 w-full
             {className}"
     {...props}
 >

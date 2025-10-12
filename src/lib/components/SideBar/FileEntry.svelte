@@ -39,7 +39,7 @@
     onclick={async (e) => {
         e.preventDefault();
         e.stopPropagation();
-        openFilesContext.getFileContent(entry);
+        await openFilesContext.getFileContent(entry);
     }}
     ondblclick={(e) => {
         e.stopPropagation();
@@ -80,8 +80,8 @@
         >
             <button
                 class="w-full text-left px-3 py-2 hover:bg-gray-700 text-gray-200 text-sm flex items-center gap-2 transition-colors"
-                onclick={() => {
-                    openFilesContext.getFileContent(entry);
+                onclick={async () => {
+                    await openFilesContext.getFileContent(entry);
                     showContextMenu = false;
                 }}
             >

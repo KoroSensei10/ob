@@ -1,3 +1,12 @@
+<script module lang="ts">
+    function saveToLocalStorage(entry: string, value: boolean) {
+        window.localStorage.setItem("folderState", JSON.stringify({
+            ...JSON.parse(window.localStorage.getItem("folderState") || "{}"),
+            [entry]: value ? "open" : "closed",
+        }));
+    }
+</script>
+
 <script lang="ts">
     import FileEntry from "./FileEntry.svelte";
     import Self from "./FolderEntry.svelte";
@@ -5,6 +14,7 @@
     import { handleDrop } from "$lib/dragdrop";
     import type { FolderEntry } from "$types/files";
     import Entry from "./Entry.svelte";
+    import { onMount } from "svelte";
 
     type Props = {
         entry: FolderEntry;
@@ -18,6 +28,7 @@
         e.preventDefault();
         e.stopPropagation();
         isOpen = !isOpen;
+        saveToLocalStorage(entry.path, isOpen);
         // TODO Use OPTIONS to set the behavior of click/double click
         // TODO see if usefull
         // if (e.detail === 1) {
@@ -30,10 +41,19 @@
         // }
         // e.stopImmediatePropagation();
     }
+
+    onMount(() => {
+        const folderState = JSON.parse(window.localStorage.getItem("folderState") || "{}");
+        if (folderState[entry.path] === "closed") {
+            isOpen = false;
+        } else {
+            isOpen = true;
+        }
+    })
 </script>
 
 <div
-    class="flex flex-col gap-1 h-full"
+    class="flex flex-col"
     ondragenter={(e) => {
         // Todo: style
         // e.currentTarget.classList.add("bg-gray-600");
@@ -73,7 +93,7 @@
             class:hidden={!isOpen}
             class="flex duration-200 transition-all flex-col gap-1 border-l border-transparent group-hover:border-gray-600"
         >
-            {#each entry.childs ?? [] as child}
+            {#each entry.childs ?? [] as child (child.path)}
                 <div class="pl-4">
                     {#if child.type === "file"}
                         <FileEntry

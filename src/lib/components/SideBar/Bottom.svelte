@@ -23,10 +23,7 @@
 
         await invalidate("files");
         await openFilesContext.getFileContent(result);
-        newFileName = null; // Clear the input field
-        // } catch (error) {
-        //     alert(`Erreur: ${error}`);
-        // }
+        newFileName = null;
     }
 
     export function focusInput() {
@@ -58,7 +55,7 @@
     </form>
 
     <div
-        class="p-2 px-4 flex items-center justify-between gap-2
+        class="p-2 flex items-center justify-between gap-2
                 bg-gray-800 border-t border-gray-700"
     >
         <div class="flex gap-2 items-center">

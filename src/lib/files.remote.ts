@@ -1,12 +1,18 @@
 import z from "zod";
+import { existsSync } from "node:fs";
+import { writeFile, mkdir, readFile } from "node:fs/promises";
+import { move } from "fs-extra/esm";
 import path, { dirname, join } from "node:path";
 import { command, query } from "$app/server";
 import { error } from "@sveltejs/kit";
-import { writeFile, mkdir, readFile } from "node:fs/promises";
-import { move } from "fs-extra/esm";
+import { createFileTree } from "$lib";
 import { DATA_DIR } from "./consts";
-import type { FileEntry } from "$types/files";
-import { existsSync } from "node:fs";
+import type { FileEntry, FileTree } from "$types/files";
+
+export const getFileTree = query(async (): Promise<FileTree[]> => {
+    return createFileTree(DATA_DIR);
+});
+
 
 export const getFileContent = query(z.string(), async (filePath): Promise<string> => {
     // TODO: Validate request.fileName to prevent directory traversal attacks
@@ -61,7 +67,8 @@ export const writeFileContent = command(z.object({
     // ? pas sûre
     // await mkdir(dirname(filePath), { recursive: true });
 
-    await writeFile(path.join(DATA_DIR, filePath), content, 'utf-8');
+    console.log(`Writing content to ${path.join(DATA_DIR, filePath)}`);
+    await writeFile(path.join(DATA_DIR, filePath), content.trim(), 'utf-8');
 })
 
 export const moveFile = command(z.object({

@@ -1,6 +1,7 @@
 import { getFileContent } from "$lib/files.remote";
 import { getContext, setContext } from "svelte";
 import type { FileEntry } from "$types/files";
+import { viewportStore } from "./Viewport.svelte";
 
 
 export class ActiveFileStore {
@@ -42,6 +43,7 @@ export class ActiveFileStore {
             entry.content = await getFileContent("./data/" + entry.path);
             this.#addOpenFile(entry);
         }
+        viewportStore.isMobileSidebarOpen = false;
     }
 }
 
