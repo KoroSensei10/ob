@@ -33,27 +33,25 @@
 </script>
 
 <div
-    class="bg-gray-900 border-b border-gray-800 relative overflow-x-auto overscroll-none scrollbar-hide"
+    class="bg-gray-900 border-b border-gray-800 h-12 relative overflow-x-auto overscroll-none scrollbar-hide"
 >
-    <div class="flex items-stretch justify-between">
-        <div class="flex h-full items-stretch gap-1">
-            {#each openFiles as tab}
-                {@render tabEntry(tab)}
-            {:else}
-                <div
-                    class="flex h-12 items-center justify-center text-gray-400 font-medium opacity-60 px-6"
-                >
-                    <span>Aucun onglet ouvert</span>
-                </div>
-            {/each}
-        </div>
+    <div class="flex h-full">
+        {#each openFiles as tab}
+            {@render tabEntry(tab)}
+        {:else}
+            <div
+                class="flex items-center justify-center text-gray-400 font-medium opacity-60 px-6"
+            >
+                <span>Aucun onglet ouvert</span>
+            </div>
+        {/each}
     </div>
 </div>
 
 {#snippet tabEntry(entry: FileEntry)}
-    <div class="relative group" {@attach scrollToView(entry)}>
+    <div class="relative group h-full" {@attach scrollToView(entry)}>
         <div
-            class="flex relative border-b-2
+            class="flex h-full justify-center items-center relative border-b
             {activeFileStore.activeFile?.path === entry.path
                 ? ' border-green-400'
                 : ' hover:bg-gray-750 border-transparent hover:border-gray-600'} 
@@ -65,8 +63,8 @@
                 onclick={async () => {
                     await activeFileStore.getFileContent(entry);
                 }}
-                class="flex py-3 grow justify-center items-center h-full cursor-pointer font-medium
-                text-gray-200 transition-all duration-200 group/tab mx-4 truncate text-ellipsis
+                class="flex h-full w-full justify-center items-center cursor-pointer font-medium
+                text-gray-200 transition-all duration-200 mx-4 truncate text-ellipsis
                 {activeFileStore.activeFile?.path === entry.path
                     ? 'text-green-100'
                     : 'hover:text-white'}"
