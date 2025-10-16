@@ -3,7 +3,7 @@ import { existsSync } from "node:fs";
 import { writeFile, mkdir, readFile } from "node:fs/promises";
 import { move } from "fs-extra/esm";
 import path, { dirname, join } from "node:path";
-import { command, query } from "$app/server";
+import { command, getRequestEvent, query } from "$app/server";
 import { error } from "@sveltejs/kit";
 import { createFileTree } from "$lib";
 import { DATA_DIR } from "./consts";
@@ -24,37 +24,41 @@ export const getFileContent = query(z.string(), async (filePath): Promise<string
 
 export const createFile = command(z.string(), async (fileName): Promise<FileEntry> => {
     // TODO: Valider request.fileName pour prévenir les attaques de directory traversal
-    // Pour l'instant, on force le dossier ./data/
-    // On remplace les caractères non autorisés dans le nom de fichier
-    // TODO: On ajoute l'extension .md
-    // TODO: split les / pour créé les dossiers automatiquement
+
     const filePathParts: string[] = fileName.split('/');
+    // On remplace les caractères non autorisés dans le nom de fichier
     const sanitizedParts = filePathParts.map((part) => part.replace(/[^a-zA-Z0-9._-]/g, '_').trim());
-    const saneFileName = sanitizedParts.join('/');
+    const saneFilePath = sanitizedParts.join('/');
+    const filename = sanitizedParts.pop();
 
-    // On empêche les noms de fichiers vides ou avec uniquement des espaces
-    if (fileName.trim() === '') {
-        throw error(400, 'fileName cannot be empty or only spaces');
+    if (!filename) {
+        throw error(400, 'Invalid file name');
     }
-    const filePath = join('./data/', saneFileName);
 
-    // Contenu du fichier (vide par défaut ou contenu fourni)
-    const content = '';
+    if (fileName.trim() === '') {
+        throw error(400, 'FileName cannot be empty or only spaces');
+    }
+
+    const {params} = getRequestEvent();
+    if (!params.tape) {
+        throw error(400, 'You must be in a tape to create a file');
+    }
+
+    const filePath = join(DATA_DIR, params.tape, saneFilePath);
 
     if (existsSync(filePath)) {
         throw error(400, 'File already exists');
     }
-
     // Créer le dossier s'il n'existe pas
     await mkdir(dirname(filePath), { recursive: true });
     // Créer le fichier
-    await writeFile(filePath, content, 'utf-8');
+    await writeFile(filePath, '', 'utf-8');
 
     return {
-        name: sanitizedParts.pop() || 'new_file',
-        path: saneFileName,
+        name: filename,
+        path: saneFilePath,
         type: 'file',
-        content: content,
+        content: '',
         childs: null
     };
 });
