@@ -1,20 +1,13 @@
-<script module lang="ts">
-    function saveToLocalStorage(entry: string, value: boolean) {
-        window.localStorage.setItem("folderState", JSON.stringify({
-            ...JSON.parse(window.localStorage.getItem("folderState") || "{}"),
-            [entry]: value ? "open" : "closed",
-        }));
-    }
-</script>
-
 <script lang="ts">
     import FileEntry from "./FileEntry.svelte";
     import Self from "./FolderEntry.svelte";
     import { Folder, FolderOpen } from "@lucide/svelte";
     import { handleDrop } from "$lib/dragdrop";
-    import type { FolderEntry } from "$types/files";
     import Entry from "./Entry.svelte";
     import { onMount } from "svelte";
+    import { slide } from "svelte/transition";
+    import type { FolderEntry } from "$types/files";
+    import { getFoldStateContext } from "$stores/FoldState.svelte";
 
     type Props = {
         entry: FolderEntry;
@@ -22,13 +15,14 @@
 
     let { entry }: Props = $props();
 
-    let isOpen = $state(true);
+    let foldState = getFoldStateContext();
+    let isOpen = $derived(foldState.isFolded(entry.path));
 
     function handleClick(e: MouseEvent) {
         e.preventDefault();
         e.stopPropagation();
         isOpen = !isOpen;
-        saveToLocalStorage(entry.path, isOpen);
+        foldState.toggleFold(entry.path);
         // TODO Use OPTIONS to set the behavior of click/double click
         // TODO see if usefull
         // if (e.detail === 1) {
@@ -41,15 +35,6 @@
         // }
         // e.stopImmediatePropagation();
     }
-
-    onMount(() => {
-        const folderState = JSON.parse(window.localStorage.getItem("folderState") || "{}");
-        if (folderState[entry.path] === "closed") {
-            isOpen = false;
-        } else {
-            isOpen = true;
-        }
-    })
 </script>
 
 <div
@@ -88,10 +73,13 @@
         {/if}
         <span class="block truncate">{entry.name}</span> 
     </Entry>
-    {#if entry.childs?.length}
+    {#if entry.childs?.length && isOpen}
         <div
-            class:hidden={!isOpen}
-            class="flex duration-200 transition-all flex-col gap-1 border-l border-transparent group-hover:border-gray-600"
+            transition:slide={{
+                duration: 150
+            }}
+            class="flex duration-200 transition-all flex-col gap-1 border-l
+            md:border-transparent md:group-hover:border-gray-600 border-gray-600"
         >
             {#each entry.childs ?? [] as child (child.path)}
                 <div class="pl-4">

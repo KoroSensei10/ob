@@ -3,6 +3,8 @@
     import FolderEntry from "./FolderEntry.svelte";
     import { handleDrop } from "$lib/dragdrop";
     import { getVaultFilesContext } from "$stores/VaultFiles.svelte";
+    import { getFoldStateContext, setFoldStateContext } from "$stores/FoldState.svelte";
+    import { onMount } from "svelte";
 
     type Props = {
         handleDblClick?: (e: MouseEvent | KeyboardEvent) => void;
@@ -20,6 +22,12 @@
             async (_) => {},
         );
     }
+    
+    setFoldStateContext();
+    const foldState = getFoldStateContext();
+    onMount(() => {
+        foldState.init();
+    })
 </script>
 
 <div
