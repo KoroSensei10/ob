@@ -6,10 +6,14 @@
 - [ ] File renaming
 - [ ] File deletion
 - [ ] ! Synchronization on tabs/open editors when moving/renaming files
-- [ ] Support multiple vaults
+- [x] Support multiple vaults
 - [ ] Fulltext search
 - [ ] Feedback with toasts/notifications
 - [ ] Export to PDF/HTML/MD
+
+## Bugs
+
+- [ ] File is created but there is an error after (this does not open the file as the current file because of that)
 
 ## Features to implement
 

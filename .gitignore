@@ -1,7 +1,9 @@
 test-results
 node_modules
 
+# User Data
 data/
+db/
 
 # Output
 .output
