@@ -1,5 +1,6 @@
 <script lang="ts">
     import { goto } from "$app/navigation";
+    import { resolve } from "$app/paths";
     import { authClient } from "$lib/auth-client";
 
     let email: string = $state("");
@@ -18,7 +19,7 @@
             },
             {
                 onSuccess: () => {
-                    goto("/");
+                    goto(resolve("/"));
                 },
             },
         );

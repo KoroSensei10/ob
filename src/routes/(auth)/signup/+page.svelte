@@ -44,6 +44,7 @@
         <div class="mb-4">
             <label class="block text-gray-300 mb-2" for="name">Name</label>
             <input
+                {@attach (node) => node.focus()}
                 bind:value={name}
                 class="w-full px-3 py-2 border border-gray-600 rounded bg-gray-700 text-white focus:border-blue-500 focus:outline-none"
                 type="text"
@@ -93,5 +94,10 @@
         >
             Sign Up
         </button>
+        <a href="/login">
+            <p class="text-center text-gray-400 text-sm mt-4 hover:underline">
+                Already have an account? Log In
+            </p>
+        </a>
     </form>
 </div>
