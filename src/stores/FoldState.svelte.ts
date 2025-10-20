@@ -32,7 +32,7 @@ class FoldState {
     }
 }
 
-let sym = Symbol("foldStates");
+const sym = Symbol("foldStates");
 export function setFoldStateContext() {
     const foldStates = new FoldState();
     setContext(sym, foldStates);
