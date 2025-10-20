@@ -10,6 +10,7 @@
 - [ ] Fulltext search
 - [ ] Feedback with toasts/notifications
 - [ ] Export to PDF/HTML/MD
+- [ ] Init Script for auto deployment
 
 ## Bugs
 

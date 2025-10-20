@@ -40,7 +40,7 @@ export const removeTape = form(
         const tapePath = path.join(DATA_DIR, tapeName);
         try {
             await rm(tapePath, { recursive: true, force: true });
-        } catch (err) {
+        } catch {
             throw error(500, 'Failed to remove tape');
         }
         return { success: true };
