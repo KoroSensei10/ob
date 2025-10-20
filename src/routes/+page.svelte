@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { goto } from "$app/navigation";
+    import { authClient } from "$lib/auth-client";
     import { createTape } from "$lib/tapes.remote";
     import type { PageServerData } from "./$types";
 
@@ -9,12 +11,36 @@
 
     let newTapeName: string = $state("");
     let creatingTape: boolean = $state(false);
+
+    const session = authClient.useSession();
 </script>
 
 <div
     class="h-screen w-screen bg-gray-900 text-gray-200 overflow-auto p-4 px-20
     flex flex-col gap-2"
 >
+    <nav class="border-b border-gray-800 h-12">
+        {#if $session.data?.user}
+            <a href="/" class="text-blue-500 hover:underline">Home</a>
+            <button
+                class="cursor-pointer"
+                onclick={async () => {
+                    await authClient.signOut({
+                        fetchOptions: {
+                            onSuccess: () => {
+                                goto("/login");
+                            },
+                        },
+                    });
+                }}
+            >
+                Sign Out
+            </button>
+        {:else}
+            <a href="/login" class="text-blue-500 hover:underline">Login</a>
+            <a href="/signup" class="text-blue-500 hover:underline">Sign Up</a>
+        {/if}
+    </nav>
     <h1 class="text-2xl font-bold mb-4">Available Tapes</h1>
     {#each data.tapes as tape}
         <a
@@ -34,11 +60,14 @@
             Create New Tape
         </button>
     {:else}
-        <form {...createTape.enhance(async (all) => {
-            await all.submit();
-            creatingTape = false;
-            newTapeName = "";
-        })} class="flex gap-2">
+        <form
+            {...createTape.enhance(async (all) => {
+                await all.submit();
+                creatingTape = false;
+                newTapeName = "";
+            })}
+            class="flex gap-2"
+        >
             <input
                 {@attach (node) => node.focus()}
                 type="text"
