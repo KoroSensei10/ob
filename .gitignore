@@ -4,6 +4,8 @@ node_modules
 # User Data
 data/
 db/
+!src/db/
+*.sqlite
 
 # Output
 .output
