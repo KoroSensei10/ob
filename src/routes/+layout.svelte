@@ -5,5 +5,4 @@
     } = $props();
 </script>
 
-snoup
 {@render children?.()}
