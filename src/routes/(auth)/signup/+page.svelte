@@ -6,7 +6,7 @@
     let password = $state("");
     let passwordConfirm = $state("");
     let passwordValid = $derived.by(() => {
-        return password === passwordConfirm
+        return password !== "" && password === passwordConfirm;
     })
 
     async function handleSubmit(e: SubmitEvent) {
