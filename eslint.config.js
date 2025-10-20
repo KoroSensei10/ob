@@ -1,3 +1,6 @@
+// For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
+import storybook from "eslint-plugin-storybook";
+
 import { includeIgnoreFile } from '@eslint/compat';
 import js from '@eslint/js';
 import svelte from 'eslint-plugin-svelte';
@@ -9,11 +12,11 @@ import svelteConfig from './svelte.config.js';
 const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
 
 export default ts.config(
-	includeIgnoreFile(gitignorePath),
-	js.configs.recommended,
-	...ts.configs.recommended,
-	...svelte.configs.recommended,
-	{
+    includeIgnoreFile(gitignorePath),
+    js.configs.recommended,
+    ...ts.configs.recommended,
+    ...svelte.configs.recommended,
+    {
 		languageOptions: {
 			globals: { ...globals.browser, ...globals.node }
 		},
@@ -21,7 +24,7 @@ export default ts.config(
 		// see: https://typescript-eslint.io/troubleshooting/faqs/eslint/#i-get-errors-from-the-no-undef-rule-about-global-variables-not-being-defined-even-though-there-are-no-typescript-errors
 		"no-undef": 'off' }
 	},
-	{
+    {
 		files: [
 			'**/*.svelte',
 			'**/*.svelte.ts',
@@ -35,5 +38,6 @@ export default ts.config(
 				svelteConfig
 			}
 		}
-	}
+	},
+    storybook.configs["flat/recommended"]
 );
