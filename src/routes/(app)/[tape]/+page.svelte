@@ -1,18 +1,18 @@
 <script lang="ts">
-    import SideBar from "$components/SideBar/SideBar.svelte";
-    import Editor from "$components/Main/Editor/Editor.svelte";
-    import Tabs from "$components/Main/Tabs.svelte";
-    import SearchBar from "$components/SearchBar.svelte";
-    import { setVaultFilesContext } from "$stores/VaultFiles.svelte";
-    import { viewportStore } from "$stores/Viewport.svelte.js";
-    import type { FileEntry, FileTree } from "$types/files";
-    import Header from "$components/SideBar/Header.svelte";
-    import * as Drawer from "$components/ui/drawer";
-    import { FilePlus, FolderTree } from "@lucide/svelte";
-    import Breadcrumb from "$components/Breadcrumb.svelte";
-    import Bottom from "$components/SideBar/Bottom.svelte";
-    import * as Resizable from "$components/ui/resizable";
-    import { getOpenFilesContext } from "$stores/OpenFiles.svelte.js";
+    import SideBar from '$components/SideBar/SideBar.svelte';
+    import Editor from '$components/Main/Editor/Editor.svelte';
+    import Tabs from '$components/Main/Tabs.svelte';
+    import SearchBar from '$components/SearchBar.svelte';
+    import { setVaultFilesContext } from '$stores/VaultFiles.svelte';
+    import { viewportStore } from '$stores/Viewport.svelte.js';
+    import type { FileEntry, FileTree } from '$types/files';
+    import Header from '$components/SideBar/Header.svelte';
+    import * as Drawer from '$components/ui/drawer';
+    import { FilePlus, FolderTree } from '@lucide/svelte';
+    import Breadcrumb from '$components/Breadcrumb.svelte';
+    import Bottom from '$components/SideBar/Bottom.svelte';
+    import * as Resizable from '$components/ui/resizable';
+    import { getOpenFilesContext } from '$stores/OpenFiles.svelte.js';
 
     let { data } = $props();
 
@@ -20,40 +20,40 @@
 
     let vaultEntries = $derived(data.files ?? []);
     let vaultFilesFlat = $derived.by(() => {
-        const files: FileEntry[] = [];
-        function flatten(tree: FileTree) {
-            if (tree.type === "file") {
-                files.push(tree);
-            } else if (tree.type === "dir" && tree.childs) {
-                tree.childs.forEach((child) => flatten(child));
-            }
-        }
-        vaultEntries.forEach((root) => flatten(root));
-        return files;
+    	const files: FileEntry[] = [];
+    	function flatten(tree: FileTree) {
+    		if (tree.type === 'file') {
+    			files.push(tree);
+    		} else if (tree.type === 'dir' && tree.childs) {
+    			tree.childs.forEach((child) => flatten(child));
+    		}
+    	}
+    	vaultEntries.forEach((root) => flatten(root));
+    	return files;
     });
     setVaultFilesContext(() => {
-        return {
-            vaultEntries,
-            vaultFiles: vaultFilesFlat,
-        };
+    	return {
+    		vaultEntries,
+    		vaultFiles: vaultFilesFlat,
+    	};
     });
 
     const openFilesContext = getOpenFilesContext();
 
     async function handleKeys(e: KeyboardEvent) {
-        if (e.metaKey && e.key === "k") {
-            // open the command palette/file selector
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            searchBarOpen = !searchBarOpen;
-        } else if (e.metaKey && e.key === "s") {
-            // save the current file
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            // console.log(`Saved file: ${currentFile}`);
-            // await writeToFile(currentFile, currentFileContent);
-            // TODO: add small feedback
-        }
+    	if (e.metaKey && e.key === 'k') {
+    		// open the command palette/file selector
+    		e.preventDefault();
+    		e.stopImmediatePropagation();
+    		searchBarOpen = !searchBarOpen;
+    	} else if (e.metaKey && e.key === 's') {
+    		// save the current file
+    		e.preventDefault();
+    		e.stopImmediatePropagation();
+    		// console.log(`Saved file: ${currentFile}`);
+    		// await writeToFile(currentFile, currentFileContent);
+    		// TODO: add small feedback
+    	}
     }
 </script>
 

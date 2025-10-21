@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { invalidate } from "$app/navigation";
-    import { createFile } from "$lib/files.remote";
-    import { getOpenFilesContext } from "$stores/OpenFiles.svelte";
-    import { FilePlus, FolderPlus, Plus, Settings } from "@lucide/svelte";
+    import { invalidate } from '$app/navigation';
+    import { createFile } from '$lib/files.remote';
+    import { getOpenFilesContext } from '$stores/OpenFiles.svelte';
+    import { FilePlus, FolderPlus, Plus, Settings } from '@lucide/svelte';
 
     let newFileName: string | null = $state(null);
     let newFileInput: HTMLInputElement | null = $state(null);
@@ -10,26 +10,26 @@
     const openFilesContext = getOpenFilesContext();
 
     async function handleCreateFile(e: Event) {
-        e.preventDefault();
-        e.stopPropagation();
-        if (!newFileName) return;
+    	e.preventDefault();
+    	e.stopPropagation();
+    	if (!newFileName) return;
 
-        // TODO: verify client-side first that the filename is valid
-        // to give faster feedback to the user
+    	// TODO: verify client-side first that the filename is valid
+    	// to give faster feedback to the user
 
-        // try {
-        const result = await createFile(newFileName);
-        console.log(result);
+    	// try {
+    	const result = await createFile(newFileName);
+    	console.log(result);
 
-        await invalidate("files");
-        await openFilesContext.getFileContent(result);
-        newFileName = null;
+    	await invalidate('files');
+    	await openFilesContext.getFileContent(result);
+    	newFileName = null;
     }
 
     export function focusInput() {
-        if (newFileInput) {
-            newFileInput.focus();
-        }
+    	if (newFileInput) {
+    		newFileInput.focus();
+    	}
     }
 </script>
 

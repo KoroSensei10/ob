@@ -1,132 +1,132 @@
-import z from "zod";
-import { existsSync } from "node:fs";
-import { writeFile, mkdir, readFile } from "node:fs/promises";
-import { move } from "fs-extra/esm";
-import path, { dirname, join } from "node:path";
-import { command, getRequestEvent, query } from "$app/server";
-import { error } from "@sveltejs/kit";
-import { createFileTree } from "$lib";
-import { DATA_DIR } from "./consts";
-import type { FileEntry, FileTree } from "$types/files";
+import z from 'zod';
+import { existsSync } from 'node:fs';
+import { writeFile, mkdir, readFile } from 'node:fs/promises';
+import { move } from 'fs-extra/esm';
+import path, { dirname, join } from 'node:path';
+import { command, getRequestEvent, query } from '$app/server';
+import { error } from '@sveltejs/kit';
+import { createFileTree } from '$lib';
+import { DATA_DIR } from './consts';
+import type { FileEntry, FileTree } from '$types/files';
 
 export const getFileTree = query(async (): Promise<FileTree[]> => {
-    return createFileTree(DATA_DIR);
+	return createFileTree(DATA_DIR);
 });
 
 
 export const getFileContent = query(z.string(), async (filePath): Promise<string> => {
-    // TODO: Validate request.fileName to prevent directory traversal attacks
-    const file = await readFile(filePath, {
-        encoding: 'utf-8',
-    });
-    return file;
+	// TODO: Validate request.fileName to prevent directory traversal attacks
+	const file = await readFile(filePath, {
+		encoding: 'utf-8',
+	});
+	return file;
 });
 
 export const createFile = command(z.string(), async (fileName): Promise<FileEntry> => {
-    // TODO: Valider request.fileName pour prévenir les attaques de directory traversal
+	// TODO: Valider request.fileName pour prévenir les attaques de directory traversal
 
-    const filePathParts: string[] = fileName.split('/');
-    // On remplace les caractères non autorisés dans le nom de fichier
-    const sanitizedParts = filePathParts.map((part) => part.replace(/[^a-zA-Z0-9._-]/g, '_').trim());
-    const saneFilePath = sanitizedParts.join('/');
-    const filename = sanitizedParts.pop();
+	const filePathParts: string[] = fileName.split('/');
+	// On remplace les caractères non autorisés dans le nom de fichier
+	const sanitizedParts = filePathParts.map((part) => part.replace(/[^a-zA-Z0-9._-]/g, '_').trim());
+	const saneFilePath = sanitizedParts.join('/');
+	const filename = sanitizedParts.pop();
 
-    if (!filename) {
-        throw error(400, 'Invalid file name');
-    }
+	if (!filename) {
+		throw error(400, 'Invalid file name');
+	}
 
-    if (fileName.trim() === '') {
-        throw error(400, 'FileName cannot be empty or only spaces');
-    }
+	if (fileName.trim() === '') {
+		throw error(400, 'FileName cannot be empty or only spaces');
+	}
 
-    const {params} = getRequestEvent();
-    if (!params.tape) {
-        throw error(400, 'You must be in a tape to create a file');
-    }
+	const {params} = getRequestEvent();
+	if (!params.tape) {
+		throw error(400, 'You must be in a tape to create a file');
+	}
 
-    const filePath = join(DATA_DIR, params.tape, saneFilePath);
+	const filePath = join(DATA_DIR, params.tape, saneFilePath);
 
-    if (existsSync(filePath)) {
-        throw error(400, 'File already exists');
-    }
-    // Créer le dossier s'il n'existe pas
-    await mkdir(dirname(filePath), { recursive: true });
-    // Créer le fichier
-    await writeFile(filePath, '', 'utf-8');
+	if (existsSync(filePath)) {
+		throw error(400, 'File already exists');
+	}
+	// Créer le dossier s'il n'existe pas
+	await mkdir(dirname(filePath), { recursive: true });
+	// Créer le fichier
+	await writeFile(filePath, '', 'utf-8');
 
-    return {
-        name: filename,
-        path: saneFilePath,
-        type: 'file',
-        content: '',
-        childs: null
-    };
+	return {
+		name: filename,
+		path: saneFilePath,
+		type: 'file',
+		content: '',
+		childs: null
+	};
 });
 
 export const writeFileContent = command(z.object({
-    filePath: z.string(),
-    content: z.string()
+	filePath: z.string(),
+	content: z.string()
 }), async ({ filePath, content }) => {
-    // Créer le dossier parent s'il n'existe pas
-    // ? pas sûre
-    // await mkdir(dirname(filePath), { recursive: true });
+	// Créer le dossier parent s'il n'existe pas
+	// ? pas sûre
+	// await mkdir(dirname(filePath), { recursive: true });
 
-    console.log(`Writing content to ${path.join(DATA_DIR, filePath)}`);
-    await writeFile(path.join(DATA_DIR, filePath), content.trim(), 'utf-8');
-})
+	console.log(`Writing content to ${path.join(DATA_DIR, filePath)}`);
+	await writeFile(path.join(DATA_DIR, filePath), content.trim(), 'utf-8');
+});
 
 export const moveFile = command(z.object({
-    entryPath: z.string(),
-    destFolder: z.string()
+	entryPath: z.string(),
+	destFolder: z.string()
 }), async ({ entryPath, destFolder }) => {
-    const entryName = path.basename(entryPath);
+	const entryName = path.basename(entryPath);
 
-    if (entryPath === destFolder) {
-        return;
-    }
+	if (entryPath === destFolder) {
+		return;
+	}
 
-    const oldPath = path.resolve(DATA_DIR, entryPath);
-    const newPath = path.resolve(DATA_DIR, destFolder, entryName);
+	const oldPath = path.resolve(DATA_DIR, entryPath);
+	const newPath = path.resolve(DATA_DIR, destFolder, entryName);
 
-    // Validate paths are within DATA_DIR
-    const dataDir = path.resolve(DATA_DIR);
-    if (!oldPath.startsWith(dataDir) || !newPath.startsWith(dataDir)) {
-        throw error(400, 'Invalid path');
-    }
+	// Validate paths are within DATA_DIR
+	const dataDir = path.resolve(DATA_DIR);
+	if (!oldPath.startsWith(dataDir) || !newPath.startsWith(dataDir)) {
+		throw error(400, 'Invalid path');
+	}
 
-    if (oldPath === newPath) {
-        return;
-    }
+	if (oldPath === newPath) {
+		return;
+	}
 
-    console.log(`Moving entry from ${oldPath} to ${newPath}`);
-    await move(oldPath, newPath);
+	console.log(`Moving entry from ${oldPath} to ${newPath}`);
+	await move(oldPath, newPath);
 });
 
 export const renameFile = command(z.object({
-    entryPath: z.string(),
-    newName: z.string(),
-    destFolder: z.string().optional()
+	entryPath: z.string(),
+	newName: z.string(),
+	destFolder: z.string().optional()
 }), async ({ entryPath, newName, destFolder }) => {
-    const sanitizedName = newName.replace(/[^a-zA-Z0-9._-]/g, '_').trim();
+	const sanitizedName = newName.replace(/[^a-zA-Z0-9._-]/g, '_').trim();
 
-    if (!sanitizedName) {
-        throw error(400, 'New name cannot be empty');
-    }
+	if (!sanitizedName) {
+		throw error(400, 'New name cannot be empty');
+	}
 
-    const oldPath = path.resolve(DATA_DIR, entryPath);
-    const targetFolder = destFolder || path.dirname(entryPath);
-    const newPath = path.resolve(DATA_DIR, targetFolder, sanitizedName);
+	const oldPath = path.resolve(DATA_DIR, entryPath);
+	const targetFolder = destFolder || path.dirname(entryPath);
+	const newPath = path.resolve(DATA_DIR, targetFolder, sanitizedName);
 
-    // Validate paths are within DATA_DIR
-    const dataDir = path.resolve(DATA_DIR);
-    if (!oldPath.startsWith(dataDir) || !newPath.startsWith(dataDir)) {
-        throw error(400, 'Invalid path');
-    }
+	// Validate paths are within DATA_DIR
+	const dataDir = path.resolve(DATA_DIR);
+	if (!oldPath.startsWith(dataDir) || !newPath.startsWith(dataDir)) {
+		throw error(400, 'Invalid path');
+	}
 
-    if (oldPath === newPath) {
-        return;
-    }
+	if (oldPath === newPath) {
+		return;
+	}
 
-    console.log(`Renaming entry from ${oldPath} to ${newPath}`);
-    await move(oldPath, newPath);
+	console.log(`Renaming entry from ${oldPath} to ${newPath}`);
+	await move(oldPath, newPath);
 });

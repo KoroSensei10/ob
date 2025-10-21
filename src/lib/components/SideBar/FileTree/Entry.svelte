@@ -1,15 +1,15 @@
 <script lang="ts">
-    import type { Snippet } from "svelte";
-    import type { HTMLButtonAttributes } from "svelte/elements";
+    import type { Snippet } from 'svelte';
+    import type { HTMLButtonAttributes } from 'svelte/elements';
 
     type Props = HTMLButtonAttributes & {
         children: Snippet;
         className?: string;
     }
     let {
-        children,
-        className,
-        ...props
+    	children,
+    	className,
+    	...props
     }: Props = $props();
 </script>
 
