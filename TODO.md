@@ -1,20 +1,28 @@
 # TODO
 
-## Missing Mandatory features
+## Prio Prio
 
-- [ ] Integrate codemirror
-- [ ] File renaming
-- [ ] File deletion
-- [ ] ! Synchronization on tabs/open editors when moving/renaming files
+- [ ] Save only the changed part of the file (8 points)
+- [ ] Synchronization on tabs/open editors when moving/renaming files (8 points)
+- [ ] Deploy script for easy installation (5 points)
+- [ ] Codemirror integration (8 points)
+  - [ ] Finish basic markdown support
+- [ ] File renaming (3 points)
+- [ ] File deletion (3 points)
+- [ ] Basic settings page/tab (5 points)
+
+## High Prio
+
 - [x] Support multiple vaults
 - [ ] Fulltext search
 - [ ] Feedback with toasts/notifications
 - [ ] Export to PDF/HTML/MD
-- [ ] Init Script for auto deployment
+- [ ] Page in page link
 
 ## Bugs
 
 - [ ] File is created but there is an error after (this does not open the file as the current file because of that)
+- [ ] "getExistingTape" is not considered as remote function when we login ???
 
 ## Features to implement
 
@@ -82,3 +90,4 @@
   - Indiquer que l'on est hors ligne
   - Empêcher certaines actions (ex: création de fichier)
   - Permettre d'autres actions (ex: édition de fichier déjà ouvert)
+- Find a way to implement plugin stystem (excalidraw/calendar/daily notes/graph/Latex support/...)
