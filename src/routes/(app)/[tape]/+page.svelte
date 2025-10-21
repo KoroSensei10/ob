@@ -1,7 +1,7 @@
 <script lang="ts">
     import SideBar from "$components/SideBar/SideBar.svelte";
-    import Editor from "$components/Editor/Editor.svelte";
-    import Tabs from "$components/Tabs.svelte";
+    import Editor from "$components/Main/Editor/Editor.svelte";
+    import Tabs from "$components/Main/Tabs.svelte";
     import SearchBar from "$components/SearchBar.svelte";
     import { setVaultFilesContext } from "$stores/VaultFiles.svelte";
     import { viewportStore } from "$stores/Viewport.svelte.js";
@@ -12,6 +12,7 @@
     import Breadcrumb from "$components/Breadcrumb.svelte";
     import Bottom from "$components/SideBar/Bottom.svelte";
     import * as Resizable from "$components/ui/resizable";
+    import { getOpenFilesContext } from "$stores/OpenFiles.svelte.js";
 
     let { data } = $props();
 
@@ -36,6 +37,8 @@
             vaultFiles: vaultFilesFlat,
         };
     });
+
+    const openFilesContext = getOpenFilesContext();
 
     async function handleKeys(e: KeyboardEvent) {
         if (e.metaKey && e.key === "k") {
@@ -79,8 +82,8 @@
         <Resizable.Handle class="hidden md:block opacity-0" />
         <Resizable.Pane class="" defaultSize={75} minSize={50}>
             <div class="w-full h-full flex flex-col">
-                <Tabs />
-                <Breadcrumb />
+                <Tabs openFiles={openFilesContext.openFiles} />
+                <Breadcrumb activeFile={openFilesContext.activeFile} />
                 <Editor />
             </div>
         </Resizable.Pane>

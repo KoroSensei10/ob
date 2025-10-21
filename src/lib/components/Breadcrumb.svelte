@@ -1,11 +1,17 @@
 <script lang="ts">
-    import { getOpenFilesContext } from "$stores/OpenFiles.svelte";
     import { ChevronRight } from "@lucide/svelte";
+    import type { FileEntry } from "$types/files";
 
-    const openFilesStore = getOpenFilesContext();
+    type Props = {
+        activeFile: FileEntry | null;
+    }
+    let {
+        activeFile,
+    }: Props = $props();
+
 
     let openFilePath = $derived(
-        openFilesStore.activeFile?.path.split("/") ?? [],
+        activeFile?.path.split("/") ?? [],
     );
     let nbSegment = $derived(openFilePath?.length);
 </script>

@@ -12,12 +12,11 @@
             title: { control: 'text' },
         },
         args: {
-            onclick: fn(),
-            children: createRawSnippet(() => 
-                ({render: () => 'Sidebar Entry'})
-            ),
+            onclick: fn()
         }
     });
 </script>
 
-<Story name="Default" />
+<Story name="File Entry">
+    Bijour !
+</Story>

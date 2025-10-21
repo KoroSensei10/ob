@@ -1,9 +1,9 @@
 <script lang="ts">
     import { FilePen, Trash, Type } from "@lucide/svelte";
     import { getOpenFilesContext } from "$stores/OpenFiles.svelte";
-    import type { FileEntry } from "$types/files";
     import Entry from "./Entry.svelte";
     import { clickOutside } from "$lib/actions/clickOutside";
+    import type { FileEntry } from "$types/files";
 
     type Props = {
         entry: FileEntry;

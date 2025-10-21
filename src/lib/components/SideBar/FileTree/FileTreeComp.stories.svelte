@@ -2,9 +2,9 @@
     import { defineMeta } from "@storybook/addon-svelte-csf";
     import FileTreeComp from "./FileTreeComp.svelte";
     import { setVaultFilesContext } from "$stores/VaultFiles.svelte";
-    import type { VaultFilesStore } from "$types/stores";
     import { setFoldStateContext } from "$stores/FoldState.svelte";
     import { ActiveFileStore, setOpenFilesContext } from "$stores/OpenFiles.svelte";
+    import type { VaultFilesStore } from "$types/stores";
 
     const { Story } = defineMeta({
         title: "Components/SideBar/FileTreeComp",
