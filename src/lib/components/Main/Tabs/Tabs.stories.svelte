@@ -1,7 +1,7 @@
 <script lang="ts" module>
+    import { OpenFilesStore, setOpenFilesContext } from '$stores/OpenFiles.svelte';
     import { defineMeta } from '@storybook/addon-svelte-csf';
     import Tabs from './Tabs.svelte';
-    import { ActiveFileStore, setOpenFilesContext } from '$stores/OpenFiles.svelte';
 
     const { Story } = defineMeta({
     	title: 'Components/Main/Tabs/Tabs',
@@ -10,7 +10,7 @@
     });
 </script>
 <script lang="ts">
-    setOpenFilesContext(new ActiveFileStore());
+    setOpenFilesContext(new OpenFilesStore());
 </script>
 
 <Story name="No Tabs" args={{

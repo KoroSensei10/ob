@@ -1,10 +1,10 @@
 import { getFileContent } from '$lib/files.remote';
-import { getContext, setContext } from 'svelte';
 import type { FileEntry } from '$types/files';
+import { getContext, setContext } from 'svelte';
 import { viewportStore } from './Viewport.svelte';
 
 
-export class ActiveFileStore {
+export class OpenFilesStore {
 	private _openFiles: FileEntry[];
 	private _activeFile: FileEntry | null;
 
@@ -26,7 +26,6 @@ export class ActiveFileStore {
 			this._openFiles.push(file);
 		}
 		this._activeFile = file;
-		this.activeFile = file;
 	}
 	closeFile(file: FileEntry) {
 		this._openFiles = this._openFiles.filter(f => f.path !== file.path);
@@ -38,7 +37,7 @@ export class ActiveFileStore {
 		// TODO save current file before switching
 		const existingFile = this.openFiles.find((f) => f.path === entry.path);
 		if (existingFile && existingFile.content) {
-			this.activeFile = existingFile;
+			this._activeFile = existingFile;
 		} else {
 			entry.content = await getFileContent('./data/' + entry.path);
 			this.#addOpenFile(entry);
@@ -47,10 +46,10 @@ export class ActiveFileStore {
 	}
 }
 
-export function setOpenFilesContext(store: ActiveFileStore) {
-	setContext<ActiveFileStore>('activeFileStore', store);
+export function setOpenFilesContext(store: OpenFilesStore) {
+	setContext<OpenFilesStore>('activeFileStore', store);
 }
 
-export function getOpenFilesContext(): ActiveFileStore {
-	return getContext<ActiveFileStore>('activeFileStore');
+export function getOpenFilesContext(): OpenFilesStore {
+	return getContext<OpenFilesStore>('activeFileStore');
 }

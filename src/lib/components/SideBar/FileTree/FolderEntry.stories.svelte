@@ -1,9 +1,9 @@
 <script module lang="ts">
-    import { onMount } from 'svelte';
-    import { defineMeta } from '@storybook/addon-svelte-csf';
-    import FolderEntry from './FolderEntry.svelte';
-    import { ActiveFileStore, setOpenFilesContext } from '$stores/OpenFiles.svelte';
     import { getFoldStateContext, setFoldStateContext } from '$stores/FoldState.svelte';
+    import { OpenFilesStore, setOpenFilesContext } from '$stores/OpenFiles.svelte';
+    import { defineMeta } from '@storybook/addon-svelte-csf';
+    import { onMount } from 'svelte';
+    import FolderEntry from './FolderEntry.svelte';
 
     const { Story } = defineMeta({
     	title: 'Components/SideBar/FolderEntry',
@@ -12,7 +12,7 @@
     });
 </script>
 <script lang="ts">
-    const openFiles = new ActiveFileStore();
+    const openFiles = new OpenFilesStore();
     setOpenFilesContext(openFiles);
     setFoldStateContext();
     const foldState = getFoldStateContext();

@@ -11,13 +11,13 @@
 
     const openFilesStore = getOpenFilesContext();
     const vaultFilesStore = getVaultFilesContext();
-    let results: FileEntry[] = $derived(vaultFilesStore().vaultFiles);
+    let results: FileEntry[] = $derived(vaultFilesStore().tapeFiles);
 
     function handleSearch(event: Event) {
     	const input = event.target as HTMLInputElement;
     	const query = input.value.toLowerCase();
 
-    	results = vaultFilesStore().vaultFiles.filter(
+    	results = vaultFilesStore().tapeFiles.filter(
     		(file) =>
     			file.name.toLowerCase().includes(query) ||
                 (file.path && file.path.toLowerCase().includes(query)),

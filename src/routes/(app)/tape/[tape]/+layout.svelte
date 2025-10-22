@@ -1,17 +1,17 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.svg';
 	import {
-		ActiveFileStore,
-		setOpenFilesContext,
+	    OpenFilesStore,
+	    setOpenFilesContext,
 	} from '$stores/OpenFiles.svelte';
-	import { onMount } from 'svelte';
+	import { setVaultFilesContext } from '$stores/VaultFiles.svelte';
 	import { viewportStore } from '$stores/Viewport.svelte';
-    import { setVaultFilesContext } from '$stores/VaultFiles.svelte';
-    import type { FileEntry, FileTree } from '$types/files';
+	import type { FileEntry, FileTree } from '$types/files';
+	import { onMount } from 'svelte';
 
 	let { children, data } = $props();
 
-	const openFilesStore = new ActiveFileStore();
+	const openFilesStore = new OpenFilesStore();
 	setOpenFilesContext(openFilesStore);
 
 	let vaultEntries = $derived(data.files ?? []);
@@ -29,8 +29,8 @@
 	});
 	setVaultFilesContext(() => {
 		return {
-			vaultEntries,
-			vaultFiles: vaultFilesFlat,
+			tapeEntries: vaultEntries,
+			tapeFiles: vaultFilesFlat,
 		};
 	});
 

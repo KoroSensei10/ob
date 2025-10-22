@@ -1,6 +1,6 @@
 <script lang="ts">
-    import FileTreeComp from './FileTreeComp.svelte';
     import type { Snippet } from 'svelte';
+    import FileTreeComp from './FileTree/FileTreeComp.svelte';
 
     type Props = {
         header?: Snippet;

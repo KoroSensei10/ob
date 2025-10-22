@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { writeFileContent } from '$lib/files.remote';
 	import { getOpenFilesContext } from '$stores/OpenFiles.svelte';
-	import { proxiedSettings } from '$stores/Options.svelte';
+	import { proxiedSettings } from '$stores/Settings.svelte';
 	import type { FileEntry } from '$types/files';
 	import CodeMirror from './CodeMirror.svelte';
 

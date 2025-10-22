@@ -16,7 +16,7 @@
     let { handleDblClick }: Props = $props();
 
     const vaultFilesStore = getVaultFilesContext();
-    let files = $derived(vaultFilesStore().vaultEntries);
+    let files = $derived(vaultFilesStore().tapeEntries);
 
     function onDrop(e: DragEvent) {
     	handleDrop(

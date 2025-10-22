@@ -1,10 +1,10 @@
 <script module lang="ts">
+    import { setFoldStateContext } from '$stores/FoldState.svelte';
+    import { OpenFilesStore, setOpenFilesContext } from '$stores/OpenFiles.svelte';
+    import { setVaultFilesContext } from '$stores/VaultFiles.svelte';
+    import type { TapeFileStore } from '$types/stores';
     import { defineMeta } from '@storybook/addon-svelte-csf';
     import FileTreeComp from './FileTreeComp.svelte';
-    import { setVaultFilesContext } from '$stores/VaultFiles.svelte';
-    import { setFoldStateContext } from '$stores/FoldState.svelte';
-    import { ActiveFileStore, setOpenFilesContext } from '$stores/OpenFiles.svelte';
-    import type { VaultFilesStore } from '$types/stores';
 
     const { Story } = defineMeta({
     	title: 'Components/SideBar/FileTreeComp',
@@ -17,9 +17,9 @@
 </script>
 
 <script>
-    const vaultFiles: VaultFilesStore = () => {
+    const vaultFiles: TapeFileStore = () => {
     	return {
-    		vaultEntries: [
+    		tapeEntries: [
     			{
     				name: 'docs',
     				type: 'dir',
@@ -42,7 +42,7 @@
     				childs: null,
     			},
     		],
-    		vaultFiles: [
+    		tapeFiles: [
     			{
     				name: 'docs/readme.md',
     				type: 'file',
@@ -64,7 +64,7 @@
 
     setFoldStateContext();
 
-    setOpenFilesContext(new ActiveFileStore());
+    setOpenFilesContext(new OpenFilesStore());
 </script>
 
 <Story name="File Tree" />

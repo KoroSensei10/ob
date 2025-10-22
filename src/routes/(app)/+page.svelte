@@ -45,7 +45,7 @@
     <h1 class="text-2xl font-bold mb-4">Available Tapes</h1>
     {#each data.tapes as tape (tape)}
         <a
-            href={resolve(`/${tape}`)}
+            href={resolve(`/tape/${tape}`)}
             class="p-2 bg-gray-800 rounded hover:bg-gray-700 cursor-pointer"
         >
             {tape}

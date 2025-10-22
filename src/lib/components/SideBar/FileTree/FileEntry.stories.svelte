@@ -1,7 +1,7 @@
 <script module lang="ts">
+    import { OpenFilesStore, setOpenFilesContext } from '$stores/OpenFiles.svelte';
     import { defineMeta } from '@storybook/addon-svelte-csf';
     import FileEntry from './FileEntry.svelte';
-    import { ActiveFileStore, setOpenFilesContext } from '$stores/OpenFiles.svelte';
 
     const { Story } = defineMeta({
     	title: 'Components/SideBar/FileEntry',
@@ -20,7 +20,7 @@
     });
 </script>
 <script lang="ts">
-    const openFiles = new ActiveFileStore();
+    const openFiles = new OpenFilesStore();
     setOpenFilesContext(openFiles);
 </script>
 

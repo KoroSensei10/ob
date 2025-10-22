@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { X } from '@lucide/svelte';
+    import type { OpenFilesStore } from '$stores/OpenFiles.svelte';
     import type { FileEntry } from '$types/files';
-    import type { ActiveFileStore } from '$stores/OpenFiles.svelte';
+    import { X } from '@lucide/svelte';
 
 
     type Props = {
         entry: FileEntry;
-        activeFileStore: ActiveFileStore;
+        activeFileStore: OpenFilesStore;
         openFiles: FileEntry[];
     };
     let { entry, activeFileStore, openFiles }: Props = $props();

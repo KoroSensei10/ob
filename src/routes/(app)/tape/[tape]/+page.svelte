@@ -1,18 +1,18 @@
 <script lang="ts">
-    import SideBar from '$components/SideBar/SideBar.svelte';
+    import Breadcrumb from '$components/Breadcrumb.svelte';
     import Editor from '$components/Main/Editor/Editor.svelte';
     import Tabs from '$components/Main/Tabs.svelte';
     import SearchBar from '$components/SearchBar.svelte';
+    import Bottom from '$components/SideBar/Bottom.svelte';
+    import Header from '$components/SideBar/Header.svelte';
+    import SideBar from '$components/SideBar/SideBar.svelte';
+    import * as Drawer from '$components/ui/drawer';
+    import * as Resizable from '$components/ui/resizable';
+    import { getOpenFilesContext } from '$stores/OpenFiles.svelte.js';
     import { setVaultFilesContext } from '$stores/VaultFiles.svelte';
     import { viewportStore } from '$stores/Viewport.svelte.js';
     import type { FileEntry, FileTree } from '$types/files';
-    import Header from '$components/SideBar/Header.svelte';
-    import * as Drawer from '$components/ui/drawer';
     import { FilePlus, FolderTree } from '@lucide/svelte';
-    import Breadcrumb from '$components/Breadcrumb.svelte';
-    import Bottom from '$components/SideBar/Bottom.svelte';
-    import * as Resizable from '$components/ui/resizable';
-    import { getOpenFilesContext } from '$stores/OpenFiles.svelte.js';
 
     let { data } = $props();
 
@@ -33,8 +33,8 @@
     });
     setVaultFilesContext(() => {
     	return {
-    		vaultEntries,
-    		vaultFiles: vaultFilesFlat,
+    		tapeEntries: vaultEntries,
+    		tapeFiles: vaultFilesFlat,
     	};
     });
 
