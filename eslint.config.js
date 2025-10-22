@@ -1,15 +1,13 @@
-import { fileURLToPath } from 'node:url';
-
 import { includeIgnoreFile } from '@eslint/compat';
-import { defineConfig } from 'eslint/config';
-import globals from 'globals';
-
 import js from '@eslint/js';
-import svelte from 'eslint-plugin-svelte';
-import ts from 'typescript-eslint';
-import svelteConfig from './svelte.config.js';
+import { defineConfig } from 'eslint/config';
+import { fileURLToPath } from 'node:url';
 // For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
 import storybook from 'eslint-plugin-storybook';
+import svelte from 'eslint-plugin-svelte';
+import globals from 'globals';
+import ts from 'typescript-eslint';
+import svelteConfig from './svelte.config.js';
 
 const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
 
