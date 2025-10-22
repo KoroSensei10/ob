@@ -18,18 +18,16 @@ jobs:
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
-
-      # Install your linters here
-
       - name: Set up Node.js
         uses: actions/setup-node@v1
         with:
           node-version: 24
 
-      - name: Install Node.js dependencies
-        run: npm i
+      - name: Set up Bun 
+        uses: oven-sh/setup-bun@v2
 
-      - name: Run linters
-        uses: wearerequired/lint-action@v2
-        with:
-          eslint: true
+      - name: Install Dependencies
+        run: bun install
+
+      - name: Run linter
+        run: bun run lint
