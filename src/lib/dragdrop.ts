@@ -1,6 +1,6 @@
-import { moveFile } from './files.remote';
 import { invalidate } from '$app/navigation';
 import type { FolderEntry } from '$types/files';
+import { moveFile } from './files.remote';
 
 export async function handleDrop(e: DragEvent, entry: FolderEntry, callback: (response?: Promise<Response>) => Promise<void>) {
 	e.preventDefault();
