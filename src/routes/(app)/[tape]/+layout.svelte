@@ -1,13 +1,13 @@
 <script lang="ts">
-	import favicon from "$lib/assets/favicon.svg";
+	import favicon from '$lib/assets/favicon.svg';
 	import {
 		ActiveFileStore,
 		setOpenFilesContext,
-	} from "$stores/OpenFiles.svelte";
-	import { onMount } from "svelte";
-	import { viewportStore } from "$stores/Viewport.svelte";
-    import { setVaultFilesContext } from "$stores/VaultFiles.svelte";
-    import type { FileEntry, FileTree } from "$types/files";
+	} from '$stores/OpenFiles.svelte';
+	import { onMount } from 'svelte';
+	import { viewportStore } from '$stores/Viewport.svelte';
+    import { setVaultFilesContext } from '$stores/VaultFiles.svelte';
+    import type { FileEntry, FileTree } from '$types/files';
 
 	let { children, data } = $props();
 
@@ -18,9 +18,9 @@
 	let vaultFilesFlat = $derived.by(() => {
 		const files: FileEntry[] = [];
 		function flatten(tree: FileTree) {
-			if (tree.type === "file") {
+			if (tree.type === 'file') {
 				files.push(tree);
-			} else if (tree.type === "dir" && tree.childs) {
+			} else if (tree.type === 'dir' && tree.childs) {
 				tree.childs.forEach((child) => flatten(child));
 			}
 		}

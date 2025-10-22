@@ -1,28 +1,28 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
-    import { resolve } from "$app/paths";
-    import { authClient } from "$lib/auth-client";
+    import { goto } from '$app/navigation';
+    import { resolve } from '$app/paths';
+    import { authClient } from '$lib/auth-client';
 
-    let email: string = $state("");
-    let password: string = $state("");
+    let email: string = $state('');
+    let password: string = $state('');
     let isPasswordValid: boolean = $derived.by(() => {
-        return password.length >= 3;
+    	return password.length >= 3;
     });
 
     async function handleSubmit(e: SubmitEvent) {
-        e.preventDefault();
-        const { data, error } = await authClient.signIn.email(
-            {
-                email,
-                password,
-                rememberMe: true,
-            },
-            {
-                onSuccess: () => {
-                    goto(resolve("/"));
-                },
-            },
-        );
+    	e.preventDefault();
+    	const { data: _data, error: _error } = await authClient.signIn.email(
+    		{
+    			email,
+    			password,
+    			rememberMe: true,
+    		},
+    		{
+    			onSuccess: () => {
+    				goto(resolve('/'));
+    			},
+    		},
+    	);
     }
 </script>
 

@@ -1,37 +1,38 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
-    import { authClient } from "$lib/auth-client";
+    import { goto } from '$app/navigation';
+    import { resolve } from '$app/paths';
+    import { authClient } from '$lib/auth-client';
 
-    let name: string = $state("");
-    let email: string = $state("");
-    let password: string = $state("");
-    let passwordConfirm: string = $state("");
+    let name: string = $state('');
+    let email: string = $state('');
+    let password: string = $state('');
+    let passwordConfirm: string = $state('');
     let isPasswordValid: boolean = $derived.by(() => {
-        return password.length >= 3 && password === passwordConfirm;
+    	return password.length >= 3 && password === passwordConfirm;
     });
 
     async function handleSubmit(e: SubmitEvent) {
-        e.preventDefault();
-        const { data, error } = await authClient.signUp.email(
-            {
-                email, // user email address
-                password, // user password -> min 8 characters by default
-                name, // user display name
-            },
-            {
-                onRequest: () => {
-                    //show loading
-                },
-                onSuccess: () => {
-                    //redirect to the dashboard or sign in page
-                    goto("/");
-                },
-                onError: (ctx: { error: { message: string } }) => {
-                    // display the error message
-                    alert(ctx);
-                },
-            },
-        );
+    	e.preventDefault();
+    	const { data: _data, error: _error } = await authClient.signUp.email(
+    		{
+    			email, // user email address
+    			password, // user password -> min 8 characters by default
+    			name, // user display name
+    		},
+    		{
+    			onRequest: () => {
+    				//show loading
+    			},
+    			onSuccess: () => {
+    				//redirect to the dashboard or sign in page
+    				goto(resolve('/'));
+    			},
+    			onError: (ctx: { error: { message: string } }) => {
+    				// display the error message
+    				alert(ctx);
+    			},
+    		},
+    	);
     }
 </script>
 
@@ -94,7 +95,7 @@
         >
             Sign Up
         </button>
-        <a href="/login">
+        <a href={resolve('/login')}>
             <p class="text-center text-gray-400 text-sm mt-4 hover:underline">
                 Already have an account? Log In
             </p>

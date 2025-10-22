@@ -6,18 +6,18 @@
     };
 
     let {
-        textWidth = 120,
-        delay = 0,
-        className = ""
+    	textWidth = 120,
+    	delay = 0,
+    	className = ''
     }: Props = $props();
 
     const delays = [0, 75, 150, 300, 500, 700];
-    const classes = ["", "delay-75", "delay-150", "delay-300", "delay-500", "delay-700"];
+    const classes = ['', 'delay-75', 'delay-150', 'delay-300', 'delay-500', 'delay-700'];
 
     // Fonction pour générer les classes de délai
     function getDelayClass(delay: number) {
-        const index = delays.indexOf(delay);
-        return index !== -1 ? classes[index] : "";
+    	const index = delays.indexOf(delay);
+    	return index !== -1 ? classes[index] : '';
     }
 </script>
 

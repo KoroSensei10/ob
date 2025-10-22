@@ -5,21 +5,21 @@
     const tapeName = 'Demo Tape';
 
     const { Story } = defineMeta({
-        title: 'Components/Header',
-        component: Header,
-        tags: ['autodocs'],
+    	title: 'Components/Header',
+    	component: Header,
+    	tags: ['autodocs'],
     });
 </script>
 
 <Story name="Default Header" parameters={{
-    // https://storybook.js.org/docs/get-started/frameworks/sveltekit#how-to-mock
-    sveltekit_experimental: {
-        state: {
-            page: {
-                params: {
-                    tape: tapeName
-                }
-            }
-        }
-    }
+	// https://storybook.js.org/docs/get-started/frameworks/sveltekit#how-to-mock
+	sveltekit_experimental: {
+		state: {
+			page: {
+				params: {
+					tape: tapeName
+				}
+			}
+		}
+	}
 }} />

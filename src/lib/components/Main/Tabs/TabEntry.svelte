@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { X } from "@lucide/svelte";
-    import type { FileEntry } from "$types/files";
-    import type { ActiveFileStore } from "$stores/OpenFiles.svelte";
+    import { X } from '@lucide/svelte';
+    import type { FileEntry } from '$types/files';
+    import type { ActiveFileStore } from '$stores/OpenFiles.svelte';
 
 
     type Props = {
@@ -13,25 +13,25 @@
 
 
     function hasNameInCommon(entry: FileEntry): boolean {
-        if (openFiles.length <= 1) return false;
+    	if (openFiles.length <= 1) return false;
 
-        const nameCount = openFiles.reduce((count, file) => {
-            return file.name === entry.name ? count + 1 : count;
-        }, 0);
+    	const nameCount = openFiles.reduce((count, file) => {
+    		return file.name === entry.name ? count + 1 : count;
+    	}, 0);
 
-        return nameCount > 1;
+    	return nameCount > 1;
     }
 
     function scrollToView(entry: FileEntry) {
-        return (node: HTMLDivElement) => {
-            if (entry.path === activeFileStore.activeFile?.path) {
-                node.scrollIntoView({
-                    behavior: "instant",
-                    block: "nearest",
-                    inline: "center",
-                });
-            }
-        };
+    	return (node: HTMLDivElement) => {
+    		if (entry.path === activeFileStore.activeFile?.path) {
+    			node.scrollIntoView({
+    				behavior: 'instant',
+    				block: 'nearest',
+    				inline: 'center',
+    			});
+    		}
+    	};
     }
 </script>
 
@@ -39,28 +39,28 @@
     <div
         class="flex h-full justify-center items-center relative border-b
             {activeFileStore.activeFile?.path === entry.path
-            ? ' border-green-400'
-            : ' hover:bg-gray-750 border-transparent hover:border-gray-600'} 
+            	? ' border-green-400'
+            	: ' hover:bg-gray-750 border-transparent hover:border-gray-600'} 
             min-w-[120px] max-w-[180px]
             md:min-w-[180px] md:max-w-[240px]
             "
     >
         <button
             onclick={async () => {
-                await activeFileStore.getFileContent(entry);
+            	await activeFileStore.getFileContent(entry);
             }}
             class="flex h-full w-full justify-center items-center cursor-pointer font-medium
                 text-gray-200 transition-all duration-200 mx-4 truncate text-ellipsis
                 {activeFileStore.activeFile?.path === entry.path
-                ? 'text-green-100'
-                : 'hover:text-white'}"
+                	? 'text-green-100'
+                	: 'hover:text-white'}"
         >
             <div class="flex items-center text-sm gap-1 min-w-0">
                 <!-- File name -->
                 {#if hasNameInCommon(entry)}
-                    {@const parentDir = entry.path.split("/").at(-2)}
+                    {@const parentDir = entry.path.split('/').at(-2)}
                     <span class="text-xs text-gray-400 italic">
-                        {parentDir ? `.../${parentDir}/` : "./"}
+                        {parentDir ? `.../${parentDir}/` : './'}
                     </span>
                 {/if}
                 <span class="">{entry.name}</span>
@@ -73,8 +73,8 @@
                 transition-all duration-200 opacity-100 md:opacity-0 group-hover:opacity-100
                 text-xs font-bold"
             onclick={(e) => {
-                e.stopPropagation();
-                activeFileStore.closeFile(entry);
+            	e.stopPropagation();
+            	activeFileStore.closeFile(entry);
             }}
         >
             <X />

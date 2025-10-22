@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { FilePen, Trash, Type } from "@lucide/svelte";
-    import { getOpenFilesContext } from "$stores/OpenFiles.svelte";
-    import Entry from "./Entry.svelte";
-    import { clickOutside } from "$lib/actions/clickOutside";
-    import type { FileEntry } from "$types/files";
+    import { FilePen, Trash, Type } from '@lucide/svelte';
+    import { getOpenFilesContext } from '$stores/OpenFiles.svelte';
+    import Entry from './Entry.svelte';
+    import { clickOutside } from '$lib/actions/clickOutside';
+    import type { FileEntry } from '$types/files';
 
     type Props = {
         entry: FileEntry;
@@ -19,39 +19,39 @@
     let newName = $state(entry.name);
 
     function handleClickOutside(node: HTMLElement) {
-        return clickOutside(node, () => {
-            renaming = false;
-            newName = entry.name;
-            showContextMenu = false;
-        });
+    	return clickOutside(node, () => {
+    		renaming = false;
+    		newName = entry.name;
+    		showContextMenu = false;
+    	});
     }
 </script>
 
 <Entry
     draggable="true"
     ondragstart={(e) => {
-        e.dataTransfer?.setData(
-            "json",
-            JSON.stringify({ filePath: entry.path }),
-        );
-        e.stopPropagation();
+    	e.dataTransfer?.setData(
+    		'json',
+    		JSON.stringify({ filePath: entry.path }),
+    	);
+    	e.stopPropagation();
     }}
     onclick={async (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        await openFilesContext.getFileContent(entry);
+    	e.preventDefault();
+    	e.stopPropagation();
+    	await openFilesContext.getFileContent(entry);
     }}
     ondblclick={(e) => {
-        e.stopPropagation();
+    	e.stopPropagation();
     }}
     oncontextmenu={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        showContextMenu = !showContextMenu;
+    	e.preventDefault();
+    	e.stopPropagation();
+    	showContextMenu = !showContextMenu;
     }}
     className="{openFilesContext.activeFile?.path === entry.path
-        ? ' bg-green-400/10'
-        : ''}
+    	? ' bg-green-400/10'
+    	: ''}
         relative"
 >
     <span class="">
@@ -65,9 +65,9 @@
             type="text"
             class="py-0.5 text-gray-200 focus:outline-none w-full"
             onkeydown={(e) => {
-                if (e.key === "Enter") {
-                    renaming = false;
-                }
+            	if (e.key === 'Enter') {
+            		renaming = false;
+            	}
             }}
         />
     {:else}
@@ -81,8 +81,8 @@
             <button
                 class="w-full text-left px-3 py-2 hover:bg-gray-700 text-gray-200 text-sm flex items-center gap-2 transition-colors"
                 onclick={async () => {
-                    await openFilesContext.getFileContent(entry);
-                    showContextMenu = false;
+                	await openFilesContext.getFileContent(entry);
+                	showContextMenu = false;
                 }}
             >
                 <span class="flex items-center justify-center w-4 h-4">
@@ -94,10 +94,10 @@
             <button
                 class="w-full text-left px-3 py-2 hover:bg-gray-700 text-gray-200 text-sm flex items-center gap-2 transition-colors"
                 onclick={(e) => {
-                    e.stopPropagation();
-                    // TODO: Implement rename functionality
-                    showContextMenu = false;
-                    renaming = true;
+                	e.stopPropagation();
+                	// TODO: Implement rename functionality
+                	showContextMenu = false;
+                	renaming = true;
                 }}
             >
                 <span class="flex items-center justify-center w-4 h-4">
@@ -108,9 +108,9 @@
             <button
                 class="w-full text-left px-3 py-2 hover:bg-red-600 text-red-400 hover:text-white text-sm flex items-center gap-2 transition-colors"
                 onclick={(e) => {
-                    e.stopPropagation();
-                    // TODO: Implement delete functionality
-                    showContextMenu = false;
+                	e.stopPropagation();
+                	// TODO: Implement delete functionality
+                	showContextMenu = false;
                 }}
             >
                 <span class="flex items-center justify-center w-4 h-4">

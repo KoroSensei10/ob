@@ -1,15 +1,16 @@
 <script lang="ts">
-    import { goto } from "$app/navigation";
-    import { authClient } from "$lib/auth-client";
-    import { createTape } from "$lib/tapes.remote";
-    import type { PageServerData } from "./$types";
+    import { goto } from '$app/navigation';
+    import { resolve } from '$app/paths';
+    import { authClient } from '$lib/auth-client';
+    import { createTape } from '$lib/tapes.remote';
+    import type { PageServerData } from './$types';
 
     type Props = {
         data: PageServerData;
     };
     let { data }: Props = $props();
 
-    let newTapeName: string = $state("");
+    let newTapeName: string = $state('');
     let creatingTape: boolean = $state(false);
 
     const session = authClient.useSession();
@@ -21,30 +22,30 @@
 >
     <nav class="border-b border-gray-800 h-12">
         {#if $session.data?.user}
-            <a href="/" class="text-blue-500 hover:underline">Home</a>
+            <a href={resolve('/')} class="text-blue-500 hover:underline">Home</a>
             <button
                 class="cursor-pointer"
                 onclick={async () => {
-                    await authClient.signOut({
-                        fetchOptions: {
-                            onSuccess: () => {
-                                goto("/login");
-                            },
-                        },
-                    });
+                	await authClient.signOut({
+                		fetchOptions: {
+                			onSuccess: () => {
+                				goto(resolve('/login'));
+                			},
+                		},
+                	});
                 }}
             >
                 Sign Out
             </button>
         {:else}
-            <a href="/login" class="text-blue-500 hover:underline">Login</a>
-            <a href="/signup" class="text-blue-500 hover:underline">Sign Up</a>
+            <a href={resolve('/login')} class="text-blue-500 hover:underline">Login</a>
+            <a href={resolve('/signup')} class="text-blue-500 hover:underline">Sign Up</a>
         {/if}
     </nav>
     <h1 class="text-2xl font-bold mb-4">Available Tapes</h1>
-    {#each data.tapes as tape}
+    {#each data.tapes as tape (tape)}
         <a
-            href={`/${tape}`}
+            href={resolve(`/${tape}`)}
             class="p-2 bg-gray-800 rounded hover:bg-gray-700 cursor-pointer"
         >
             {tape}
@@ -62,9 +63,9 @@
     {:else}
         <form
             {...createTape.enhance(async (all) => {
-                await all.submit();
-                creatingTape = false;
-                newTapeName = "";
+            	await all.submit();
+            	creatingTape = false;
+            	newTapeName = '';
             })}
             class="flex gap-2"
         >
@@ -86,8 +87,8 @@
                 class="p-2 bg-gray-700 rounded hover:bg-gray-600 cursor-pointer"
                 type="button"
                 onclick={() => {
-                    creatingTape = false;
-                    newTapeName = "";
+                	creatingTape = false;
+                	newTapeName = '';
                 }}
             >
                 Cancel

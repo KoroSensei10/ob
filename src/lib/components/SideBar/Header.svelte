@@ -1,5 +1,5 @@
 <script>
-    import { page } from "$app/state";
+    import { page } from '$app/state';
 
     let { tape } = $derived(page.params);
 </script>

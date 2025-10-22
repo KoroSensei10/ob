@@ -1,10 +1,10 @@
 <script lang="ts">
-    import { getOpenFilesContext } from "$stores/OpenFiles.svelte";
-    import { getVaultFilesContext } from "$stores/VaultFiles.svelte";
-    import type { FileEntry } from "$types/files";
+    import { getOpenFilesContext } from '$stores/OpenFiles.svelte';
+    import { getVaultFilesContext } from '$stores/VaultFiles.svelte';
+    import type { FileEntry } from '$types/files';
 
     let {
-        searchBarOpen = $bindable(false),
+    	searchBarOpen = $bindable(false),
     }: {
         searchBarOpen: boolean;
     } = $props();
@@ -14,31 +14,31 @@
     let results: FileEntry[] = $derived(vaultFilesStore().vaultFiles);
 
     function handleSearch(event: Event) {
-        const input = event.target as HTMLInputElement;
-        const query = input.value.toLowerCase();
+    	const input = event.target as HTMLInputElement;
+    	const query = input.value.toLowerCase();
 
-        results = vaultFilesStore().vaultFiles.filter(
-            (file) =>
-                file.name.toLowerCase().includes(query) ||
+    	results = vaultFilesStore().vaultFiles.filter(
+    		(file) =>
+    			file.name.toLowerCase().includes(query) ||
                 (file.path && file.path.toLowerCase().includes(query)),
-        );
+    	);
     }
 
     async function handleEntryClick(e: MouseEvent, file: FileEntry) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        await openFilesStore.getFileContent(file);
-        searchBarOpen = false;
+    	e.preventDefault();
+    	e.stopImmediatePropagation();
+    	await openFilesStore.getFileContent(file);
+    	searchBarOpen = false;
     }
 </script>
 
 <svelte:window
     onkeydown={(e) => {
-        if (e.key === "Escape" && searchBarOpen) {
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            searchBarOpen = false;
-        }
+    	if (e.key === 'Escape' && searchBarOpen) {
+    		e.preventDefault();
+    		e.stopImmediatePropagation();
+    		searchBarOpen = false;
+    	}
     }}
 />
 
@@ -48,24 +48,23 @@
          text-gray-200
         "
         {@attach (element) => {
-            document.addEventListener("click", (e) => {
-                
-                if (!element.contains(e.target as Node)) {
-                    searchBarOpen = false;
-                }
-            });
-            return () => {
-                document.removeEventListener("click", (e) => {
-                    if (!element.contains(e.target as Node)) {
-                        searchBarOpen = false;
-                    }
-                });
-            };
+        	document.addEventListener('click', (e) => {
+        		if (!element.contains(e.target as Node)) {
+        			searchBarOpen = false;
+        		}
+        	});
+        	return () => {
+        		document.removeEventListener('click', (e) => {
+        			if (!element.contains(e.target as Node)) {
+        				searchBarOpen = false;
+        			}
+        		});
+        	};
         }}
     >
         <input
             {@attach (element) => {
-                element.focus();
+            	element.focus();
             }}
             type="text"
             placeholder="Search files..."
@@ -73,7 +72,7 @@
             oninput={handleSearch}
         />
         <div class="max-h-1/2 overflow-y-auto flex flex-col items-start">
-            {#each results as result}
+            {#each results as result (result.path)}
                 <button
                     class="mt-2 p-2 bg-gray-700 rounded-md hover:bg-gray-600 cursor-pointer"
                     onclick={(e) => handleEntryClick(e, result)}
