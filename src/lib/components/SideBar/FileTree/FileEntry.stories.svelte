@@ -1,5 +1,4 @@
 <script module lang="ts">
-    import { OpenFilesStore, setOpenFilesContext } from '$stores/OpenFiles.svelte';
     import { defineMeta } from '@storybook/addon-svelte-csf';
     import FileEntry from './FileEntry.svelte';
 
@@ -18,10 +17,6 @@
     		},
     	}
     });
-</script>
-<script lang="ts">
-    const openFiles = new OpenFilesStore();
-    setOpenFilesContext(openFiles);
 </script>
 
 <Story name="File" args={{

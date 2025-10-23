@@ -3,7 +3,7 @@
     import { onMount } from 'svelte';
     import FileEntry from './FileEntry.svelte';
     import FolderEntry from './FolderEntry.svelte';
-    import { getFileTree, getCurrentTape } from '$lib/files.remote';
+    import { getFileTree, getCurrentTape } from '$lib/remotes/files.remote';
     import { foldStateStore } from '$stores/FoldState.svelte';
 
     type Props = {

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { writeFileContent } from '$lib/files.remote';
+	import { writeFileContent } from '$lib/remotes/files.remote';
     import { openFilesStore } from '$stores/OpenFiles.svelte';
 	import { proxiedSettings } from '$stores/Settings.svelte';
 	import type { FileEntry } from '$types/files';

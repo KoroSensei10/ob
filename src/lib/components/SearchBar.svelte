@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getFileTree } from '$lib/files.remote';
+	import { getFileTree } from '$lib/remotes/files.remote';
     import { openFilesStore } from '$stores/OpenFiles.svelte';
 	import type { FileEntry, FileTree } from '$types/files';
 

@@ -1,4 +1,4 @@
-import { getFileContent } from '$lib/files.remote';
+import { getFileContent } from '$lib/remotes/files.remote';
 import { viewportStore } from './Viewport.svelte';
 import type { FileEntry } from '$types/files';
 import type { EntryModification } from '$types/modification';

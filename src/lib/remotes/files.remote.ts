@@ -6,7 +6,7 @@ import path, { dirname, join } from 'node:path';
 import { command, form, getRequestEvent, query } from '$app/server';
 import { error } from '@sveltejs/kit';
 import { createFileTree } from '$lib';
-import { DATA_DIR } from './consts';
+import { DATA_DIR } from '../consts';
 import type { FileEntry, FileTree } from '$types/files';
 import type { EntryModification } from '$types/modification';
 

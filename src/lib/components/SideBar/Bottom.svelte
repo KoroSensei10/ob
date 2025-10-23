@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createFile } from '$lib/files.remote';
+	import { createFile } from '$lib/remotes/files.remote';
     import { openFilesStore } from '$stores/OpenFiles.svelte';
 	import { FilePlus, FolderPlus, Plus, Settings, X } from '@lucide/svelte';
 

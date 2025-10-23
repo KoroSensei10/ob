@@ -1,4 +1,4 @@
-import { moveFile } from '../files.remote';
+import { moveFile } from '$lib/remotes/files.remote';
 import { dragStore } from '$stores/Drag.svelte';
 import { openFilesStore } from '$stores/OpenFiles.svelte';
 import type { FileTree, FolderEntry } from '$types/files';
