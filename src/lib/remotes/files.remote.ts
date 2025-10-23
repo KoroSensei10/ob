@@ -18,7 +18,8 @@ export const getFileTree = query(async (): Promise<FileTree[]> => {
 	}
 
 	// todo: validate tape to prevent directory traversal attacks
-	return createFileTree(join(DATA_DIR, tape));
+	const tree = await createFileTree(join(DATA_DIR, tape));
+	return tree;
 });
 
 export const getCurrentTape = query(async (): Promise<string> => {
@@ -33,7 +34,7 @@ export const getCurrentTape = query(async (): Promise<string> => {
 
 export const getFileContent = query(z.string(), async (filePath): Promise<string> => {
 	// TODO: Validate request.fileName to prevent directory traversal attacks
-	const path = join(DATA_DIR, filePath);
+	const path = join(DATA_DIR, await getCurrentTape(), filePath);
 	const file = await readFile(path, {
 		encoding: 'utf-8',
 	});
@@ -95,7 +96,7 @@ export const writeFileContent = command(z.object({
 	// await mkdir(dirname(filePath), { recursive: true });
 
 	console.log(`Writing content to ${path.join(DATA_DIR, filePath)}`);
-	await writeFile(path.join(DATA_DIR, filePath), content.trim(), 'utf-8');
+	await writeFile(path.join(DATA_DIR, await getCurrentTape(), filePath), content.trim(), 'utf-8');
 });
 
 export const moveFile = command(z.object({
@@ -108,8 +109,8 @@ export const moveFile = command(z.object({
 		return [];
 	}
 
-	const oldPath = path.resolve(DATA_DIR, entryPath);
-	const newPath = path.resolve(DATA_DIR, destFolder, entryName);
+	const oldPath = path.resolve(DATA_DIR, await getCurrentTape(), entryPath);
+	const newPath = path.resolve(DATA_DIR, await getCurrentTape(), destFolder, entryName);
 
 	// Validate paths are within DATA_DIR
 	const dataDir = path.resolve(DATA_DIR);
@@ -142,9 +143,9 @@ export const renameFile = command(z.object({
 		throw error(400, 'New name cannot be empty');
 	}
 
-	const oldPath = path.resolve(DATA_DIR, entryPath);
+	const oldPath = path.resolve(DATA_DIR, await getCurrentTape(), entryPath);
 	const targetFolder = destFolder || path.dirname(entryPath);
-	const newPath = path.resolve(DATA_DIR, targetFolder, sanitizedName);
+	const newPath = path.resolve(DATA_DIR, await getCurrentTape(), targetFolder, sanitizedName);
 
 	// Validate paths are within DATA_DIR
 	const dataDir = path.resolve(DATA_DIR);

@@ -18,7 +18,7 @@
 			e.preventDefault();
 			e.stopPropagation();
 			const tape = await getCurrentTape();
-			dropAndMove({ name: tape, path: tape + '/', type: 'dir', childs: files });
+			dropAndMove({ name: tape, path: '', type: 'dir', childs: files });
 		}
     onMount(() => {
     	foldStateStore.init();
