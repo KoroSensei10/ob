@@ -1,48 +1,58 @@
 import { getFileContent } from '$lib/files.remote';
-import type { FileEntry } from '$types/files';
 import { getContext, setContext } from 'svelte';
 import { viewportStore } from './Viewport.svelte';
+import type { FileEntry } from '$types/files';
+import type { EntryModification } from '$types/modification';
 
 
 export class OpenFilesStore {
-	private _openFiles: FileEntry[];
-	private _activeFile: FileEntry | null;
-
-	constructor() {
-		this._openFiles = $state([]);
-		this._activeFile = $state(null);
-	}
-	get openFiles(): FileEntry[] {
-		return this._openFiles;
-	}
-	get activeFile(): FileEntry | null {
-		return this._activeFile;
-	}
-	set activeFile(file: FileEntry | null) {
-		this._activeFile = file;
-	}
-	#addOpenFile(file: FileEntry) {
-		if (!this._openFiles.find(f => f.path === file.path)) {
-			this._openFiles.push(file);
+	openFiles: FileEntry[] = $state([]);
+	activeFilePath: string | null = $state(null);
+	activeFile: FileEntry | null = $derived.by(() => {
+		if (this.activeFilePath) {
+			return this.openFiles.find(f => f.path === this.activeFilePath) || null;
 		}
-		this._activeFile = file;
+		return null;
+	});
+
+	#addOpenFile(file: FileEntry) {
+		if (!this.openFiles.find(f => f.path === file.path)) {
+			this.openFiles.push(file);
+		}
+		this.activeFilePath = file.path;
 	}
 	closeFile(file: FileEntry) {
-		this._openFiles = this._openFiles.filter(f => f.path !== file.path);
-		if (this._activeFile?.path === file.path) {
-			this._activeFile = this._openFiles.length > 0 ? this._openFiles[this._openFiles.length - 1] : null;
+		if (this.activeFilePath === file.path) {
+			this.activeFilePath = this.openFiles.length > 0 ? this.openFiles[this.openFiles.length - 1].path : null;
 		}
+		this.openFiles = this.openFiles.filter(f => f.path !== file.path);
 	}
 	async getFileContent(entry: FileEntry) {
 		// TODO save current file before switching
 		const existingFile = this.openFiles.find((f) => f.path === entry.path);
 		if (existingFile && existingFile.content) {
-			this._activeFile = existingFile;
+			this.activeFilePath = existingFile.path;
 		} else {
-			entry.content = await getFileContent('./data/' + entry.path);
+			entry.content = await getFileContent(entry.path);
 			this.#addOpenFile(entry);
 		}
 		viewportStore.isMobileSidebarOpen = false;
+	}
+
+	applyChanges(changes: EntryModification[]) {
+		for (const change of changes) {
+			if (change.type === 'moved') {
+				const files = this.openFiles.filter(f => f.path.startsWith(change.oldPath));
+				for (const file of files) {
+					const relativePath = file.path.slice(change.oldPath.length);
+					const newPath = change.newPath + relativePath;
+					file.path = newPath;
+					if (this.activeFilePath?.startsWith(change.oldPath)) {
+						this.activeFilePath = newPath;
+					}
+				}
+			}
+		}
 	}
 }
 
