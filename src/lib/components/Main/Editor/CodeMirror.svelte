@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getOpenFilesContext } from '$stores/OpenFiles.svelte';
+	import { openFilesStore } from '$stores/OpenFiles.svelte';
 	import { viewportStore } from '$stores/Viewport.svelte';
 	import type { FileEntry } from '$types/files';
 
@@ -8,8 +8,6 @@
 		handleContentChange: (_e: Event, _file: FileEntry) => Promise<void>;
 	};
 	let { file = $bindable(), handleContentChange }: Props = $props();
-
-	const openFilesStore = getOpenFilesContext();
 
 	function focus(node: HTMLElement) {
 		if (node && file.path === openFilesStore.activeFile?.path) {

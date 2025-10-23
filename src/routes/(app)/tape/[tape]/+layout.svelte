@@ -1,16 +1,10 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.svg';
-	import {
-	    OpenFilesStore,
-	    setOpenFilesContext,
-	} from '$stores/OpenFiles.svelte';
 	import { viewportStore } from '$stores/Viewport.svelte';
 	import { onMount } from 'svelte';
 
 	let { children } = $props();
 
-	const openFilesStore = new OpenFilesStore();
-	setOpenFilesContext(openFilesStore);
 
 	onMount(() => {
 		viewportStore.updateDimensions();

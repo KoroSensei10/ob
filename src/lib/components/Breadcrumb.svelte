@@ -1,17 +1,10 @@
 <script lang="ts">
     import { ChevronRight } from '@lucide/svelte';
-    import type { FileEntry } from '$types/files';
-
-    type Props = {
-        activeFile: FileEntry | null;
-    }
-    let {
-    	activeFile,
-    }: Props = $props();
+    import { openFilesStore } from '$stores/OpenFiles.svelte';
 
 
     let activeFilePath = $derived(
-    	activeFile?.path.split('/') ?? [],
+    	openFilesStore.activeFile?.path.split('/') ?? [],
     );
     let nbSegment = $derived(activeFilePath?.length);
 </script>

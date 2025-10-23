@@ -8,7 +8,6 @@
     import FileEntry from './FileEntry.svelte';
     import Self from './FolderEntry.svelte';
     import { dragStore } from '$stores/Drag.svelte';
-    import { getOpenFilesContext } from '$stores/OpenFiles.svelte';
 
     type Props = {
         entry: FolderEntry;
@@ -18,8 +17,6 @@
 
     let foldState = getFoldStateContext();
     let isOpen = $derived(foldState.isFolded(entry.path));
-
-		const openFilesStore = getOpenFilesContext();
 
     function handleClick(e: MouseEvent) {
     	e.preventDefault();
@@ -58,7 +55,7 @@
     	e.preventDefault();
     	e.stopPropagation();
 
-    	dropAndMove(openFilesStore, entry, async () => {
+    	dropAndMove(entry, async () => {
     		isOpen = true;
     	});
     }}

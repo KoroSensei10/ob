@@ -1,31 +1,33 @@
 <script lang="ts">
 	import { createFile } from '$lib/files.remote';
-	import { getOpenFilesContext } from '$stores/OpenFiles.svelte';
+    import { openFilesStore } from '$stores/OpenFiles.svelte';
 	import { FilePlus, FolderPlus, Plus, Settings, X } from '@lucide/svelte';
 
 	let newFileInput: HTMLInputElement | null = $state(null);
-
-	const openFilesCtx = getOpenFilesContext();
 
 	export function focusInput() {
 		if (newFileInput) {
 			newFileInput.focus();
 		}
 	}
+	
+	async function enhanceForm({form, submit}: {form: HTMLFormElement, submit: () => Promise<void>}) {
+		try {
+			await submit();
+			form.reset();
+			if (!createFile.result) {
+				return;
+			}
+			openFilesStore.openFile(createFile.result);
+		} catch (error) {
+			console.error('Error creating file:', error);
+		}
+	}
 </script>
 
 <div class="text-sm">
 	<form
-		{...createFile.enhance(async ({ form, submit }) => {
-			try {
-				await submit();
-				form.reset();
-				if (!createFile.result) return;
-				openFilesCtx.getFileContent(createFile.result);
-			} catch (error) {
-				console.error('Error creating file:', error);
-			}
-		})}
+		{...createFile.enhance(enhanceForm)}
 		class="flex flex-col w-full"
 	>
 		{#if createFile.fields.allIssues()?.length}
@@ -48,6 +50,7 @@
 				bind:this={newFileInput}
 				{...createFile.fields.fileName.as('text')}
 				oninput={() => 
+					// this resets errors when user types
 					createFile.validate()
 				}
 				placeholder="Nouveau fichier..."

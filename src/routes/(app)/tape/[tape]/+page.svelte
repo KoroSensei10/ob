@@ -8,13 +8,11 @@
     import SideBar from '$components/SideBar/SideBar.svelte';
     import * as Drawer from '$components/ui/drawer';
     import * as Resizable from '$components/ui/resizable';
-    import { getOpenFilesContext } from '$stores/OpenFiles.svelte.js';
     import { viewportStore } from '$stores/Viewport.svelte.js';
     import { FilePlus, FolderTree } from '@lucide/svelte';
 
     let searchBarOpen: boolean = $state(false);
 
-    const openFilesContext = getOpenFilesContext();
 
     async function handleKeys(e: KeyboardEvent) {
     	if (e.metaKey && e.key === 'k') {
@@ -58,8 +56,8 @@
         <Resizable.Handle class="hidden md:block opacity-0" />
         <Resizable.Pane class="" defaultSize={75} minSize={50}>
             <div class="w-full h-full flex flex-col">
-                <Tabs openFiles={openFilesContext.openFiles} />
-                <Breadcrumb activeFile={openFilesContext.activeFile} />
+                <Tabs />
+                <Breadcrumb />
                 <Editor />
             </div>
         </Resizable.Pane>

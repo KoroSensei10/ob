@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { writeFileContent } from '$lib/files.remote';
-	import { getOpenFilesContext } from '$stores/OpenFiles.svelte';
+    import { openFilesStore } from '$stores/OpenFiles.svelte';
 	import { proxiedSettings } from '$stores/Settings.svelte';
 	import type { FileEntry } from '$types/files';
 	import CodeMirror from './CodeMirror.svelte';
@@ -32,7 +32,6 @@
 		}, 500);
 	}
 
-	const openFilesStore = getOpenFilesContext();
 </script>
 
 <div class="relative w-full h-full">
@@ -40,7 +39,7 @@
 		<CodeMirror bind:file={openFilesStore.openFiles[i]} {handleContentChange} />
 	{:else}
 		<div
-			class="flex items-center justify-center text-gray-400 font-medium opacity-60 p-4"
+			class="flex h-full items-center justify-center text-gray-400 font-medium opacity-60 p-4"
 		>
 			Ouvrez un fichier pour commencer à éditer...
 		</div>

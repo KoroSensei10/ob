@@ -1,18 +1,16 @@
 <script lang="ts">
     import { FilePen, Trash, Type } from '@lucide/svelte';
-    import { getOpenFilesContext } from '$stores/OpenFiles.svelte';
     import Entry from './Entry.svelte';
     import { clickOutside } from '$lib/actions/clickOutside';
     import type { FileEntry } from '$types/files';
     import { dragStore } from '$stores/Drag.svelte';
+    import { openFilesStore } from '$stores/OpenFiles.svelte';
 
     type Props = {
         entry: FileEntry;
     };
 
     let { entry }: Props = $props();
-
-    const openFilesContext = getOpenFilesContext();
 
     let showContextMenu = $state(false);
     
@@ -37,7 +35,7 @@
     onclick={async (e) => {
     	e.preventDefault();
     	e.stopPropagation();
-    	await openFilesContext.getFileContent(entry);
+    	await openFilesStore.openFile(entry);
     }}
     ondblclick={(e) => {
     	e.stopPropagation();
@@ -47,7 +45,7 @@
     	e.stopPropagation();
     	showContextMenu = !showContextMenu;
     }}
-    className="{openFilesContext.activeFile?.path === entry.path
+    className="{openFilesStore.activeFile?.path === entry.path
     	? ' bg-green-400/10'
     	: ''}
         relative"
@@ -79,7 +77,7 @@
             <button
                 class="w-full text-left px-3 py-2 hover:bg-gray-700 text-gray-200 text-sm flex items-center gap-2 transition-colors"
                 onclick={async () => {
-                	await openFilesContext.getFileContent(entry);
+                	await openFilesStore.openFile(entry);
                 	showContextMenu = false;
                 }}
             >

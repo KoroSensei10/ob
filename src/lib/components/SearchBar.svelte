@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getFileTree } from '$lib/files.remote';
-	import { getOpenFilesContext } from '$stores/OpenFiles.svelte';
+    import { openFilesStore } from '$stores/OpenFiles.svelte';
 	import type { FileEntry, FileTree } from '$types/files';
 
 	let {
@@ -8,8 +8,6 @@
 	}: {
 		searchBarOpen: boolean;
 	} = $props();
-
-	const openFilesStore = getOpenFilesContext();
 
 	let query: string = $state('');
 
@@ -37,7 +35,7 @@
 	async function handleEntryClick(e: MouseEvent, file: FileEntry) {
 		e.preventDefault();
 		e.stopImmediatePropagation();
-		await openFilesStore.getFileContent(file);
+		await openFilesStore.openFile(file);
 		searchBarOpen = false;
 		query = '';
 	}

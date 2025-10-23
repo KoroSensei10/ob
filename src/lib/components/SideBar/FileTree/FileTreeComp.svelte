@@ -8,7 +8,6 @@
     import FileEntry from './FileEntry.svelte';
     import FolderEntry from './FolderEntry.svelte';
     import { getFileTree, getCurrentTape } from '$lib/files.remote';
-    import { getOpenFilesContext } from '$stores/OpenFiles.svelte';
 
     type Props = {
         handleDblClick?: (_: MouseEvent | KeyboardEvent) => void;
@@ -18,7 +17,6 @@
 
     setFoldStateContext();
     const foldState = getFoldStateContext();
-    const openFilesStore = getOpenFilesContext();
 	
 		let files = $derived(await getFileTree() ?? []);
 		
@@ -26,11 +24,7 @@
 			e.preventDefault();
 			e.stopPropagation();
 			const tape = await getCurrentTape();
-			dropAndMove(
-				openFilesStore,
-				{ name: tape, path: tape + '/', type: 'dir', childs: files },
-				async () => {},
-			);
+			dropAndMove({ name: tape, path: tape + '/', type: 'dir', childs: files });
 		}
     onMount(() => {
     	foldState.init();
