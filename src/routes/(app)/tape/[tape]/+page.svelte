@@ -1,44 +1,18 @@
 <script lang="ts">
     import Breadcrumb from '$components/Breadcrumb.svelte';
     import Editor from '$components/Main/Editor/Editor.svelte';
-    import Tabs from '$components/Main/Tabs.svelte';
+    import Tabs from '$components/Main/Tabs/Tabs.svelte';
     import SearchBar from '$components/SearchBar.svelte';
     import Bottom from '$components/SideBar/Bottom.svelte';
     import Header from '$components/SideBar/Header.svelte';
     import SideBar from '$components/SideBar/SideBar.svelte';
     import * as Drawer from '$components/ui/drawer';
     import * as Resizable from '$components/ui/resizable';
-    import { getOpenFilesContext } from '$stores/OpenFiles.svelte.js';
-    import { setVaultFilesContext } from '$stores/VaultFiles.svelte';
     import { viewportStore } from '$stores/Viewport.svelte.js';
-    import type { FileEntry, FileTree } from '$types/files';
     import { FilePlus, FolderTree } from '@lucide/svelte';
-
-    let { data } = $props();
 
     let searchBarOpen: boolean = $state(false);
 
-    let vaultEntries = $derived(data.files ?? []);
-    let vaultFilesFlat = $derived.by(() => {
-    	const files: FileEntry[] = [];
-    	function flatten(tree: FileTree) {
-    		if (tree.type === 'file') {
-    			files.push(tree);
-    		} else if (tree.type === 'dir' && tree.childs) {
-    			tree.childs.forEach((child) => flatten(child));
-    		}
-    	}
-    	vaultEntries.forEach((root) => flatten(root));
-    	return files;
-    });
-    setVaultFilesContext(() => {
-    	return {
-    		tapeEntries: vaultEntries,
-    		tapeFiles: vaultFilesFlat,
-    	};
-    });
-
-    const openFilesContext = getOpenFilesContext();
 
     async function handleKeys(e: KeyboardEvent) {
     	if (e.metaKey && e.key === 'k') {
@@ -82,8 +56,8 @@
         <Resizable.Handle class="hidden md:block opacity-0" />
         <Resizable.Pane class="" defaultSize={75} minSize={50}>
             <div class="w-full h-full flex flex-col">
-                <Tabs openFiles={openFilesContext.openFiles} />
-                <Breadcrumb activeFile={openFilesContext.activeFile} />
+                <Tabs />
+                <Breadcrumb />
                 <Editor />
             </div>
         </Resizable.Pane>

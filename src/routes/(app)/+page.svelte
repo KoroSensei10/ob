@@ -2,13 +2,7 @@
     import { goto } from '$app/navigation';
     import { resolve } from '$app/paths';
     import { authClient } from '$lib/auth-client';
-    import { createTape } from '$lib/tapes.remote';
-    import type { PageServerData } from './$types';
-
-    type Props = {
-        data: PageServerData;
-    };
-    let { data }: Props = $props();
+    import { createTape, getExistingTapes } from '$lib/remotes/tapes.remote';
 
     let newTapeName: string = $state('');
     let creatingTape: boolean = $state(false);
@@ -43,7 +37,7 @@
         {/if}
     </nav>
     <h1 class="text-2xl font-bold mb-4">Available Tapes</h1>
-    {#each data.tapes as tape (tape)}
+    {#each await getExistingTapes() as tape (tape)}
         <a
             href={resolve(`/tape/${tape}`)}
             class="p-2 bg-gray-800 rounded hover:bg-gray-700 cursor-pointer"

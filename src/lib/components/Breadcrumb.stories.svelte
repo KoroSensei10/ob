@@ -1,34 +1,29 @@
 <script lang="ts" module>
     import { defineMeta } from '@storybook/addon-svelte-csf';
     import Breadcrumb from './Breadcrumb.svelte';
+    import { openFilesStore } from '$stores/OpenFiles.svelte';
 
     const { Story } = defineMeta({
     	title: 'Components/Breadcrumb',
     	component: Breadcrumb,
-    	tags: ['autodocs'],
-    	argTypes: {
-    		activeFile: {
-    			control: 'object',
-    			description: 'The currently active file or folder.',
-    			table: {
-    				type: { summary: 'FileEntry | null' },
-    				defaultValue: { summary: 'null' },
-    			},
-    		},
-    	}
+    	tags: ['autodocs']
     });
 </script>
 
-<Story name="With Active File" args={{
-	activeFile: {
-		name: 'readme.md',
-		type: 'file',
-		path: 'home/user/project/readme.md',
-		content: null,
-		childs: null
-	},
-}} />
+<Story name="With Active File" play={() => {
+	openFilesStore.openFiles = [
+		{
+			name: 'readme.md',
+			type: 'file',
+			path: 'home/user/project/readme.md',
+			content: null,
+			childs: null
+		}
+	];
+	openFilesStore.activeFilePath = 'home/user/project/readme.md';
+}}/>
 
-<Story name="No Active File" args={{
-	activeFile: null,
+<Story name="No Active File" play={() => {
+	openFilesStore.openFiles = [];
+	openFilesStore.activeFilePath = null;
 }} />
