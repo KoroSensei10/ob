@@ -1,11 +1,11 @@
 class DragStore {
-	draggedItem: any | null = $state(null)
+	draggedItem: unknown | null = $state(null);
 
-	drag(item: any) {
+	drag(item: unknown) {
 		this.draggedItem = $state.snapshot(item);
 	}
 
-	drop(): any {
+	drop(): unknown {
 		return $state.snapshot(this.draggedItem);
 	}
 }
