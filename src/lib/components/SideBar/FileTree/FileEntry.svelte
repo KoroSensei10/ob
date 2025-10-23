@@ -1,7 +1,7 @@
 <script lang="ts">
     import { FilePen, Trash, Type } from '@lucide/svelte';
     import Entry from './Entry.svelte';
-    import { clickOutside } from '$lib/actions/clickOutside';
+    import { clickOutside } from '$lib/attachments/clickOutside';
     import type { FileEntry } from '$types/files';
     import { dragStore } from '$stores/Drag.svelte';
     import { openFilesStore } from '$stores/OpenFiles.svelte';
