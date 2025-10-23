@@ -10,15 +10,15 @@
     }: Props = $props();
 
 
-    let openFilePath = $derived(
+    let activeFilePath = $derived(
     	activeFile?.path.split('/') ?? [],
     );
-    let nbSegment = $derived(openFilePath?.length);
+    let nbSegment = $derived(activeFilePath?.length);
 </script>
 
-{#if openFilePath.length}
+{#if activeFilePath.length}
     <div class="flex gap-1 px-2 text-sm items-center text-gray-400">
-        {#each openFilePath || '' as segment, index (index)}
+        {#each activeFilePath || '' as segment, index (index)}
             {#if index !== nbSegment - 1}
                 <span class="text-gray-400">{segment}</span>
                 <span><ChevronRight strokeWidth={1} /></span>
