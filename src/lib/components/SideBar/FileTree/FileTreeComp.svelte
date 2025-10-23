@@ -1,13 +1,10 @@
 <script lang="ts">
     import { dropAndMove } from '$lib/attachments/drop';
-    import {
-    	getFoldStateContext,
-    	setFoldStateContext,
-    } from '$stores/FoldState.svelte';
     import { onMount } from 'svelte';
     import FileEntry from './FileEntry.svelte';
     import FolderEntry from './FolderEntry.svelte';
     import { getFileTree, getCurrentTape } from '$lib/files.remote';
+    import { foldStateStore } from '$stores/FoldState.svelte';
 
     type Props = {
         handleDblClick?: (_: MouseEvent | KeyboardEvent) => void;
@@ -15,9 +12,6 @@
 
     let { handleDblClick }: Props = $props();
 
-    setFoldStateContext();
-    const foldState = getFoldStateContext();
-	
 		let files = $derived(await getFileTree() ?? []);
 		
 		async function onDrop(e: DragEvent) {
@@ -27,7 +21,7 @@
 			dropAndMove({ name: tape, path: tape + '/', type: 'dir', childs: files });
 		}
     onMount(() => {
-    	foldState.init();
+    	foldStateStore.init();
     });
 </script>
 

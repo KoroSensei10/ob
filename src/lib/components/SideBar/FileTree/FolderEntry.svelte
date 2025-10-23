@@ -1,13 +1,13 @@
 <script lang="ts">
     import { dropAndMove } from '$lib/attachments/drop';
-    import { getFoldStateContext } from '$stores/FoldState.svelte';
-    import type { FolderEntry } from '$types/files';
     import { Folder, FolderOpen } from '@lucide/svelte';
     import { slide } from 'svelte/transition';
     import Entry from './Entry.svelte';
     import FileEntry from './FileEntry.svelte';
     import Self from './FolderEntry.svelte';
     import { dragStore } from '$stores/Drag.svelte';
+    import { foldStateStore } from '$stores/FoldState.svelte';
+    import type { FolderEntry } from '$types/files';
 
     type Props = {
         entry: FolderEntry;
@@ -15,14 +15,13 @@
 
     let { entry }: Props = $props();
 
-    let foldState = getFoldStateContext();
-    let isOpen = $derived(foldState.isFolded(entry.path));
+    let isOpen = $derived(foldStateStore.isFolded(entry.path));
 
     function handleClick(e: MouseEvent) {
     	e.preventDefault();
     	e.stopPropagation();
     	isOpen = !isOpen;
-    	foldState.toggleFold(entry.path);
+    	foldStateStore.toggleFold(entry.path);
     	// TODO Use OPTIONS to set the behavior of click/double click
     	// TODO see if usefull
     	// if (e.detail === 1) {
