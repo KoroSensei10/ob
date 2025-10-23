@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { handleDrop } from '$lib/dragdrop';
+    import { dropAndMove } from '$lib/attachments/drop';
     import { getFoldStateContext } from '$stores/FoldState.svelte';
     import type { FolderEntry } from '$types/files';
     import { Folder, FolderOpen } from '@lucide/svelte';
@@ -7,6 +7,8 @@
     import Entry from './Entry.svelte';
     import FileEntry from './FileEntry.svelte';
     import Self from './FolderEntry.svelte';
+    import { dragStore } from '$stores/Drag.svelte';
+    import { getOpenFilesContext } from '$stores/OpenFiles.svelte';
 
     type Props = {
         entry: FolderEntry;
@@ -16,6 +18,8 @@
 
     let foldState = getFoldStateContext();
     let isOpen = $derived(foldState.isFolded(entry.path));
+
+		const openFilesStore = getOpenFilesContext();
 
     function handleClick(e: MouseEvent) {
     	e.preventDefault();
@@ -37,7 +41,8 @@
 </script>
 
 <div
-    class="flex flex-col"
+		class="flex flex-col"
+		draggable="true"
     ondragenter={(_) => {
     	// Todo: style
     	// e.currentTarget.classList.add("bg-gray-600");
@@ -49,18 +54,18 @@
     ondragover={(e) => {
     	e.preventDefault(); // ! Mandatory to allow drop event
     }}
-    ondrop={(e) =>
-    	handleDrop(e, entry, async (_) => {
+    ondrop={(e) => {
+    	e.preventDefault();
+    	e.stopPropagation();
+
+    	dropAndMove(openFilesStore, entry, async () => {
     		isOpen = true;
-    	})}
-    draggable="true"
+    	});
+    }}
     ondragstart={(e) => {
-    	console.log('dragging');
-    	e.dataTransfer?.setData(
-    		'json',
-    		JSON.stringify({ filePath: entry.path }),
-    	);
-    	e.stopImmediatePropagation();
+    	e.stopPropagation();
+
+    	dragStore.drag($state.snapshot(entry));
     }}
     role="region"
 >

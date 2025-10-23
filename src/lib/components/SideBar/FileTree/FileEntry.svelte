@@ -4,6 +4,7 @@
     import Entry from './Entry.svelte';
     import { clickOutside } from '$lib/actions/clickOutside';
     import type { FileEntry } from '$types/files';
+    import { dragStore } from '$stores/Drag.svelte';
 
     type Props = {
         entry: FileEntry;
@@ -30,11 +31,8 @@
 <Entry
     draggable="true"
     ondragstart={(e) => {
-    	e.dataTransfer?.setData(
-    		'json',
-    		JSON.stringify({ filePath: entry.path }),
-    	);
     	e.stopPropagation();
+    	dragStore.drag($state.snapshot(entry));
     }}
     onclick={async (e) => {
     	e.preventDefault();
