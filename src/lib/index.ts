@@ -20,7 +20,7 @@ export async function createFileTree(parentPath: string): Promise<FileTree[]> {
 			const dirpath = path.join(parentPath, e.name);
 			childs.push({
 				name: e.name,
-				path: entryPath,
+				path: entryPath + '/',
 				type: 'dir',
 				childs: await createFileTree(dirpath)
 			});
