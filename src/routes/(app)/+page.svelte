@@ -39,6 +39,7 @@
     <h1 class="text-2xl font-bold mb-4">Available Tapes</h1>
     {#each await getExistingTapes() as tape (tape)}
         <a
+						data-testid="tape-item"
             href={resolve(`/tape/${tape}`)}
             class="p-2 bg-gray-800 rounded hover:bg-gray-700 cursor-pointer"
         >
@@ -47,6 +48,7 @@
     {/each}
     {#if !creatingTape}
         <button
+            data-testid="create-tape-button"
             onclick={() => (creatingTape = true)}
             class="p-2 bg-gray-800 rounded hover:bg-gray-700 cursor-pointer
             border-dashed border border-gray-600 hover:border-gray-500
@@ -64,6 +66,7 @@
             class="flex gap-2"
         >
             <input
+								data-testid="tape-name-input"
                 {@attach (node) => node.focus()}
                 type="text"
                 name="tapeName"
