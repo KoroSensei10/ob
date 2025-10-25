@@ -2,7 +2,7 @@ import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
 	webServer: {
-		command: 'pnpm tsx scripts/setup-test-db.ts && pnpm build --mode test && pnpm preview',
+		command: 'pnpm build --mode test && pnpm preview',
 		port: 4173
 	},
 	testDir: 'e2e',
