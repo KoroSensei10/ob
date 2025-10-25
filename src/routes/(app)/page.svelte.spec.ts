@@ -28,9 +28,9 @@ describe('/+page.svelte', () => {
 	beforeEach(() => {
 		render(Page);
 	});
-	it('should render h1', async () => {
-		
-		const heading = page.getByRole('heading', { level: 1 });
+	it('should render h2', async () => {
+
+		const heading = page.getByRole('heading', { level: 2 });
 		await expect.element(heading).toBeInTheDocument();
 	});
 	it('should show existing tapes', async () => {

@@ -36,7 +36,7 @@
             <a href={resolve('/signup')} class="text-blue-500 hover:underline">Sign Up</a>
         {/if}
     </nav>
-    <h1 class="text-2xl font-bold mb-4">Available Tapes</h1>
+    <h2 data-testid="HomeHeading" class="text-2xl font-bold mb-4">Available Tapes</h2>
     {#each await getExistingTapes() as tape (tape)}
         <a
 						data-testid="tape-item"
@@ -75,10 +75,12 @@
                 class="p-2 w-full bg-gray-800 focus:outline-none rounded border border-gray-600"
             />
             <button
+								name="submitTapeButton"
+								data-testid="submit-tape-button"
                 type="submit"
                 class="p-2 bg-gray-700 rounded hover:bg-gray-600 cursor-pointer"
             >
-                Save
+                Add
             </button>
             <button
                 class="p-2 bg-gray-700 rounded hover:bg-gray-600 cursor-pointer"
