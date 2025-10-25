@@ -6,7 +6,7 @@ import path, { dirname, join } from 'node:path';
 import { command, form, getRequestEvent, query } from '$app/server';
 import { error } from '@sveltejs/kit';
 import { createFileTree } from '$lib';
-import { DATA_DIR } from '../consts';
+import { DATA_DIR } from '../../server/consts';
 import type { FileEntry, FileTree } from '$types/files';
 import type { EntryModification } from '$types/modification';
 
@@ -17,9 +17,16 @@ export const getFileTree = query(async (): Promise<FileTree[]> => {
 		throw error(400, 'Tape parameter is missing');
 	}
 
-	// todo: validate tape to prevent directory traversal attacks
-	const tree = await createFileTree(join(DATA_DIR, tape));
-	return tree;
+	try {
+		// todo: validate tape to prevent directory traversal attacks
+		const tree = await createFileTree(join(DATA_DIR, tape));
+		return tree;
+	} catch (err) {
+		if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
+			throw error(404, 'Tape not found');
+		}
+		throw error(500, 'Failed to get file tree');
+	}
 });
 
 export const getCurrentTape = query(async (): Promise<string> => {

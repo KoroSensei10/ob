@@ -1,5 +1,5 @@
 import { mkdir, readdir, rm } from 'node:fs/promises';
-import { DATA_DIR } from '../consts';
+import { DATA_DIR } from '../../server/consts';
 import { form, query } from '$app/server';
 import z from 'zod';
 import path from 'node:path';
