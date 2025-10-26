@@ -1,4 +1,3 @@
-import { getContext, setContext } from 'svelte';
 import { SvelteMap } from 'svelte/reactivity';
 
 class FoldState {
@@ -32,16 +31,4 @@ class FoldState {
 	}
 }
 
-const sym = Symbol('foldState');
-export function setFoldStateContext() {
-	const foldStates = new FoldState();
-	setContext(sym, foldStates);
-}
-
-export function getFoldStateContext(): FoldState {
-	const foldStates = getContext(sym);
-	if (!foldStates) {
-		throw new Error('FoldState context not found');
-	}
-	return foldStates as FoldState;
-}
+export const foldStateStore = new FoldState();

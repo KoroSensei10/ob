@@ -1,21 +1,19 @@
 <script lang="ts">
-    import type { OpenFilesStore } from '$stores/OpenFiles.svelte';
-    import type { FileEntry } from '$types/files';
+    import { openFilesStore } from '$stores/OpenFiles.svelte';
     import { X } from '@lucide/svelte';
+    import type { FileEntry } from '$types/files';
 
 
     type Props = {
         entry: FileEntry;
-        activeFileStore: OpenFilesStore;
-        openFiles: FileEntry[];
     };
-    let { entry, activeFileStore, openFiles }: Props = $props();
+    let { entry }: Props = $props();
 
 
     function hasNameInCommon(entry: FileEntry): boolean {
-    	if (openFiles.length <= 1) return false;
+    	if (openFilesStore.openFiles.length <= 1) return false;
 
-    	const nameCount = openFiles.reduce((count, file) => {
+    	const nameCount = openFilesStore.openFiles.reduce((count, file) => {
     		return file.name === entry.name ? count + 1 : count;
     	}, 0);
 
@@ -24,7 +22,7 @@
 
     function scrollToView(entry: FileEntry) {
     	return (node: HTMLDivElement) => {
-    		if (entry.path === activeFileStore.activeFile?.path) {
+    		if (entry.path === openFilesStore.activeFile?.path) {
     			node.scrollIntoView({
     				behavior: 'instant',
     				block: 'nearest',
@@ -38,7 +36,7 @@
 <div class="relative group h-full" {@attach scrollToView(entry)}>
     <div
         class="flex h-full justify-center items-center relative border-b
-            {activeFileStore.activeFile?.path === entry.path
+            {openFilesStore.activeFile?.path === entry.path
             	? ' border-green-400'
             	: ' hover:bg-gray-750 border-transparent hover:border-gray-600'} 
             min-w-[120px] max-w-[180px]
@@ -47,11 +45,11 @@
     >
         <button
             onclick={async () => {
-            	await activeFileStore.getFileContent(entry);
+            	await openFilesStore.openFile(entry);
             }}
             class="flex h-full w-full justify-center items-center cursor-pointer font-medium
                 text-gray-200 transition-all duration-200 mx-4 truncate text-ellipsis
-                {activeFileStore.activeFile?.path === entry.path
+                {openFilesStore.activeFile?.path === entry.path
                 	? 'text-green-100'
                 	: 'hover:text-white'}"
         >
@@ -74,7 +72,7 @@
                 text-xs font-bold"
             onclick={(e) => {
             	e.stopPropagation();
-            	activeFileStore.closeFile(entry);
+            	openFilesStore.closeFile(entry);
             }}
         >
             <X />

@@ -7,12 +7,11 @@ export async function createFileTree(parentPath: string): Promise<FileTree[]> {
 	const childs: FileTree[] = [];
 
 	for (const e of entries) {
-		let filePath = path.join(parentPath, e.name);
-		filePath = filePath.substring(filePath.indexOf('/') + 1);
+		const entryPath = getRelativeFilePath(path.join(parentPath, e.name));
 		if (e.isFile()) {
 			childs.push({
 				name: e.name,
-				path: filePath,
+				path: entryPath,
 				type: 'file',
 				childs: null,
 				content: null
@@ -21,11 +20,20 @@ export async function createFileTree(parentPath: string): Promise<FileTree[]> {
 			const dirpath = path.join(parentPath, e.name);
 			childs.push({
 				name: e.name,
-				path: filePath,
+				path: entryPath + '/',
 				type: 'dir',
 				childs: await createFileTree(dirpath)
 			});
 		}
 	}
 	return childs;
+}
+
+
+/**
+ * This will remove the DATA_DIR and tape name from the full path
+ */
+function getRelativeFilePath(fullPath: string): string {
+	const parts = fullPath.split('/');
+	return parts.slice(2).join('/');
 }

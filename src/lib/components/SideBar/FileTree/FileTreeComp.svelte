@@ -1,13 +1,10 @@
 <script lang="ts">
-    import { handleDrop } from '$lib/dragdrop';
-    import {
-    	getFoldStateContext,
-    	setFoldStateContext,
-    } from '$stores/FoldState.svelte';
-    import { getVaultFilesContext } from '$stores/VaultFiles.svelte';
+    import { dropAndMove } from '$lib/attachments/drop';
     import { onMount } from 'svelte';
     import FileEntry from './FileEntry.svelte';
     import FolderEntry from './FolderEntry.svelte';
+    import { getFileTree, getCurrentTape } from '$lib/remotes/files.remote';
+    import { foldStateStore } from '$stores/FoldState.svelte';
 
     type Props = {
         handleDblClick?: (_: MouseEvent | KeyboardEvent) => void;
@@ -15,21 +12,16 @@
 
     let { handleDblClick }: Props = $props();
 
-    const vaultFilesStore = getVaultFilesContext();
-    let files = $derived(vaultFilesStore().tapeEntries);
-
-    function onDrop(e: DragEvent) {
-    	handleDrop(
-    		e,
-    		{ name: 'root', path: '.', type: 'dir', childs: files },
-    		async (_) => {},
-    	);
-    }
-
-    setFoldStateContext();
-    const foldState = getFoldStateContext();
+		let files = $derived(await getFileTree() ?? []);
+		
+		async function onDrop(e: DragEvent) {
+			e.preventDefault();
+			e.stopPropagation();
+			const tape = await getCurrentTape();
+			dropAndMove({ name: tape, path: '', type: 'dir', childs: files });
+		}
     onMount(() => {
-    	foldState.init();
+    	foldStateStore.init();
     });
 </script>
 
@@ -46,7 +38,9 @@
     ondragover={(e) => {
     	e.preventDefault(); // ! Mandatory to allow drop event
     }}
-    ondrop={onDrop}
+    ondrop={(e) => {
+    	onDrop(e);
+    }}
     role="region"
     ondblclick={(e) => {
     	handleDblClick?.(e);
