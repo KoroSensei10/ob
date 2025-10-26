@@ -27,4 +27,4 @@ jobs:
         run: npm i -g pnpm && pnpm install
 
       - name: Run linter
-        run: pnpm check && pnpm lint
+        run: pnpm lint

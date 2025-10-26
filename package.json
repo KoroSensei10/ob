@@ -12,7 +12,7 @@
     "test:e2e": "pnpm prepare:test && playwright test",
 		"prepare:db": "tsx --env-file=.env scripts/setup-db.ts",
     "prepare:test": "tsx --env-file=.env.test scripts/setup-test-db.ts",
-    "lint": "eslint . && tsc --noEmit",
+    "lint": "pnpm check && eslint . && tsc --noEmit",
     "lint:fix": "eslint . --fix",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",

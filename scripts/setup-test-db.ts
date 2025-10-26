@@ -19,8 +19,8 @@ export async function setupTestDb() {
 	
 	// 1. Ensure test data directory exists and is clean
 
-	await rm(path.resolve(import.meta.dirname, '../test-data/'), { recursive: true, force: true });
-	await mkdir(path.resolve(import.meta.dirname, '../test-data/'), { recursive: true });
+	await rm(path.resolve(process.cwd(), './test-data/'), { recursive: true, force: true });
+	await mkdir(path.resolve(process.cwd(), './test-data/'), { recursive: true });
 	console.info('Test Dir is clean');
 
 	// 2. Creating database and Run migrations
@@ -28,13 +28,13 @@ export async function setupTestDb() {
 		fileMustExist: false,
 	});
 	const db = drizzle(sqlite);
-	migrate(db, { migrationsFolder: path.resolve(import.meta.dirname, '../drizzle') });
+	migrate(db, { migrationsFolder: path.resolve(process.cwd(), './drizzle') });
 	console.log('Migrations done');
 
 	// https://www.better-auth.com/docs/plugins/admin#create-user
 	// 3. Create test user
 	// * Using the same auth object as in the main app to ensure consistency
-	const { auth } = await import(path.resolve(import.meta.dirname, '../src/server/auth.ts'));
+	const { auth } = await import(path.resolve(process.cwd(), './src/server/auth.ts'));
 	const data = await auth.api.createUser({
 		body: testUser
 	});

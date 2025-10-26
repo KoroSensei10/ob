@@ -1,18 +1,15 @@
 import { expect, test } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
+import { TEST_DEFAULTS } from '../../tests/defaults';
+import { readdir, stat, rm } from 'node:fs/promises';
 
 test.beforeEach(async ({ page }) => {
 	// Clear existing tapes before each test
 	await page.goto('/');
 
 	// Remove only subdirectories, not files at the root level
-	const { readdir } = await import('node:fs/promises');
-	const { stat } = await import('node:fs/promises');
-	const { rm } = await import('node:fs/promises');
-	
 	try {
-		// TODO: use env variable or use opinionated path for test data
-		const items = await readdir('./test-data');
+		const items = await readdir(TEST_DEFAULTS.NOTE_DIR);
 		for (const item of items) {
 			const itemPath = `./test-data/${item}`;
 			const itemStat = await stat(itemPath);

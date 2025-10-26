@@ -9,7 +9,7 @@ export const load: ServerLoad = async ({ request }) => {
 		return {
 			user: session.user
 		};
-	} else {
-		redirect(303, '/login');
 	}
+	// If no user, redirect to login
+	throw redirect(303, '/login');
 };
