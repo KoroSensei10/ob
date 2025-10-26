@@ -5,10 +5,10 @@ import { admin } from './adminUser.ts';
 // Run this script to set up the database and create an admin user
 
 async function setupDb() {
-	if (!process.env.DB_FILE_NAME) {
-		throw new Error('DB_FILE_NAME environment variable is not set');
+	if (!process.env.DB_PATH) {
+		throw new Error('DB_PATH environment variable is not set');
 	}
-	console.info('Using database file:', process.env.DB_FILE_NAME);
+	console.info('Using database file:', process.env.DB_PATH);
 
 	// 1. Run migrations
 

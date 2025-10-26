@@ -12,10 +12,10 @@ export async function setupTestDb() {
 	if (!process.env.ENV || process.env.ENV !== 'test') {
 		throw new Error('This script should only be run in a test environment');
 	}
-	if (!process.env.DB_FILE_NAME) {
-		throw new Error('DB_FILE_NAME environment variable is not set');
+	if (!process.env.DB_PATH) {
+		throw new Error('DB_PATH environment variable is not set');
 	}
-	console.info('Using database file:', process.env.DB_FILE_NAME);
+	console.info('Using database file:', process.env.DB_PATH);
 	
 	// 1. Ensure test data directory exists and is clean
 
@@ -24,7 +24,7 @@ export async function setupTestDb() {
 	console.info('Test Dir is clean');
 
 	// 2. Creating database and Run migrations
-	const sqlite = new Database(process.env.DB_FILE_NAME!.replace('file:', ''), {
+	const sqlite = new Database(process.env.DB_PATH!.replace('file:', ''), {
 		fileMustExist: false,
 	});
 	const db = drizzle(sqlite);
