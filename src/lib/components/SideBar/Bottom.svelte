@@ -47,13 +47,14 @@
 		{/if}
 		<div class="pb-2 pl-4 pr-2 flex justify-between items-center gap-4">
 			<input
+				data-testid="new-entry-input"
 				bind:this={newFileInput}
 				{...createFile.fields.fileName.as('text')}
 				oninput={() => 
 					// this resets errors when user types
 					createFile.validate()
 				}
-				placeholder="Nouveau fichier..."
+				placeholder="New file/folder..."
 				class="w-full p-2 py-1 bg-gray-700
 					text-gray-400
 					focus:text-gray-200
@@ -64,6 +65,7 @@
 					"
 			/>
 			<button
+				data-testid="create-entry-button"
 				{...createFile.buttonProps}
 				class="cursor-pointer w-8 h-8 p-1 flex justify-center items-center rounded-lg
 					hover:bg-gray-600 hover:border-green-500 transition-all"

@@ -6,7 +6,7 @@ import path, { dirname, join } from 'node:path';
 import { command, form, getRequestEvent, query } from '$app/server';
 import { error } from '@sveltejs/kit';
 import { createFileTree } from '$lib';
-import { DATA_DIR } from '../consts';
+import { NOTE_DIR } from '../../server/consts';
 import type { FileEntry, FileTree } from '$types/files';
 import type { EntryModification } from '$types/modification';
 
@@ -17,9 +17,16 @@ export const getFileTree = query(async (): Promise<FileTree[]> => {
 		throw error(400, 'Tape parameter is missing');
 	}
 
-	// todo: validate tape to prevent directory traversal attacks
-	const tree = await createFileTree(join(DATA_DIR, tape));
-	return tree;
+	try {
+		// todo: validate tape to prevent directory traversal attacks
+		const tree = await createFileTree(join(NOTE_DIR, tape));
+		return tree;
+	} catch (err) {
+		if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
+			throw error(404, 'Tape not found');
+		}
+		throw error(500, 'Failed to get file tree');
+	}
 });
 
 export const getCurrentTape = query(async (): Promise<string> => {
@@ -34,7 +41,7 @@ export const getCurrentTape = query(async (): Promise<string> => {
 
 export const getFileContent = query(z.string(), async (filePath): Promise<string> => {
 	// TODO: Validate request.fileName to prevent directory traversal attacks
-	const path = join(DATA_DIR, await getCurrentTape(), filePath);
+	const path = join(NOTE_DIR, await getCurrentTape(), filePath);
 	const file = await readFile(path, {
 		encoding: 'utf-8',
 	});
@@ -64,7 +71,7 @@ export const createFile = form(z.object({
 		throw error(400, 'Tape parameter is missing');
 	}
 
-	const filePath = join(DATA_DIR, params.tape, saneFilePath);
+	const filePath = join(NOTE_DIR, params.tape, saneFilePath);
 	if (existsSync(filePath)) {
 		return invalid(invalid.fileName('File already exists'));
 	}
@@ -95,8 +102,8 @@ export const writeFileContent = command(z.object({
 	// ? pas sûre
 	// await mkdir(dirname(filePath), { recursive: true });
 
-	console.log(`Writing content to ${path.join(DATA_DIR, filePath)}`);
-	await writeFile(path.join(DATA_DIR, await getCurrentTape(), filePath), content.trim(), 'utf-8');
+	console.log(`Writing content to ${path.join(NOTE_DIR, filePath)}`);
+	await writeFile(path.join(NOTE_DIR, await getCurrentTape(), filePath), content.trim(), 'utf-8');
 });
 
 export const moveFile = command(z.object({
@@ -109,11 +116,11 @@ export const moveFile = command(z.object({
 		return [];
 	}
 
-	const oldPath = path.resolve(DATA_DIR, await getCurrentTape(), entryPath);
-	const newPath = path.resolve(DATA_DIR, await getCurrentTape(), destFolder, entryName);
+	const oldPath = path.resolve(NOTE_DIR, await getCurrentTape(), entryPath);
+	const newPath = path.resolve(NOTE_DIR, await getCurrentTape(), destFolder, entryName);
 
 	// Validate paths are within DATA_DIR
-	const dataDir = path.resolve(DATA_DIR);
+	const dataDir = path.resolve(NOTE_DIR);
 	if (!oldPath.startsWith(dataDir) || !newPath.startsWith(dataDir)) {
 		throw error(400, 'Invalid path');
 	}
@@ -143,12 +150,12 @@ export const renameFile = command(z.object({
 		throw error(400, 'New name cannot be empty');
 	}
 
-	const oldPath = path.resolve(DATA_DIR, await getCurrentTape(), entryPath);
+	const oldPath = path.resolve(NOTE_DIR, await getCurrentTape(), entryPath);
 	const targetFolder = destFolder || path.dirname(entryPath);
-	const newPath = path.resolve(DATA_DIR, await getCurrentTape(), targetFolder, sanitizedName);
+	const newPath = path.resolve(NOTE_DIR, await getCurrentTape(), targetFolder, sanitizedName);
 
 	// Validate paths are within DATA_DIR
-	const dataDir = path.resolve(DATA_DIR);
+	const dataDir = path.resolve(NOTE_DIR);
 	if (!oldPath.startsWith(dataDir) || !newPath.startsWith(dataDir)) {
 		throw error(400, 'Invalid path');
 	}

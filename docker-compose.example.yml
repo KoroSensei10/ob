@@ -6,7 +6,7 @@ services:
       args:
         # Better auth need these values at *build* time
         BETTER_AUTH_URL: http://0.0.0.0:3000
-        BETTER_AUTH_SECRET: 2f4098cbd5be3fc7be72a8e4af2ca9a8f48263e2587f052a62d7aad755011d3e9
+        BETTER_AUTH_SECRET: xxxxxSuperSecretKeyxxxxx
 
         # Static env vars need for svelte to resolve at build time
         NOTE_DIR: ./data

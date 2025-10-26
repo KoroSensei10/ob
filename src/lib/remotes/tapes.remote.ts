@@ -1,12 +1,12 @@
 import { mkdir, readdir, rm } from 'node:fs/promises';
-import { DATA_DIR } from '../consts';
+import { NOTE_DIR } from '../../server/consts';
 import { form, query } from '$app/server';
 import z from 'zod';
 import path from 'node:path';
 import { error } from '@sveltejs/kit';
 
 export const getExistingTapes = query(async () => {
-	const entries = await readdir(DATA_DIR, { withFileTypes: true });
+	const entries = await readdir(NOTE_DIR, { withFileTypes: true });
 	return entries.filter(entry => entry.isDirectory()).map(dir => dir.name);
 });
 
@@ -16,7 +16,7 @@ export const createTape = form(
 	}),
 	async ({ tapeName }) => {
 		console.log(`tapeName: ${tapeName}`);
-		const tapePath = path.join(DATA_DIR, tapeName);
+		const tapePath = path.join(NOTE_DIR, tapeName);
 
 		try {
 			await mkdir(tapePath);
@@ -37,7 +37,7 @@ export const removeTape = form(
 		tapeName: z.string().min(1).max(100)
 	}),
 	async ({ tapeName }) => {
-		const tapePath = path.join(DATA_DIR, tapeName);
+		const tapePath = path.join(NOTE_DIR, tapeName);
 		try {
 			await rm(tapePath, { recursive: true, force: true });
 		} catch {

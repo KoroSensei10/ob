@@ -7,6 +7,10 @@ db/
 !src/db/
 *.sqlite
 
+# Test Data
+test-data/
+playwright/state.json
+
 # Output
 .output
 .vercel
@@ -20,8 +24,8 @@ db/
 Thumbs.db
 
 # Env
-.env
 .env.*
+!.env
 !.env.example
 !.env.test
 

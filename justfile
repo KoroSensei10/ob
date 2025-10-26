@@ -2,20 +2,22 @@ alias d := dev
 alias l := lint
 alias f := fix
 
+pm := "pnpm"
+
 dev:
-	bun dev
+	{{pm}} dev
 
 lint:
-	bun lint
+	{{pm}} lint
 
 fix:
-	bun lint --fix
+	{{pm}} lint --fix
 
 build:
-	bun run build
+	{{pm}} build
 
 preview:
-	bun run preview
+	{{pm}} preview
 
 previewBuild: build
 	just preview

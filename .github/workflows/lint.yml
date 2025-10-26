@@ -23,11 +23,8 @@ jobs:
         with:
           node-version: 24
 
-      - name: Set up Bun 
-        uses: oven-sh/setup-bun@v2
-
       - name: Install Dependencies
-        run: bun install
+        run: npm i -g pnpm && pnpm install
 
       - name: Run linter
-        run: bun run lint
+        run: pnpm lint

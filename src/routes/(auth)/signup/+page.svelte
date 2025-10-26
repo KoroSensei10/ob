@@ -45,6 +45,7 @@
         <div class="mb-4">
             <label class="block text-gray-300 mb-2" for="name">Name</label>
             <input
+                name="name"
                 {@attach (node) => node.focus()}
                 bind:value={name}
                 class="w-full px-3 py-2 border border-gray-600 rounded bg-gray-700 text-white focus:border-blue-500 focus:outline-none"
@@ -55,6 +56,7 @@
         <div class="mb-4">
             <label class="block text-gray-300 mb-2" for="email">Email</label>
             <input
+                name="email"
                 bind:value={email}
                 class="w-full px-3 py-2 border border-gray-600 rounded bg-gray-700 text-white focus:border-blue-500 focus:outline-none"
                 type="email"
@@ -66,6 +68,7 @@
                 >Password</label
             >
             <input
+                name="password"
                 bind:value={password}
                 class="w-full px-3 py-2 border border-gray-600 rounded bg-gray-700 text-white focus:border-blue-500 focus:outline-none"
                 type="password"
@@ -77,6 +80,7 @@
                 >Confirm Password</label
             >
             <input
+                name="passwordConfirm"
                 bind:value={passwordConfirm}
                 class="w-full px-3 py-2 border border-gray-600 rounded bg-gray-700 text-white focus:border-blue-500 focus:outline-none"
                 type="password"

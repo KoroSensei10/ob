@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config.js';
+import { defineConfig } from 'vitest/config';
 
 
 export default defineConfig({
@@ -16,7 +16,7 @@ export default defineConfig({
 						instances: [{ browser: 'chromium' }]
 					},
 					include: ['src/**/*.svelte.{test,spec}.{js,ts}'],
-					exclude: ['src/lib/server/**'],
+					exclude: ['src/lib/server/**', 'src/server/**'],
 					setupFiles: ['./vitest-setup-client.ts']
 				}
 			},
