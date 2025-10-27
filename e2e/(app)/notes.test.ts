@@ -17,9 +17,9 @@ test.beforeEach(async ({ page }) => {
 test('Create a note inside a tape', async ({ page }) => {
 	// const tapeUrl = page.url();
 	
-	await page.getByTestId('new-entry-input').fill('MyFirstNote.md');
+	const noteName = 'Note-' + randomUUID();
+	await page.getByTestId('new-entry-input').fill(noteName);
 	await page.getByTestId('create-entry-button').click();
 
-	await expect(page.getByText('MyFirstNote.md')).toBeVisible();
-	await page.screenshot({path: 'test-results/create-note.png'});
+	await expect(page.getByRole('region').getByRole('button', { name: noteName })).toBeAttached();
 });
