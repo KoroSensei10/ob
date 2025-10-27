@@ -1,4 +1,4 @@
-import { defineConfig } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
 	webServer: {
@@ -6,7 +6,17 @@ export default defineConfig({
 		port: 4173
 	},
 	testDir: 'e2e',
-	globalSetup: './playwright/global-setup.ts',
+	projects: [
+		{
+			name: 'Create initial user and login',
+			testMatch: /global\.setup\.ts/,
+		},
+		{
+			name: 'chromium',
+			use: { ...devices['Desktop Chrome'] },
+			dependencies: ['Create initial user and login'],
+		},
+	],
 	use: {
 		baseURL: 'http://localhost:4173/',
 		storageState: './playwright/state.json',
