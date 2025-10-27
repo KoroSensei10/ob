@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: [ main, master ]
 jobs:
-  test:
+  e2e:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
@@ -15,12 +15,18 @@ jobs:
         node-version: lts/*
     - name: Install dependencies
       run: npm i -g pnpm && pnpm install
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    - name: 'Create env file'
-      run: |
-        touch .env
-        echo BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }} >> .env
+    - name: Get installed Playwright version
+      id: playwright-version
+      run: echo "PLAYWRIGHT_VERSION=$(node -e "console.log(require('./package-lock.json').dependencies['@playwright/test'].version)")" >> $GITHUB_ENV
+    - name: Cache playwright binaries
+      uses: actions/cache@v3
+      id: playwright-cache
+      with:
+        path: |
+          ~/.cache/ms-playwright
+        key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
+    - run: npx playwright install --with-deps
+      if: steps.playwright-cache.outputs.cache-hit != 'true'
     - name: Run Playwright tests
       run: pnpm test:e2e
     - uses: actions/upload-artifact@v4
@@ -29,3 +35,18 @@ jobs:
         name: playwright-report
         path: test-results/
         retention-days: 30
+  playwright-docker:
+    name: 'Playwright Tests'
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --user 1001
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: lts/*
+      - name: Install dependencies
+        run: npm ci
+      - name: Run your tests
+        run: npx playwright test
