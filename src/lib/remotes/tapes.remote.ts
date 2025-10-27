@@ -15,11 +15,11 @@ export const createTape = form(
 		tapeName: z.string().min(1).max(100)
 	}),
 	async ({ tapeName }) => {
-		console.log(`tapeName: ${tapeName}`);
 		const tapePath = path.join(NOTE_DIR, tapeName);
-
+		
 		try {
 			await mkdir(tapePath);
+			console.log('Creating tape: ', tapeName);
 		} catch (err) {
 			if ((err as NodeJS.ErrnoException).code === 'EEXIST') {
 				throw error(400, 'Tape already exists');
@@ -28,6 +28,7 @@ export const createTape = form(
 			}
 		}
 
+		await getExistingTapes().refresh();
 		return { success: true };
 	}
 );
@@ -40,9 +41,12 @@ export const removeTape = form(
 		const tapePath = path.join(NOTE_DIR, tapeName);
 		try {
 			await rm(tapePath, { recursive: true, force: true });
+			console.log('Removing tape: ', tapeName);
 		} catch {
 			throw error(500, 'Failed to remove tape');
 		}
+
+		await getExistingTapes().refresh();
 		return { success: true };
 	}
 );
