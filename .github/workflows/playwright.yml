@@ -47,6 +47,6 @@ jobs:
         with:
           node-version: lts/*
       - name: Install dependencies
-        run: pnpm i
+        run: npm install -g pnpm && pnpm install
       - name: Run your tests
         run: npx playwright test
