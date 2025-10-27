@@ -85,9 +85,11 @@ export const createFile = form(z.object({
 		return invalid(invalid.fileName('Error creating file'));
 	}
 
+	await getFileTree().refresh();
+
 	return {
 		name: filename,
-		path: join(params.tape, saneFilePath),
+		path: saneFilePath,
 		type: 'file',
 		content: '',
 		childs: null

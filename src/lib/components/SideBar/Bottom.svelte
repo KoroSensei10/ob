@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createFile } from '$lib/remotes/files.remote';
-    import { openFilesStore } from '$stores/OpenFiles.svelte';
+  import { openFilesStore } from '$stores/OpenFiles.svelte';
 	import { FilePlus, FolderPlus, Plus, Settings, X } from '@lucide/svelte';
 
 	let newFileInput: HTMLInputElement | null = $state(null);
@@ -10,7 +10,7 @@
 			newFileInput.focus();
 		}
 	}
-	
+
 	async function enhanceForm({form, submit}: {form: HTMLFormElement, submit: () => Promise<void>}) {
 		try {
 			await submit();
@@ -23,6 +23,13 @@
 			console.error('Error creating file:', error);
 		}
 	}
+
+	// TODO: refacto, this will retrigger when open the page
+	$effect(() => {
+		if (createFile.result) {
+			openFilesStore.openFile(createFile.result);
+		}
+	});
 </script>
 
 <div class="text-sm">

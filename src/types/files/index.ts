@@ -15,7 +15,7 @@ export type FileEntry = Entry & {
 
 export type FolderEntry = Entry & {
     type: 'dir';
-    childs: Entry[];
+    childs: FileTree[];
 }
 
 export type FileWithContent = FileEntry & {
