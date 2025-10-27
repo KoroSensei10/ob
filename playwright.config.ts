@@ -1,26 +1,30 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
+	fullyParallel: true,
 	webServer: {
 		command: 'pnpm build --mode test && pnpm preview',
-		port: 4173
+		port: 4173,
+		reuseExistingServer: false
 	},
 	testDir: 'e2e',
 	projects: [
 		{
 			name: 'Create initial user and login',
-			testMatch: /global\.setup\.ts/,
+			testMatch: /.*\.setup\.ts/,
 		},
 		{
 			name: 'chromium',
-			use: { ...devices['Desktop Chrome'] },
+			use: { 
+				...devices['Desktop Chrome'],
+				storageState: './e2e/.auth/user.json',
+			},
 			dependencies: ['Create initial user and login'],
 		},
 	],
 	use: {
 		baseURL: 'http://localhost:4173/',
-		storageState: './playwright/state.json',
 		screenshot: 'only-on-failure',
 	},
-	workers: 1
+	// workers: 1,
 });
