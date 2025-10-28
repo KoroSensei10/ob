@@ -59,6 +59,9 @@
     {:else}
         <form
             {...createTape.enhance(async (all) => {
+            	if (!newTapeName.trim()) {
+            		return;
+            	}
             	await all.submit();
             	creatingTape = false;
             	newTapeName = '';

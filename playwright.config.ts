@@ -26,5 +26,4 @@ export default defineConfig({
 		baseURL: 'http://localhost:4173/',
 		screenshot: 'only-on-failure',
 	},
-	// workers: 1,
 });
