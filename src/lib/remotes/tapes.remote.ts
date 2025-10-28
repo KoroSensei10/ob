@@ -14,7 +14,7 @@ export const createTape = form(
 	z.object({
 		tapeName: z.string().min(1).max(100)
 	}),
-	async ({ tapeName }) => {
+	async ({ tapeName }, invalid) => {
 		const tapePath = path.join(NOTE_DIR, tapeName);
 		
 		try {
@@ -22,8 +22,10 @@ export const createTape = form(
 			console.log('Creating tape: ', tapeName);
 		} catch (err) {
 			if ((err as NodeJS.ErrnoException).code === 'EEXIST') {
-				throw error(400, 'Tape already exists');
+				return invalid({message: 'Tape with this name already exists'});
 			} else {
+				// Invalid server state -> sveltekit error
+				console.error('Error creating tape: ', err);
 				throw error(500, 'Failed to create tape');
 			}
 		}
@@ -42,7 +44,9 @@ export const removeTape = form(
 		try {
 			await rm(tapePath, { recursive: true, force: true });
 			console.log('Removing tape: ', tapeName);
-		} catch {
+		} catch (err) {
+			// Invalid server state -> sveltekit error
+			console.error('Error removing tape: ', err);
 			throw error(500, 'Failed to remove tape');
 		}
 

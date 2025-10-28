@@ -85,4 +85,30 @@ test.describe('Tapes', () => {
 		await expect(page.getByText('Tape not found')).toBeVisible();
 	});
 
+	test('Create same named tape twice', async ({ page }) => {
+		await page.goto('/');
+	
+		const tapeName = `Tape-${randomUUID()}`;
+	
+		// Create first tape
+		await page.getByTestId('create-tape-button').click();
+		await page.getByTestId('tape-name-input').fill(tapeName);
+		await page.getByRole('button', { name: 'Add' }).click();
+		await expect(page.getByText(tapeName)).toBeAttached();
+	
+		// Attempt to create second tape with same name
+		await page.getByTestId('create-tape-button').click();
+		await page.getByTestId('tape-name-input').fill(tapeName);
+		const createTapeReq = page.waitForRequest(/createTape/);
+		await page.getByRole('button', { name: 'Add' }).click();
+		const req = await createTapeReq;
+		const res = await req.response();
+
+		expect(await res?.text()).toContain('Tape with this name already exists');
+
+		// Verify second tape is not created
+		await expect(page.getByText(tapeName)).toHaveCount(1);
+		await page.screenshot({ path: 'duplicate-tape-attempt.png' });
+	});
+
 });
