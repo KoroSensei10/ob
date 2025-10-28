@@ -109,7 +109,6 @@ test.describe('Tapes', () => {
 
 		// Verify second tape is not created
 		await expect(page.getByText(tapeName)).toHaveCount(1);
-		await page.screenshot({ path: 'duplicate-tape-attempt.png' });
 	});
 
 });
