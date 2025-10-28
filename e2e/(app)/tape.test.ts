@@ -23,12 +23,13 @@ test.describe('Tapes', () => {
 
 	test('Create tape with empty name', async ({ page }) => {
 		await page.goto('/');
+		await page.waitForLoadState('networkidle');
 	
 		const tapeItemNumber = await page.getByTestId('tape-item').count();
 	
 		// Attempt to create tape with empty name
 		await page.getByTestId('create-tape-button').click();
-		await page.getByRole('button', { name: 'Add' }).click();
+		await page.getByTestId('submit-tape-button').click();
 	
 		// Verify tape is not created with empty name
 		await expect(page.getByTestId('tape-item')).toHaveCount(tapeItemNumber);
