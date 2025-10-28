@@ -1,6 +1,6 @@
 import z from 'zod';
 import { existsSync } from 'node:fs';
-import { writeFile, mkdir, readFile } from 'node:fs/promises';
+import { writeFile, mkdir, readFile, rm, lstat } from 'node:fs/promises';
 import { move } from 'fs-extra/esm';
 import path, { dirname, join } from 'node:path';
 import { command, form, getRequestEvent, query } from '$app/server';
@@ -56,10 +56,10 @@ export const createFile = form(z.object({
 	// On remplace les caractères non autorisés dans le nom de fichier
 	const sanitizedParts = filePathParts.map((part) => part.replace(/[^a-zA-Z0-9._-]/g, '_').trim());
 	const saneFilePath = sanitizedParts.join('/');
-	const filename = sanitizedParts.pop();
+	const newFilename = sanitizedParts.pop();
 
-	if (!filename) {
-		return invalid(invalid.fileName('Invalid file name'));
+	if (!newFilename) {
+		return invalid(invalid.fileName(`Invalid file name: ${fileName}`));
 	}
 
 	if (fileName.trim() === '') {
@@ -88,7 +88,7 @@ export const createFile = form(z.object({
 	await getFileTree().refresh();
 
 	return {
-		name: filename,
+		name: newFilename,
 		path: saneFilePath,
 		type: 'file',
 		content: '',
@@ -108,7 +108,7 @@ export const writeFileContent = command(z.object({
 	await writeFile(path.join(NOTE_DIR, await getCurrentTape(), filePath), content.trim(), 'utf-8');
 });
 
-export const moveFile = command(z.object({
+export const moveEntry = command(z.object({
 	entryPath: z.string(),
 	destFolder: z.string()
 }), async ({ entryPath, destFolder }): Promise<EntryModification[]> => {
@@ -132,20 +132,24 @@ export const moveFile = command(z.object({
 	}
 
 	await move(oldPath, newPath);
-	console.log(`Moving entry from ${oldPath} to ${newPath}`);
 	getFileTree().refresh();
 
-	const modifications = [
-		{ type: 'moved', oldPath: entryPath, newPath: path.join(destFolder, entryName) }
-	] satisfies EntryModification[];
+	const isFolder = await lstat(newPath).then(stats => stats.isDirectory()).catch(() => false);
+	const modifications = [{
+		type: 'moved',
+		oldPath: isFolder ? path.join(entryPath, '/') : entryPath,
+		newPath: isFolder ? path.join(destFolder, entryName, '/') : newPath,
+		isFolder
+	}] satisfies EntryModification[];
+	console.log(modifications);
+
 	return modifications;
 });
 
-export const renameFile = command(z.object({
+export const renameEntry = command(z.object({
 	entryPath: z.string(),
-	newName: z.string(),
-	destFolder: z.string().optional()
-}), async ({ entryPath, newName, destFolder }) => {
+	newName: z.string()
+}), async ({ entryPath, newName }): Promise<EntryModification[]> => {
 	const sanitizedName = newName.replace(/[^a-zA-Z0-9._-]/g, '_').trim();
 
 	if (!sanitizedName) {
@@ -153,19 +157,52 @@ export const renameFile = command(z.object({
 	}
 
 	const oldPath = path.resolve(NOTE_DIR, await getCurrentTape(), entryPath);
-	const targetFolder = destFolder || path.dirname(entryPath);
+	const targetFolder = path.dirname(entryPath);
 	const newPath = path.resolve(NOTE_DIR, await getCurrentTape(), targetFolder, sanitizedName);
 
-	// Validate paths are within DATA_DIR
+	if (oldPath === newPath) {
+		return [];
+	}
+
+	await move(oldPath, newPath);
+	await getFileTree().refresh();
+
+	const isFolder = await lstat(newPath).then(stats => stats.isDirectory()).catch(() => false);
+	const modifications = [{
+		type: 'renamed', 
+		oldPath: isFolder ? path.join(entryPath, '/') : entryPath,
+		newPath: isFolder ? 
+			path.join(targetFolder, sanitizedName, '/') :
+			path.join(targetFolder, sanitizedName),
+		isFolder
+	}] satisfies EntryModification[];
+	console.log(modifications);
+	
+	return modifications;
+});
+
+export const removeEntry = command(z.object({
+	entryPath: z.string()
+}), async ({ entryPath }): Promise<EntryModification[]> => {
+	const fullPath = path.resolve(NOTE_DIR, await getCurrentTape(), entryPath);
+
+	// Validate path is within DATA_DIR
 	const dataDir = path.resolve(NOTE_DIR);
-	if (!oldPath.startsWith(dataDir) || !newPath.startsWith(dataDir)) {
+	if (!fullPath.startsWith(dataDir)) {
 		throw error(400, 'Invalid path');
 	}
 
-	if (oldPath === newPath) {
-		return;
-	}
+	const isFolder = await lstat(fullPath).then(stats => stats.isDirectory()).catch(() => false);
+	await rm(fullPath, { recursive: true, force: true });
+	await getFileTree().refresh();
 
-	console.log(`Renaming entry from ${oldPath} to ${newPath}`);
-	await move(oldPath, newPath);
+	const modifications = [{
+		type: 'removed',
+		oldPath: isFolder ? path.join(entryPath, '/') : entryPath,
+		newPath: '',
+		isFolder
+	}] satisfies EntryModification[];
+	console.log(modifications);
+
+	return modifications;
 });

@@ -1,7 +1,6 @@
 import { mkdir, rm } from 'node:fs/promises';
 import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
 
-import { testUser } from '../e2e/data.ts';
 import path from 'node:path';
 import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
@@ -30,15 +29,6 @@ export async function setupTestDb() {
 	const db = drizzle(sqlite);
 	migrate(db, { migrationsFolder: path.resolve(process.cwd(), './drizzle') });
 	console.log('Migrations done');
-
-	// https://www.better-auth.com/docs/plugins/admin#create-user
-	// 3. Create test user
-	// * Using the same auth object as in the main app to ensure consistency
-	const { auth } = await import(path.resolve(process.cwd(), './src/server/auth.ts'));
-	const data = await auth.api.createUser({
-		body: testUser
-	});
-	console.log('Successfully created test user:', data.user.name);
 };
 
 

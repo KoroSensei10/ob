@@ -1,4 +1,5 @@
 import { drizzle } from 'drizzle-orm/libsql';
+import { user } from './schemas';
 
 // case for Node.js: scripts (setup-db, setup-test-db)
 let dbPath = process.env.DB_PATH!;
@@ -14,3 +15,8 @@ if (!dbPath) {
 
 export const db = drizzle(dbPath);
 
+export async function getUserCount() {
+	return await db.select({
+		field: user.id
+	}).from(user).execute().then((res) => res.length);
+}

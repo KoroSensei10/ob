@@ -1,100 +1,103 @@
 <script lang="ts">
-    import { dropAndMove } from '$lib/attachments/drop';
-    import { Folder, FolderOpen } from '@lucide/svelte';
-    import { slide } from 'svelte/transition';
-    import Entry from './Entry.svelte';
-    import FileEntry from './FileEntry.svelte';
-    import Self from './FolderEntry.svelte';
-    import { dragStore } from '$stores/Drag.svelte';
-    import { foldStateStore } from '$stores/FoldState.svelte';
-    import type { FolderEntry } from '$types/files';
+	import { dropAndMove } from '$lib/attachments/drop';
+	import { Folder, FolderOpen } from '@lucide/svelte';
+	import { slide } from 'svelte/transition';
+	import Entry from './Entry.svelte';
+	import FileEntry from './FileEntry.svelte';
+	import Self from './FolderEntry.svelte';
+	import { dragStore } from '$stores/Drag.svelte';
+	import { foldStateStore } from '$stores/FoldState.svelte';
+	import type { FolderEntry } from '$types/files';
 
-    type Props = {
-        entry: FolderEntry;
-    };
+	type Props = {
+		entry: FolderEntry;
+	};
 
-    let { entry }: Props = $props();
+	let { entry }: Props = $props();
 
-    let isOpen = $derived(foldStateStore.isFolded(entry.path));
+	let isOpen = $derived(foldStateStore.isFolded(entry.path));
 
-    function handleClick(e: MouseEvent) {
-    	e.preventDefault();
-    	e.stopPropagation();
-    	isOpen = !isOpen;
-    	foldStateStore.toggleFold(entry.path);
-    	// TODO Use OPTIONS to set the behavior of click/double click
-    	// TODO see if usefull
-    	// if (e.detail === 1) {
-    	//     isOpen = !isOpen;
-    	// } else if (e.detail === 2) {
-    	//     // double click
-    	// } else if (e.detail === 3) {
-    	//     // triple click
-    	//     // renaming of file/folder ?
-    	// }
-    	// e.stopImmediatePropagation();
-    }
+	function handleClick(e: MouseEvent) {
+		e.preventDefault();
+		e.stopPropagation();
+		isOpen = !isOpen;
+		foldStateStore.toggleFold(entry.path);
+		// TODO Use OPTIONS to set the behavior of click/double click
+		// TODO see if usefull
+		// if (e.detail === 1) {
+		//     isOpen = !isOpen;
+		// } else if (e.detail === 2) {
+		//     // double click
+		// } else if (e.detail === 3) {
+		//     // triple click
+		//     // renaming of file/folder ?
+		// }
+		// e.stopImmediatePropagation();
+	}
 </script>
 
 <div
-		class="flex flex-col"
-		draggable="true"
-    ondragenter={(_) => {
-    	// Todo: style
-    	// e.currentTarget.classList.add("bg-gray-600");
-    }}
-    ondragleave={(_) => {
-    	// Todo: style
-    	// e.currentTarget.classList.remove("bg-gray-600");
-    }}
-    ondragover={(e) => {
-    	e.preventDefault(); // ! Mandatory to allow drop event
-    }}
-    ondrop={(e) => {
-    	e.preventDefault();
-    	e.stopPropagation();
+	class="flex flex-col"
+	draggable="true"
+	ondragenter={(_) => {
+		// Todo: style
+		// e.currentTarget.classList.add("bg-gray-600");
+	}}
+	ondragleave={(_) => {
+		// Todo: style
+		// e.currentTarget.classList.remove("bg-gray-600");
+	}}
+	ondragover={(e) => {
+		e.preventDefault(); // ! Mandatory to allow drop event
+	}}
+	ondrop={(e) => {
+		e.preventDefault();
+		e.stopPropagation();
 
-    	dropAndMove(entry, async () => {
-    		isOpen = true;
-    	});
-    }}
-    ondragstart={(e) => {
-    	e.stopPropagation();
+		dropAndMove(entry, async () => {
+			isOpen = true;
+		});
+	}}
+	ondragstart={(e) => {
+		e.stopPropagation();
 
-    	dragStore.drag($state.snapshot(entry));
-    }}
-    role="region"
+		dragStore.drag($state.snapshot(entry));
+	}}
+	role="region"
 >
-    <Entry onclick={handleClick} ondblclick={(e) => e.stopPropagation()}>
-        {#if isOpen}
-            <FolderOpen strokeWidth={2} class="w-4 stroke-green-500 " />
-        {:else}
-            <Folder
-                strokeWidth={2}
-                class="w-4 stroke-transparent fill-green-500"
-            />
-        {/if}
-        <span class="block truncate">{entry.name}</span>
-    </Entry>
-    {#if entry.childs?.length && isOpen}
-        <div
-            transition:slide={{
-            	duration: 150,
-            }}
-            class="flex duration-200 transition-all flex-col gap-1 border-l
+	<Entry {entry} onclick={handleClick} ondblclick={(e) => e.stopPropagation()}>
+		{#snippet icon()}
+			<span>
+				{#if isOpen}
+					<FolderOpen strokeWidth={2} class="w-4 stroke-green-500 " />
+				{:else}
+					<Folder
+						strokeWidth={2}
+						class="w-4 stroke-transparent fill-green-500"
+					/>
+				{/if}
+			</span>
+		{/snippet}
+	</Entry>
+	{#if entry.childs?.length && isOpen}
+		<div
+			transition:slide={{
+				duration: 150,
+			}}
+			class="flex duration-200 transition-all flex-col gap-1 border-l
             md:border-transparent md:group-hover:border-gray-600 border-gray-600"
-        >
-            {#each entry.childs ?? [] as child (child.path)}
-                <div class="pl-4">
-                    {#if child.type === 'file'}
-                        <FileEntry entry={child} />
-                    {:else if child.type === 'dir'}
-                        <div class="flex flex-col gap-1">
-                            <Self entry={child} />
-                        </div>
-                    {/if}
-                </div>
-            {/each}
-        </div>
-    {/if}
+		>
+			{#each entry.childs ?? [] as child (child.path)}
+				<div class="pl-4">
+					{#if child.type === 'file'}
+						<FileEntry entry={child} />
+					{:else if child.type === 'dir'}
+						<div class="flex flex-col gap-1">
+							<Self entry={child} />
+						</div>
+					{/if}
+				</div>
+			{/each}
+		</div>
+	{/if}
 </div>

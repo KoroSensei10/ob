@@ -1,6 +1,5 @@
 import { migrate } from 'drizzle-orm/libsql/migrator';
 import { admin } from './adminUser.ts';
-import { user } from '../src/server/schemas/auth-schema.ts';
 
 
 // Run this script to set up the database and create an admin user
@@ -14,7 +13,7 @@ async function setupDb() {
 	// 1. Run migrations
 
 	// dynamic import avoids creating the db during module load (and thus before we delete the test db file)
-	const { db } = await import('../src/server/db.ts');
+	const { db, getUserCount } = await import('../src/server/db.ts');
 	migrate(db, { migrationsFolder: './drizzle' });
 	console.log('Migrations done');
 
@@ -25,8 +24,7 @@ async function setupDb() {
 	const { auth } = await import('../src/server/auth.ts');
 	try {
 		// Check if any users exists
-		const existingsUsers = await db.select().from(user).limit(1).execute();
-		if (existingsUsers.length > 0) {
+		if (await getUserCount() > 0) {
 			console.log('Admin user already exists');
 			return;
 		}
