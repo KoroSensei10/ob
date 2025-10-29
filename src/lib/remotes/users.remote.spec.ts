@@ -1,26 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import * as usersRemote from './users.remote';
 
-vi.mock('$app/server', async (importOriginal) => {
-	const form = (schemaOrHandler: unknown, arg2?: unknown) => {
-		// TODO: Fixme: This is a temporary workaround to mock SvelteKit's form function
-		// see: https://github.com/sveltejs/kit/issues/14796
-		const handler = (arg2 ?? schemaOrHandler) as { __?: { type: string }};
-		handler.__ = {
-			type: 'form'
-		};
-		return handler;
-	};
-	return {
-		...(await importOriginal()),
-		form
-	};
-});
-vi.mock('@sveltejs/kit', async () => {
-	return {
-		redirect: vi.fn(),
-	};
-});
+vi.mock('$app/server');
+vi.mock('@sveltejs/kit');
 
 const getUserCountMock = vi.spyOn(await import('../../server/db'), 'getUserCount').mockResolvedValue(0);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
