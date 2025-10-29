@@ -2,14 +2,18 @@
 
 ## Prio Prio
 
-- [ ] Save only the changed part of the file (8 points)
-- [ ] Synchronization on tabs/open editors when moving/renaming files (8 points)
-- [ ] Deploy script for easy installation (5 points)
+- ~~[ ] Save only the changed part of the file (8 points)~~
+  - -> not priority for now, files are small enough
+- [x] Synchronization on tabs/open editors when moving/renaming files (8 points)
+- [~] Deploy script for easy installation (5 points)
 - [ ] Codemirror integration (8 points)
   - [ ] Finish basic markdown support
-- [ ] File renaming (3 points)
-- [ ] File deletion (3 points)
+- [x] File renaming (3 points)
+- [x] File deletion (3 points)
 - [ ] Basic settings page/tab (5 points)
+- [ ] Full mobile support (13 points)
+  - [x] Sidebar support
+  - [ ] Touch support (drag and drop, context menu, etc)
 
 ## High Prio
 
@@ -21,22 +25,22 @@
 
 ## Bugs
 
-- [ ] File is created but there is an error after (this does not open the file as the current file because of that)
-- [ ] "getExistingTape" is not considered as remote function when we login ???
+- [?] File is created but there is an error after (this does not open the file as the current file because of that)
+- [?] "getExistingTape" is not considered as remote function when we login ???
 
 ## Features to implement
 
 - [x] Drag and drop to move files in the tree
   - [x] implementation mv of the file
   - [ ] implem of cp
-  - [ ] implem of rename
+  - [x] implem of rename
   - [ ] handle edge cases (ex: moving a folder into itself)
-  - [ ] update all the open tabs if a file is moved/renamed
+  - [x] update all the open tabs if a file is moved/renamed
 - [ ] Tests
   - [ ] E2E tests for the side-bar/drag and drop
     - [ ] mock the server calls
-    - [ ] mock the file system -> use a temp folder?
-    - [ ] -> needs multiple vault support
+    - [x] mock the file system -> use a temp folder?
+    - [x] -> needs multiple vault support
 - [x] Auto save
 - [x] Sync active file between tabs and sidebar
   - [x] Show active file in sidebar
@@ -66,7 +70,7 @@
   - [ ] Create new folder
   - [ ] Rename file/folder
   - [ ] Delete file/folder
-  - [ ] Save file
+  - [x] Save file
   - [ ] Close tab
   - [ ] Switch between tabs
   - [x] Open command palette (Ctrl+K)
@@ -81,8 +85,8 @@
   - [ ] Close tab on middle click
   - [ ] Tab context menu (close other tabs, close to the right, etc)
   - [ ] Tab overflow handling (scrolling, dropdown, etc)
-- Right click (context) menu
-- Custom Sidebar width
+- [~] Right click (context) menu
+- [x] Custom Sidebar width
 - "Preview click" like vscode
   - click on open the file in preview mode (not permanent tab)
   - open a file in permanent tab on double click or edit
