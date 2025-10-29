@@ -138,7 +138,7 @@ export const moveEntry = command(z.object({
 	const modifications = [{
 		type: 'moved',
 		oldPath: isFolder ? path.join(entryPath, '/') : entryPath,
-		newPath: isFolder ? path.join(destFolder, entryName, '/') : newPath,
+		newPath: isFolder ? path.join(destFolder, entryName, '/') : path.join(destFolder, entryName),
 		isFolder
 	}] satisfies EntryModification[];
 	console.log(modifications);
