@@ -4,6 +4,9 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
 	test: {
 		expect: { requireAssertions: true },
+		coverage: {
+			include: ['src/**/*.ts'],
+		},
 		projects: [
 			{
 				extends: './vite.config.ts',
@@ -25,7 +28,10 @@ export default defineConfig({
 				test: {
 					name: 'server',
 					environment: 'node',
-					include: ['src/**/*.{test,spec}.{js,ts}'],
+					include: [
+						'src/**/*.{test,spec}.{js,ts}',
+						'src/**/*.remote.{test,spec}.{js,ts}'
+					],
 					exclude: ['src/**/*.svelte.{test,spec}.{js,ts}']
 				}
 			}

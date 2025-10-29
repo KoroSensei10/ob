@@ -18,6 +18,7 @@ e2e/.auth/
 .wrangler
 /.svelte-kit
 /build
+coverage/
 
 # OS
 .DS_Store

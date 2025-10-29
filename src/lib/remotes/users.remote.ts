@@ -11,14 +11,12 @@ export const createInitialUser = form(z.object({
 }), async ({ name, email, password }) => {
 
 	// 1. Check that we are in initial setup state
-	// - No users exist in the database
-	if (await getUserCount() !== 0) {
-		// If users exist, redirect to login page
-		return redirect(303, '/login');
+	// - If no users exist in the database
+	if (await getUserCount() <= 0) {
+		// 2. Create the initial user
+		// -> This will be then called once to create the first admin user
+		await auth.api.createUser({ body: { name, email, password, role: 'admin' } });
 	}
-
-	// 2. Create the initial user
-	await auth.api.createUser({ body: { name, email, password, role: 'admin' } });
-
-	redirect(303, '/login');
+	// 3. Redirect to login page
+	return redirect(303, '/login');
 });
