@@ -4,7 +4,12 @@ import * as usersRemote from './users.remote';
 vi.mock('$app/server');
 vi.mock('@sveltejs/kit');
 
-const getUserCountMock = vi.spyOn(await import('../../server/db'), 'getUserCount').mockResolvedValue(0);
+vi.mock('../../server/db', async () => {
+	return {
+		db: {},
+		getUserCount: vi.fn().mockResolvedValue(1).mockResolvedValueOnce(0)
+	};
+});
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const createUserMock = vi.spyOn((await import('../../server/auth')).auth.api, 'createUser').mockResolvedValue({} as any);
 
@@ -20,9 +25,6 @@ describe('users.remote', () => {
 	});
 
 	it('should create initial user when no users exist', async () => {
-		// Mock getUserCount to return 0
-		getUserCountMock.mockResolvedValueOnce(0);
-
 		// Call createInitialUser
 		// @ts-expect-error -- Testing the form handler directly
 		await usersRemote.createInitialUser(formData);
@@ -40,9 +42,6 @@ describe('users.remote', () => {
 	});
 
 	it('should redirect when users already exist', async () => {
-		// Mock getUserCount to return a non-zero value
-		getUserCountMock.mockResolvedValue(1);
-
 		// Call createInitialUser
 		// @ts-expect-error -- Testing the form handler directly
 		await usersRemote.createInitialUser(formData);
