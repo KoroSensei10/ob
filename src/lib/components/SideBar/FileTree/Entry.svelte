@@ -1,10 +1,13 @@
 <script lang="ts">
-	import { clickOutside } from '$lib/attachments/clickOutside';
-    import { removeEntryClient, renameEntryClient } from '$lib/clients/files';
-	import * as Context from '$lib/components/ui/context-menu';
-	import type { FileEntry, FolderEntry } from '$types/files';
-	import type { ContextMenuTriggerProps } from 'bits-ui';
 	import { tick, type Snippet } from 'svelte';
+	import { coreAPI } from '$core/CoreAPI.svelte';
+	import { clickOutside } from '$lib/attachments/clickOutside';
+	import * as Context from '$lib/components/ui/context-menu';
+
+	import type { ContextMenuTriggerProps } from 'bits-ui';
+	import type { FileEntry, FolderEntry } from '$types/files';
+
+	const { removeEntry, renameEntry } = coreAPI.entries;
 
 	type Props = ContextMenuTriggerProps & {
 		icon: Snippet;
@@ -50,7 +53,7 @@
 				onkeydown={async (e) => {
 					if (e.key === 'Enter') {
 						renaming = false;
-						await renameEntryClient(entry.path, newName);
+						await renameEntry(entry.path, newName);
 					}
 				}}
 			/>
@@ -74,9 +77,9 @@
 		<Context.Item
 			data-testid="delete-entry-button"
 			inset
-			onclick={(e) => {
+			onclick={async (e) => {
 				e.stopPropagation();
-				removeEntryClient(entry.path);
+				await removeEntry(entry.path);
 			}}
 		>
 			Delete

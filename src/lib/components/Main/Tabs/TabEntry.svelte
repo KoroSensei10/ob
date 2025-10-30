@@ -1,8 +1,9 @@
 <script lang="ts">
-    import { openFilesStore } from '$stores/OpenFiles.svelte';
     import { X } from '@lucide/svelte';
+    import { coreAPI } from '$core/CoreAPI.svelte';
     import type { FileEntry } from '$types/files';
 
+		const { getActiveFile, openFile, getOpenFiles, closeFile} = coreAPI.files;
 
     type Props = {
         entry: FileEntry;
@@ -11,9 +12,10 @@
 
 
     function hasNameInCommon(entry: FileEntry): boolean {
-    	if (openFilesStore.openFiles.length <= 1) return false;
+    	const openFiles = getOpenFiles();
+    	if (openFiles.length <= 1) return false;
 
-    	const nameCount = openFilesStore.openFiles.reduce((count, file) => {
+    	const nameCount = openFiles.reduce((count, file) => {
     		return file.name === entry.name ? count + 1 : count;
     	}, 0);
 
@@ -22,7 +24,7 @@
 
     function scrollToView(entry: FileEntry) {
     	return (node: HTMLDivElement) => {
-    		if (entry.path === openFilesStore.activeFile?.path) {
+    		if (entry.path === getActiveFile()?.path) {
     			node.scrollIntoView({
     				behavior: 'instant',
     				block: 'nearest',
@@ -36,20 +38,20 @@
 <div class="relative group h-full" {@attach scrollToView(entry)}>
     <div
         class="flex h-full justify-center items-center relative border-b
-            {openFilesStore.activeFile?.path === entry.path
+            {coreAPI.files.getActiveFile()?.path === entry.path
             	? ' border-green-400'
             	: ' hover:bg-gray-750 border-transparent hover:border-gray-600'} 
             min-w-[120px] max-w-[180px]
-            md:min-w-[180px] md:max-w-[240px]
+            md:min-w-[180px] md:max-w-60
             "
     >
         <button
             onclick={async () => {
-            	await openFilesStore.openFile(entry);
+            	await openFile(entry);
             }}
             class="flex h-full w-full justify-center items-center cursor-pointer font-medium
                 text-gray-200 transition-all duration-200 mx-4 truncate text-ellipsis
-                {openFilesStore.activeFile?.path === entry.path
+                {getActiveFile()?.path === entry.path
                 	? 'text-green-100'
                 	: 'hover:text-white'}"
         >
@@ -70,9 +72,9 @@
                 text-gray-500 hover:text-white rounded-full
                 transition-all duration-200 opacity-100 md:opacity-0 group-hover:opacity-100
                 text-xs font-bold"
-            onclick={(e) => {
+            onclick={async (e) => {
             	e.stopPropagation();
-            	openFilesStore.closeFile(entry);
+            	await closeFile(entry);
             }}
         >
             <X />

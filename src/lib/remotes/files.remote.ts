@@ -105,6 +105,8 @@ export const writeFileContent = command(z.object({
 	// await mkdir(dirname(filePath), { recursive: true });
 
 	console.log(`Writing content to ${path.join(NOTE_DIR, filePath)}`);
+	// TODO: change "writeFile" for a safer stream-based method
+	// If two request arrive at the same time, data can be lost
 	await writeFile(path.join(NOTE_DIR, await getCurrentTape(), filePath), content.trim(), 'utf-8');
 });
 
