@@ -1,7 +1,7 @@
 <script lang="ts" module>
     import { defineMeta } from '@storybook/addon-svelte-csf';
     import TabEntry from './TabEntry.svelte';
-    import { openFilesStore } from '$stores/OpenFiles.svelte';
+    import { coreAPI } from '$core/CoreAPI.svelte';
 
     const { Story } = defineMeta({
     	title: 'Components/Main/Tabs/TabEntry',
@@ -10,7 +10,7 @@
     });
 </script>
 <script lang="ts">
-	openFilesStore.openFile({
+	coreAPI.files.openFile({
 		name: 'file1.txt',
 		type: 'file',
 		path: '/file1.txt',
