@@ -41,7 +41,7 @@
     class="w-full h-full grid grid-rows-[1fr_auto] md:flex md:flex-row-reverse"
 >
     <Resizable.PaneGroup class="hidden md:block" direction="horizontal">
-        <Resizable.Pane collapsible={true} collapsedSize={0} class="hidden md:block" minSize={20} maxSize={50} defaultSize={25}>
+        <Resizable.Pane collapsible={true} collapsedSize={0} class="hidden md:block" minSize={15} maxSize={50} defaultSize={25}>
             <div class="hidden md:flex md:flex-col h-full">
                 <SideBar className="h-full bg-gray-800">
                     {#snippet header()}
@@ -53,7 +53,7 @@
                 </SideBar>
             </div>
         </Resizable.Pane>
-        <Resizable.Handle class="hidden md:block opacity-0" />
+        <Resizable.Handle class="hidden md:block opacity-0 mx-1" />
         <Resizable.Pane class="" defaultSize={75} minSize={50}>
             <div class="w-full h-full flex flex-col">
                 <Tabs />
@@ -78,8 +78,12 @@
             >
                 <FolderTree strokeWidth={1} />
             </Drawer.Trigger>
-            <Drawer.Content class="bg-gray-900 text-gray-200 font-sans p-4">
-                <SideBar className="bg-gray-800 rounded" />
+            <Drawer.Content class="bg-gray-900 text-gray-200 font-sans">
+                <SideBar className="bg-gray-800 rounded">
+									{#snippet header()}
+											<Header class="bg-gray-700" />
+									{/snippet}
+								</SideBar>
             </Drawer.Content>
             <Drawer.Overlay class="fixed inset-0 bg-black/50" />
         </Drawer.Root>
