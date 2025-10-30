@@ -6,7 +6,7 @@ export async function createFileTree(parentPath: string): Promise<FileTree[]> {
 	const entries = await readdir(parentPath, { withFileTypes: true });
 	const childs: FileTree[] = [];
 
-	for (const e of entries) {
+	await Promise.all(entries.map(async (e) => {
 		const entryPath = getRelativeFilePath(path.join(parentPath, e.name));
 		if (e.isFile()) {
 			childs.push({
@@ -25,7 +25,7 @@ export async function createFileTree(parentPath: string): Promise<FileTree[]> {
 				childs: await createFileTree(dirpath)
 			});
 		}
-	}
+	}));
 	return childs;
 }
 
