@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getFileTree } from '$lib/remotes/files.remote';
-    import { openFilesStore } from '$stores/OpenFiles.svelte';
+	import { coreAPI } from '$core/CoreAPI.svelte';
 	import type { FileEntry, FileTree } from '$types/files';
 
 	let {
@@ -35,7 +35,7 @@
 	async function handleEntryClick(e: MouseEvent, file: FileEntry) {
 		e.preventDefault();
 		e.stopImmediatePropagation();
-		await openFilesStore.openFile(file);
+		await coreAPI.files.openFile(file);
 		searchBarOpen = false;
 		query = '';
 	}

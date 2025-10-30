@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { createFile } from '$lib/remotes/files.remote';
-  import { openFilesStore } from '$stores/OpenFiles.svelte';
+	import { coreAPI } from '$core/CoreAPI.svelte';
 	import { FilePlus, FolderPlus, Plus, Settings, X } from '@lucide/svelte';
+
+	const { openFile } = coreAPI.files;
 
 	let newFileInput: HTMLInputElement | null = $state(null);
 
@@ -18,7 +20,7 @@
 			if (!createFile.result) {
 				return;
 			}
-			openFilesStore.openFile(createFile.result);
+			openFile(createFile.result);
 		} catch (error) {
 			console.error('Error creating file:', error);
 		}
@@ -27,7 +29,7 @@
 	// TODO: refacto, this will retrigger when open the page
 	$effect(() => {
 		if (createFile.result) {
-			openFilesStore.openFile(createFile.result);
+			openFile(createFile.result);
 		}
 	});
 </script>

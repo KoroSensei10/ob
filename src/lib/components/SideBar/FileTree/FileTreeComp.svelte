@@ -14,11 +14,11 @@
 
 		let files = $derived(await getFileTree() ?? []);
 		
-		async function onDrop(e: DragEvent) {
+		async function handleDrop(e: DragEvent) {
 			e.preventDefault();
 			e.stopPropagation();
 			const tape = await getCurrentTape();
-			dropAndMove({ name: tape, path: '', type: 'dir', childs: files });
+			await dropAndMove({ name: tape, path: '', type: 'dir', childs: files });
 		}
     onMount(() => {
     	foldStateStore.init();
@@ -26,7 +26,7 @@
 </script>
 
 <div
-    class="overflow-hidden rounded flex flex-col group text-sm p-2"
+    class="h-full overflow-hidden rounded flex flex-col group text-sm p-2"
     ondragenter={(_) => {
     	// Todo: style
     	// e.currentTarget.classList.add("bg-gray-600");
@@ -35,12 +35,8 @@
     	// Todo: style
     	// e.currentTarget.classList.remove("bg-gray-600");
     }}
-    ondragover={(e) => {
-    	e.preventDefault(); // ! Mandatory to allow drop event
-    }}
-    ondrop={(e) => {
-    	onDrop(e);
-    }}
+    ondragover={(e) => e.preventDefault()}
+    ondrop={handleDrop}
     role="region"
     ondblclick={(e) => {
     	handleDblClick?.(e);
