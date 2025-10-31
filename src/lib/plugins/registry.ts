@@ -73,14 +73,6 @@ export class PluginRegistry implements IPluginRegistry {
 		// Return the highest priority plugin, or undefined if none found
 		return candidates[0];
 	}
-	
-	/**
-	 * Get the file extension from a filename
-	 */
-	private getFileExtension(filename: string): string {
-		const lastDot = filename.lastIndexOf('.');
-		return lastDot === -1 ? '' : filename.slice(lastDot);
-	}
 }
 
 /**
