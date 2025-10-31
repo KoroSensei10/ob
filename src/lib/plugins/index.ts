@@ -2,6 +2,7 @@ import type { EditorPlugin } from './types';
 import { pluginRegistry } from './registry';
 import TextEditor from './editors/TextEditor.svelte';
 import MarkdownEditor from './editors/MarkdownEditor.svelte';
+import ExcalidrawEditor from './editors/ExcalidrawEditor.svelte';
 
 /**
  * Default text editor plugin
@@ -28,11 +29,25 @@ const markdownEditorPlugin: EditorPlugin = {
 };
 
 /**
+ * Excalidraw editor plugin (example)
+ * Handles excalidraw drawing files
+ */
+const excalidrawEditorPlugin: EditorPlugin = {
+	id: 'excalidraw-editor',
+	name: 'Excalidraw Editor',
+	fileExtensions: ['.excalidraw'],
+	priority: 10,
+	component: ExcalidrawEditor
+};
+
+/**
  * Register default plugins
  */
 export function registerDefaultPlugins(): void {
 	pluginRegistry.register(textEditorPlugin);
 	pluginRegistry.register(markdownEditorPlugin);
+	// Example plugin for excalidraw files
+	pluginRegistry.register(excalidrawEditorPlugin);
 }
 
 /**
