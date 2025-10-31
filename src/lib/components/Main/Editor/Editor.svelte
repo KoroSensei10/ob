@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { coreAPI } from '$core/CoreAPI.svelte';
 	import { proxiedSettings } from '$stores/Settings.svelte';
-	import CodeMirror from './CodeMirror.svelte';
+	import { pluginRegistry } from '$lib/plugins';
 	import type { FileEntry } from '$types/files';
 
 	let _saving = $state(false);
@@ -35,7 +35,15 @@
 
 <div class="relative w-full h-full">
 	{#each openFiles as file, i (file.path)}
-		<CodeMirror bind:file={openFiles[i]} {handleContentChange} />
+		{@const plugin = pluginRegistry.resolvePlugin(file)}
+		{#if plugin}
+			{@const PluginComponent = plugin.component}
+			<PluginComponent bind:file={openFiles[i]} {handleContentChange} />
+		{:else}
+			<div class="flex h-full items-center justify-center text-gray-400 font-medium opacity-60 p-4">
+				No editor plugin found for this file type
+			</div>
+		{/if}
 	{:else}
 		<div
 			class="flex h-full items-center justify-center text-gray-400 font-medium opacity-60 p-4"
