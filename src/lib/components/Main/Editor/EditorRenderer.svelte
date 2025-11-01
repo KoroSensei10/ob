@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { coreAPI } from '$core/CoreAPI.svelte';
 	import { proxiedSettings } from '$stores/Settings.svelte';
-	import { pluginRegistry } from '$lib/plugins';
 	import type { FileEntry } from '$types/files';
 
 	let _saving = $state(false);
@@ -30,20 +29,36 @@
 		}, 500);
 	}
 
-
+	function resolveEditorPlugin(file: FileEntry) {
+		const plugins = coreAPI.pluginRegistry.getPluginsByKind('editor');
+		for (const plugin of plugins) {
+			if (plugin.editor?.fileExtensions?.some(ext => file.path.endsWith(ext))) {
+				return plugin;
+			}
+		}
+		return null;
+	}
 </script>
 
 <div class="relative w-full h-full">
 	{#each openFiles as file, i (file.path)}
-		{@const plugin = pluginRegistry.resolvePlugin(file)}
-		{#if plugin}
-			{@const PluginComponent = plugin.component}
-			<PluginComponent bind:file={openFiles[i]} {handleContentChange} />
-		{:else}
-			<div class="flex h-full items-center justify-center text-gray-400 font-medium opacity-60 p-4">
-				No editor plugin found for this file type
-			</div>
-		{/if}
+		{@const plugin = resolveEditorPlugin(file)}
+		<div class:hidden={file.path !== coreAPI.files.getActiveFile()?.path}>
+			{#if plugin}
+				{@const PluginComponent = plugin.editor.editor}
+				<PluginComponent
+					coreAPI={coreAPI.lightCoreAPI}
+					bind:file={openFiles[i]}
+					{handleContentChange}
+				/>
+			{:else}
+				<div
+					class="flex h-full items-center justify-center text-gray-400 font-medium opacity-60 p-4"
+				>
+					No editor plugin found for this file type
+				</div>
+			{/if}
+		</div>
 	{:else}
 		<div
 			class="flex h-full items-center justify-center text-gray-400 font-medium opacity-60 p-4"

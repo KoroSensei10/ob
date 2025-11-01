@@ -1,9 +1,12 @@
 <script lang="ts">
+	import { coreAPI } from '$core/CoreAPI.svelte';
 	import favicon from '$lib/assets/favicon.svg';
 	import { viewportStore } from '$stores/Viewport.svelte';
 	import { onMount } from 'svelte';
 
 	let { children } = $props();
+
+	await coreAPI.pluginRegistry.init();
 
 
 	onMount(() => {

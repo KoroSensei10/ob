@@ -2,6 +2,7 @@ import { getFileContent, writeFileContent } from '$lib/remotes/files.remote';
 import type { CoreAPI } from '$core/CoreAPI.svelte';
 import type { FileEntry } from '$types/files';
 import type { OpenFilesStore } from '$core/internal/stores/OpenFiles.svelte';
+import type { HookManager } from '$lib/plugins/HookManager';
 
 /**
  * @class FileAPI
@@ -11,9 +12,12 @@ export class FileAPI {
 	readonly #openFilesStore: OpenFilesStore;
 	// eslint-disable-next-line no-unused-private-class-members
 	readonly #core: CoreAPI;
-	constructor(core: CoreAPI, openFilesStore: OpenFilesStore) {
+	readonly #hookManager: HookManager;
+
+	constructor(core: CoreAPI, openFilesStore: OpenFilesStore, hookManager: HookManager) {
 		this.#openFilesStore = openFilesStore;
 		this.#core = core;
+		this.#hookManager = hookManager;
 	}
 
 	/**
@@ -31,6 +35,7 @@ export class FileAPI {
 	 */
 	writeFileContent = async (file: FileEntry, content: string): Promise<void> => {
 		await writeFileContent({ filePath: file.path, content });
+		this.#hookManager.trigger('onFileSave', file);
 	};
 	/**
 	 * Load content of the file and add it to opened files
@@ -40,6 +45,7 @@ export class FileAPI {
 	openFile = async (file: FileEntry) => {
 		file.content = await this.getFileContent(file);
 		await this.#openFilesStore.openFile(file);
+		this.#hookManager.trigger('onFileOpen', file);
 	};
 	/**
 	 * Close an opened file
