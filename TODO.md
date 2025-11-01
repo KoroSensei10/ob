@@ -95,3 +95,8 @@
   - Empêcher certaines actions (ex: création de fichier)
   - Permettre d'autres actions (ex: édition de fichier déjà ouvert)
 - Find a way to implement plugin stystem (excalidraw/calendar/daily notes/graph/Latex support/...)
+
+## Known issues
+
+- Click event on the Drawer closes the drawer when we click on a folder (not the "touch" event)
+- $derived(await ...) sometimes does not refresh the content (likely a Svelte issue)

@@ -1,10 +1,13 @@
 <script lang="ts">
-	import { clickOutside } from '$lib/attachments/clickOutside';
-    import { removeEntryClient, renameEntryClient } from '$lib/clients/files';
-	import * as Context from '$lib/components/ui/context-menu';
-	import type { FileEntry, FolderEntry } from '$types/files';
-	import type { ContextMenuTriggerProps } from 'bits-ui';
 	import { tick, type Snippet } from 'svelte';
+	import { coreAPI } from '$core/CoreAPI.svelte';
+	import { clickOutside } from '$lib/attachments/clickOutside';
+	import * as Context from '$lib/components/ui/context-menu';
+
+	import type { ContextMenuTriggerProps } from 'bits-ui';
+	import type { FileEntry, FolderEntry } from '$types/files';
+
+	const { removeEntry, renameEntry } = coreAPI.entries;
 
 	type Props = ContextMenuTriggerProps & {
 		icon: Snippet;
@@ -16,6 +19,8 @@
 	let renaming = $state(false);
 	let newName = $state(entry.name);
 
+	let open = $state(false);
+
 	function handleClickOutside(node: HTMLElement) {
 		return clickOutside(node, () => {
 			renaming = false;
@@ -24,7 +29,7 @@
 	}
 </script>
 
-<Context.Root>
+<Context.Root bind:open>
 	<Context.Trigger
 		data-testid={`file-tree-entry-${entry.name}`}
 		class="flex gap-2 items-center p-2 md:py-0 text-sm cursor-pointer group relative text-gray-200
@@ -50,7 +55,7 @@
 				onkeydown={async (e) => {
 					if (e.key === 'Enter') {
 						renaming = false;
-						await renameEntryClient(entry.path, newName);
+						await renameEntry(entry.path, newName);
 					}
 				}}
 			/>
@@ -74,9 +79,10 @@
 		<Context.Item
 			data-testid="delete-entry-button"
 			inset
-			onclick={(e) => {
+			onclick={async (e) => {
 				e.stopPropagation();
-				removeEntryClient(entry.path);
+				open = false;
+				await removeEntry(entry.path);
 			}}
 		>
 			Delete

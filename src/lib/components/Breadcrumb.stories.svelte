@@ -1,7 +1,7 @@
 <script lang="ts" module>
     import { defineMeta } from '@storybook/addon-svelte-csf';
     import Breadcrumb from './Breadcrumb.svelte';
-    import { openFilesStore } from '$stores/OpenFiles.svelte';
+    import { coreAPI } from '$core/CoreAPI.svelte';
 
     const { Story } = defineMeta({
     	title: 'Components/Breadcrumb',
@@ -11,19 +11,19 @@
 </script>
 
 <Story name="With Active File" play={() => {
-	openFilesStore.openFiles = [
-		{
-			name: 'readme.md',
-			type: 'file',
-			path: 'home/user/project/readme.md',
-			content: null,
-			childs: null
-		}
-	];
-	openFilesStore.activeFilePath = 'home/user/project/readme.md';
+	coreAPI.files.openFile({
+		name: 'readme.md',
+		type: 'file',
+		path: 'home/user/project/readme.md',
+		content: 'Content of readme.md',
+		childs: null
+	});
 }}/>
 
 <Story name="No Active File" play={() => {
-	openFilesStore.openFiles = [];
-	openFilesStore.activeFilePath = null;
+	coreAPI.files.closeFile({ path: 'home/user/project/readme.md' });
+}} />
+
+<Story name="No Active File" play={() => {
+	coreAPI.files.closeFile({ path: 'home/user/project/readme.md' });
 }} />
