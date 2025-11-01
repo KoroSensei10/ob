@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { Type } from '@lucide/svelte';
 	import Entry from './Entry.svelte';
-	import type { FileEntry } from '$types/files';
+	import { coreAPI } from '$core/CoreAPI.svelte';
 	import { dragStore } from '$stores/Drag.svelte';
-	import { openFilesStore } from '$stores/OpenFiles.svelte';
+	import type { FileEntry } from '$types/files';
+
+	const { getActiveFile, openFile } = coreAPI.files;
 
 	type Props = {
 		entry: FileEntry;
@@ -22,12 +24,12 @@
 	onclick={async (e) => {
 		e.preventDefault();
 		e.stopPropagation();
-		await openFilesStore.openFile(entry);
+		await openFile(entry);
 	}}
 	ondblclick={(e) => {
 		e.stopPropagation();
 	}}
-	className={openFilesStore.activeFile?.path === entry.path
+	className={getActiveFile()?.path === entry.path
 		? ' bg-green-400/10'
 		: ''}
 >

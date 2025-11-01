@@ -1,6 +1,6 @@
 <script lang="ts">
     import Breadcrumb from '$components/Breadcrumb.svelte';
-    import Editor from '$components/Main/Editor/Editor.svelte';
+    import EditorRenderer from '$components/Main/Editor/EditorRenderer.svelte';
     import Tabs from '$components/Main/Tabs/Tabs.svelte';
     import SearchBar from '$components/SearchBar.svelte';
     import Bottom from '$components/SideBar/Bottom.svelte';
@@ -58,7 +58,7 @@
             <div class="w-full h-full flex flex-col">
                 <Tabs />
                 <Breadcrumb />
-                <Editor />
+                <EditorRenderer />
             </div>
         </Resizable.Pane>
     </Resizable.PaneGroup>

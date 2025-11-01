@@ -1,6 +1,8 @@
 <script lang="ts">
-	import { dropAndMove } from '$lib/attachments/drop';
+	import { tick } from 'svelte';
 	import { Folder, FolderOpen } from '@lucide/svelte';
+
+	import { dropAndMove } from '$lib/attachments/drop';
 	import { slide } from 'svelte/transition';
 	import Entry from './Entry.svelte';
 	import FileEntry from './FileEntry.svelte';
@@ -20,7 +22,6 @@
 	function handleClick(e: MouseEvent) {
 		e.preventDefault();
 		e.stopPropagation();
-		isOpen = !isOpen;
 		foldStateStore.toggleFold(entry.path);
 		// TODO Use OPTIONS to set the behavior of click/double click
 		// TODO see if usefull
@@ -33,6 +34,18 @@
 		//     // renaming of file/folder ?
 		// }
 		// e.stopImmediatePropagation();
+	}
+
+	async function handleDrop(e: DragEvent) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		const success = await dropAndMove(entry);
+		if (!success) return;
+		// await tick because filetreecomp is updated after a drop
+		// otherwise it will open and close at the same time
+		await tick();
+		foldStateStore.setFoldState(entry.path, true);
 	}
 </script>
 
@@ -50,14 +63,7 @@
 	ondragover={(e) => {
 		e.preventDefault(); // ! Mandatory to allow drop event
 	}}
-	ondrop={(e) => {
-		e.preventDefault();
-		e.stopPropagation();
-
-		dropAndMove(entry, async () => {
-			isOpen = true;
-		});
-	}}
+	ondrop={handleDrop}
 	ondragstart={(e) => {
 		e.stopPropagation();
 
