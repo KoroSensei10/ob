@@ -35,6 +35,19 @@
 </script>
 
 <div class="text-sm">
+	<!-- Plugin Section -->
+	<section class="flex flex-col gap-2 px-2 mb-2 text-gray-200">
+		{#each Object.entries(coreAPI.ui.sideBarItems) as [id, Comp] (id)}
+			{@const plugin = coreAPI.pluginRegistry.getPlugin(id)}
+			{#if plugin}
+				<Comp
+					{plugin}
+					coreAPI={coreAPI}
+				/>
+			{/if}
+		{/each}
+	</section>
+
 	<form
 		{...createFile.enhance(enhanceForm)}
 		class="flex flex-col w-full"

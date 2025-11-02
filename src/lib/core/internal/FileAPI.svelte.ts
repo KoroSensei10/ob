@@ -2,7 +2,7 @@ import { getFileContent, writeFileContent } from '$lib/remotes/files.remote';
 import type { CoreAPI } from '$core/CoreAPI.svelte';
 import type { FileEntry } from '$types/files';
 import type { OpenFilesStore } from '$core/internal/stores/OpenFiles.svelte';
-import type { HookManager } from '$lib/plugins/HookManager';
+import type { HookManager } from '$core/HookManager';
 
 /**
  * @class FileAPI
@@ -24,13 +24,13 @@ export class FileAPI {
 	 * Read file content from disk.
 	 * No update of the FileEntry content in the store.
 	 */
-	getFileContent = async (file: FileEntry): Promise<string> => {
+	loadFile = async (file: FileEntry): Promise<string> => {
 		return await getFileContent(file.path);
 	};
 	/**
 	 * One-way writing file content to disk.
 	 * No update of the FileEntry content in the store.
-	 * If needed, the caller should update it with {@linkcode FileAPI.getFileContent}
+	 * If needed, the caller should update it with {@linkcode FileAPI.loadFile}
 	 * or {@linkcode FileAPI.openFile}.
 	 */
 	writeFileContent = async (file: FileEntry, content: string): Promise<void> => {
@@ -43,7 +43,7 @@ export class FileAPI {
 	 * @fires {@linkcode FileAPI.getActiveFile}
 	 */
 	openFile = async (file: FileEntry) => {
-		file.content = await this.getFileContent(file);
+		file.content = await this.loadFile(file);
 		await this.#openFilesStore.openFile(file);
 		this.#hookManager.trigger('onFileOpen', file);
 	};

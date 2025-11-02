@@ -2,7 +2,6 @@ import type { Component } from 'svelte';
 import type { FileEntry } from '$types/files';
 import type { CoreAPI } from '$core/CoreAPI.svelte';
 import type { PluginHooks } from './HookManager';
-import type { LightCoreAPI } from '../core/LightCoreAPI.svelte';
 
 export type PluginKind = 'editor' | 'core' | 'ui' | 'service';
 
@@ -10,16 +9,25 @@ export type InitContext = {
 	coreAPI: CoreAPI;
 };
 
-export type PluginDefinition<T extends PluginKind = PluginKind> = {
+type BasePluginDefinition = {
 	id: string;
 	name: string;
-	kind: T;
+	kind: PluginKind;
 	init?(ctx: InitContext): Promise<void>;
 	destroy?(): Promise<void>;
-
-  hooks?: Partial<PluginHooks>;
-  editor: T extends 'editor' ? EditorPlugin : never;
+	hooks?: Partial<PluginHooks>;
 };
+
+export type PluginDefinition =
+	| (BasePluginDefinition & {
+			kind: 'editor';
+			editor: EditorPlugin;
+	  })
+	| (BasePluginDefinition & {
+			kind: 'core' | 'ui' | 'service';
+			editor?: never;
+	  });
+
 
 export interface EditorPlugin {
 	fileExtensions: string[];
@@ -31,6 +39,6 @@ export interface EditorPlugin {
  */
 export interface EditorPluginProps {
 	file: FileEntry;
-	coreAPI: LightCoreAPI;
+	coreAPI: CoreAPI;
 	handleContentChange: (e: Event, file: FileEntry) => Promise<void>;
 }

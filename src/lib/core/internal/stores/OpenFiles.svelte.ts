@@ -17,10 +17,7 @@ export class OpenFilesStore {
 		return null;
 	});
 
-	coreAPI: CoreAPI;
-	constructor(coreAPI: CoreAPI) {
-		this.coreAPI = coreAPI;
-	}
+	constructor(private coreAPI: CoreAPI) {}
 
 	async openFile(file: FileEntry) {
 		// todo: save file before switch if auto save is on

@@ -5,7 +5,7 @@
 	import { dragStore } from '$stores/Drag.svelte';
 	import type { FileEntry } from '$types/files';
 
-	const { getActiveFile, openFile } = coreAPI.files;
+	const { activeTab } = $derived(coreAPI);
 
 	type Props = {
 		entry: FileEntry;
@@ -24,12 +24,12 @@
 	onclick={async (e) => {
 		e.preventDefault();
 		e.stopPropagation();
-		await openFile(entry);
+		await coreAPI.openFile(entry);
 	}}
 	ondblclick={(e) => {
 		e.stopPropagation();
 	}}
-	className={getActiveFile()?.path === entry.path
+	className={activeTab && 'file' in activeTab && activeTab.file.path === entry.path
 		? ' bg-green-400/10'
 		: ''}
 >

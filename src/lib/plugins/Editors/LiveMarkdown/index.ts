@@ -1,6 +1,6 @@
 import Editor from './LiveMarkdown.svelte';
-import { definePlugin } from '$lib/plugins/PluginRegistry';
-import type { PluginDefinition } from '$lib/plugins/types';
+import { definePlugin } from '$core/PluginRegistry';
+import type { PluginDefinition } from '$core/types';
 
 /**
  * Markdown editor plugin

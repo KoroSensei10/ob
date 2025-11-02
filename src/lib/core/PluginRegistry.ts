@@ -1,11 +1,12 @@
+import * as defaultEditors from '$plugins/Editors';
+import * as defaultServices from '$plugins/Services';
+
 import type { CoreAPI } from '$core/CoreAPI.svelte';
 import type { PluginDefinition, PluginKind } from './types';
-
-import * as defaultPlugins from './Editors';
 import type { HookManager } from './HookManager';
 
 export class PluginRegistry {
-	private plugins: Map<string, PluginDefinition<PluginKind>> = new Map();
+	private plugins: Map<string, PluginDefinition> = new Map();
 	readonly core: CoreAPI;
 	readonly hookManager: HookManager;
 
@@ -15,9 +16,14 @@ export class PluginRegistry {
 	}
 
 	async init(): Promise<void> {
-		// Register default plugins
-		for (const pluginKey in defaultPlugins) {
-			const plugin = (defaultPlugins as Record<string, PluginDefinition>)[pluginKey];
+		// Register default editors and services
+
+		for (const pluginKey in defaultEditors) {
+			const plugin = (defaultEditors as Record<string, PluginDefinition>)[pluginKey];
+			this.register(plugin);
+		}
+		for (const pluginKey in defaultServices) {
+			const plugin = (defaultServices as Record<string, PluginDefinition>)[pluginKey];
 			this.register(plugin);
 		}
 	}
@@ -29,7 +35,7 @@ export class PluginRegistry {
 		this.plugins.set(plugin.id, plugin);
 
 		// Initialize plugin
-		plugin.init?.(this.core);
+		plugin.init?.({ coreAPI: this.core });
 		for (const hookName in plugin.hooks) {
 			const hook = hookName as keyof typeof plugin.hooks;
 			const handler = plugin.hooks[hook];
@@ -51,10 +57,10 @@ export class PluginRegistry {
 		return Array.from(this.plugins.values());
 	}
 
-	getPluginsByKind<T extends PluginKind>(kind: T): PluginDefinition<T>[] {
+	getPluginsByKind<T extends PluginKind>(kind: T): PluginDefinition[] {
 		return Array.from(this.plugins.values())
 			.filter(plugin => plugin.kind === kind)
-			.map(plugin => plugin as PluginDefinition<T>);
+			.map(plugin => plugin);
 	}
 }
 

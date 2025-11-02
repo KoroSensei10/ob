@@ -1,9 +1,14 @@
+import type { TabEntry } from './internal/stores/TabStore.svelte';
 import type { FileEntry } from '$types/files';
+import type { PluginDefinition } from './types';
 
 export interface PluginHooks {
 	onFileOpen?(file: FileEntry): Promise<void>;
 	onFileSave?(file: FileEntry): Promise<void>;
 	onAppStart?(): Promise<void>;
+	onFileActive?(file: FileEntry): Promise<void>;
+	onPluginTabActive?(plugin: PluginDefinition, tab: TabEntry): Promise<void>;
+	onTabClose?(tab: TabEntry): Promise<void>;
 }
 
 type HookMap = { [K in keyof PluginHooks]?: Set<PluginHooks[K]> };

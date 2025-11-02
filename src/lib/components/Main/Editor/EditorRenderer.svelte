@@ -3,10 +3,12 @@
 	import { proxiedSettings } from '$stores/Settings.svelte';
 	import type { FileEntry } from '$types/files';
 
+	let {
+		entry = $bindable()
+	}: { entry: FileEntry } = $props();
+
 	let _saving = $state(false);
 	let _saveError: string | null = $state(null);
-
-	let openFiles = $derived(coreAPI.files.getOpenFiles());
 
 	// Debounce the writeToFile calls
 	let timeout: NodeJS.Timeout | null = null;
@@ -29,41 +31,33 @@
 		}, 500);
 	}
 
-	function resolveEditorPlugin(file: FileEntry) {
+	function resolveEditorPlugin() {
 		const plugins = coreAPI.pluginRegistry.getPluginsByKind('editor');
 		for (const plugin of plugins) {
-			if (plugin.editor?.fileExtensions?.some(ext => file.path.endsWith(ext))) {
+			if (
+				plugin.editor?.fileExtensions?.some((ext) => entry.path.endsWith(ext))
+			) {
 				return plugin;
 			}
 		}
 		return null;
 	}
+	let plugin = resolveEditorPlugin();
 </script>
 
 <div class="relative w-full h-full">
-	{#each openFiles as file, i (file.path)}
-		{@const plugin = resolveEditorPlugin(file)}
-		<div class:hidden={file.path !== coreAPI.files.getActiveFile()?.path}>
-			{#if plugin}
-				{@const PluginComponent = plugin.editor.editor}
-				<PluginComponent
-					coreAPI={coreAPI.lightCoreAPI}
-					bind:file={openFiles[i]}
-					{handleContentChange}
-				/>
-			{:else}
-				<div
-					class="flex h-full items-center justify-center text-gray-400 font-medium opacity-60 p-4"
-				>
-					No editor plugin found for this file type
-				</div>
-			{/if}
-		</div>
-	{:else}
-		<div
-			class="flex h-full items-center justify-center text-gray-400 font-medium opacity-60 p-4"
-		>
-			Ouvrez un fichier pour commencer à éditer...
-		</div>
-	{/each}
+		{#if plugin}
+			{@const PluginComponent = plugin.editor.editor}
+			<PluginComponent
+				{coreAPI}
+				bind:file={entry}
+				{handleContentChange}
+			/>
+		{:else}
+			<div
+				class="flex h-full items-center justify-center text-gray-400 font-medium opacity-60 p-4"
+			>
+				No editor plugin found for this file type
+			</div>
+		{/if}
 </div>
