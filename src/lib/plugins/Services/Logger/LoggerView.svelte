@@ -2,7 +2,7 @@
 	import type { ViewComponentProps } from '$core/internal/UIAPI.svelte';
 
 	let {
-		coreAPI
+		coreAPI: _,
 	}: ViewComponentProps = $props();
 
 </script>
