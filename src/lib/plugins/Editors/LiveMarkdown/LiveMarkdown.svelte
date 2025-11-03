@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { EditorPluginProps } from '$core/types';
+	import type { EditorPluginProps } from '$core/Plugin';
 
 	let { 
 		file = $bindable(), 

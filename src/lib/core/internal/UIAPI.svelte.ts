@@ -1,17 +1,17 @@
 import { SvelteMap } from 'svelte/reactivity';
 import type { CoreAPI } from '$core/CoreAPI.svelte';
-import type { PluginDefinition } from '$core/types';
+import type { Plugin } from '$core/Plugin';
 import type { Component } from 'svelte';
 import type { TabEntry } from './stores/TabStore.svelte';
 
 export type SideBarComponentProps = {
 	coreAPI: CoreAPI;
-	plugin: PluginDefinition
+	plugin: Plugin;
 }
 
 export type ViewComponentProps = {
 	coreAPI: CoreAPI;
-	plugin: PluginDefinition;
+	plugin: Plugin;
 	tab: TabEntry;
 }
 

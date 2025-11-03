@@ -2,6 +2,7 @@
 	import { coreAPI } from '$core/CoreAPI.svelte';
 	import { proxiedSettings } from '$stores/Settings.svelte';
 	import type { FileEntry } from '$types/files';
+	import { EditorPlugin } from '$core/Plugin';
 
 	let {
 		entry = $bindable()
@@ -31,13 +32,15 @@
 		}, 500);
 	}
 
-	function resolveEditorPlugin() {
+	function resolveEditorPlugin(): EditorPlugin | null {
 		const plugins = coreAPI.pluginRegistry.getPluginsByKind('editor');
 		for (const plugin of plugins) {
-			if (
-				plugin.editor?.fileExtensions?.some((ext) => entry.path.endsWith(ext))
-			) {
-				return plugin;
+			// Check if plugin is an EditorPlugin
+			if (plugin instanceof EditorPlugin) {
+				const config = plugin.getEditorConfig();
+				if (config.fileExtensions?.some((ext: string) => entry.path.endsWith(ext))) {
+					return plugin;
+				}
 			}
 		}
 		return null;
@@ -47,7 +50,8 @@
 
 <div class="relative w-full h-full">
 		{#if plugin}
-			{@const PluginComponent = plugin.editor.editor}
+			{@const config = plugin.getEditorConfig()}
+			{@const PluginComponent = config.editor}
 			<PluginComponent
 				{coreAPI}
 				bind:file={entry}
