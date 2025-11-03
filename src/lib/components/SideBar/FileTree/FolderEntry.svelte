@@ -22,6 +22,7 @@
 	function handleClick(e: MouseEvent) {
 		e.preventDefault();
 		e.stopPropagation();
+		e.stopImmediatePropagation();
 		foldStateStore.toggleFold(entry.path);
 		// TODO Use OPTIONS to set the behavior of click/double click
 		// TODO see if usefull

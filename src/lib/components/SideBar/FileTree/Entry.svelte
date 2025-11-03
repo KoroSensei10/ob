@@ -19,6 +19,8 @@
 	let renaming = $state(false);
 	let newName = $state(entry.name);
 
+	let open = $state(false);
+
 	function handleClickOutside(node: HTMLElement) {
 		return clickOutside(node, () => {
 			renaming = false;
@@ -27,7 +29,7 @@
 	}
 </script>
 
-<Context.Root>
+<Context.Root bind:open>
 	<Context.Trigger
 		data-testid={`file-tree-entry-${entry.name}`}
 		class="flex gap-2 items-center p-2 md:py-0 text-sm cursor-pointer group relative text-gray-200
@@ -79,6 +81,7 @@
 			inset
 			onclick={async (e) => {
 				e.stopPropagation();
+				open = false;
 				await removeEntry(entry.path);
 			}}
 		>

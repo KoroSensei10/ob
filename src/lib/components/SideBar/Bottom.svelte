@@ -80,12 +80,12 @@
 					createFile.validate()
 				}
 				placeholder="New file/folder..."
+				autocomplete="off"
 				class="w-full p-2 py-1 bg-gray-700
 					text-gray-400
 					focus:text-gray-200
-					border border-gray-600
 					hover:ring-green-500 transition-all
-					rounded-lg focus:outline-none
+					rounded-md focus:outline-none
 					peer focus:ring-1 focus:ring-green-500
 					"
 			/>
@@ -101,8 +101,11 @@
 	</form>
 
 	<div
-		class="p-2 flex items-center justify-between gap-2
-                bg-gray-800 border-t border-gray-700"
+		class={['p-2 flex items-center justify-between gap-2',
+			'bg-linear-to-br from-gray-800 to-green-900 from-90%',
+			'border-t border-transparent hover:border-gray-700',
+			'transition-all duration-150',
+		]}
 	>
 		<div class="flex gap-2 items-center">
 			<button
@@ -121,8 +124,11 @@
 			</button>
 		</div>
 		<span
-			class="w-8 h-8 p-1 flex justify-center items-center rounded-lg
-                        hover:bg-gray-600 hover:border-green-500 transition-all cursor-pointer"
+			class={[
+				'w-8 h-8 p-1 flex justify-center items-center rounded-lg',
+				'backdrop-hue-rotate-90',
+				'hover:bg-white/10 hover:border-green-500 transition-all cursor-pointer'
+			]}
 		>
 			<Settings strokeWidth={1} class="text-gray-200" />
 		</span>
