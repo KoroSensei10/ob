@@ -1,7 +1,6 @@
-import { getFileContent, writeFileContent } from '$lib/remotes/files.remote';
+import { createFileCmd, createFileIfNotExists, getFileContent, writeFileContent } from '$lib/remotes/files.remote';
 import type { CoreAPI } from '$core/CoreAPI.svelte';
 import type { FileEntry } from '$types/files';
-import type { OpenFilesStore } from '$core/internal/stores/OpenFiles.svelte';
 import type { HookManager } from '$core/HookManager';
 
 /**
@@ -9,64 +8,39 @@ import type { HookManager } from '$core/HookManager';
  * @internal You should not use this API directly, but use {@linkcode CoreAPI.files} instead.
  */
 export class FileAPI {
-	readonly #openFilesStore: OpenFilesStore;
-	// eslint-disable-next-line no-unused-private-class-members
-	readonly #core: CoreAPI;
-	readonly #hookManager: HookManager;
-
-	constructor(core: CoreAPI, openFilesStore: OpenFilesStore, hookManager: HookManager) {
-		this.#openFilesStore = openFilesStore;
-		this.#core = core;
-		this.#hookManager = hookManager;
-	}
+	constructor(private core: CoreAPI, private hookManager: HookManager) {}
 
 	/**
 	 * Read file content from disk.
 	 * No update of the FileEntry content in the store.
 	 */
-	loadFile = async (file: { path: string }): Promise<string> => {
+	readFile = async (file: { path: string }): Promise<string> => {
 		return await getFileContent(file.path);
 	};
 	/**
 	 * One-way writing file content to disk.
 	 * No update of the FileEntry content in the store.
-	 * If needed, the caller should update it with {@linkcode FileAPI.loadFile}
+	 * If needed, the caller should update it with {@linkcode FileAPI.readFile}
 	 * or {@linkcode FileAPI.openFile}.
 	 */
-	writeFileContent = async (file: FileEntry, content: string): Promise<void> => {
+	writeFile = async (file: FileEntry, content: string): Promise<void> => {
 		await writeFileContent({ filePath: file.path, content });
-		this.#hookManager.trigger('onFileSave', file);
+		this.hookManager.trigger('onFileSave', file);
 	};
+
+
+	async createFile(filePath: string): Promise<FileEntry> {
+		return await createFileCmd({filePath});
+	}
+
 	/**
-	 * Load content of the file and add it to opened files
-	 * @fires {@linkcode FileAPI.getOpenFiles}
-	 * @fires {@linkcode FileAPI.getActiveFile}
+	 * Creates a file if it does not exist and opens it in a new tab.
+	 * @fires {@linkcode CoreAPI.tabs} – a new tab is created for the file
+	 * @fires {@linkcode CoreAPI.activeTab} – switch to the newly created file's tab
 	 */
-	openFile = async (file: FileEntry) => {
-		file.content = await this.loadFile(file);
-		await this.#openFilesStore.openFile(file);
-		this.#hookManager.trigger('onFileOpen', file);
-	};
-	/**
-	 * Close an opened file
-	 * @fires {@linkcode FileAPI.getOpenFiles}
-	 * @fires {@linkcode FileAPI.getActiveFile}
-	 */
-	closeFile = async (file: { path: string }): Promise<void> => {
-		await this.#openFilesStore.closeFile(file);
-	};
-	/**
-	 * Get the list of currently opened files
-	 * @reactive
-	 */
-	getOpenFiles = (): FileEntry[] => {
-		return this.#openFilesStore.openFiles;
-	};
-	/**
-	 * Get the currently active file
-	 * @reactive
-	 */
-	getActiveFile = (): FileEntry | null => {
-		return this.#openFilesStore.activeFile;
-	};	
+	async createAndOpenFile(filePath: string): Promise<FileEntry> {
+		const file = await createFileIfNotExists({filePath});
+		await this.core.openFile(file);
+		return file;
+	}
 }

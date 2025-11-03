@@ -1,6 +1,5 @@
 import { FileAPI } from './internal/FileAPI.svelte';
 
-import { OpenFilesStore } from './internal/stores/OpenFiles.svelte';
 import { EntryAPI } from './internal/EntryAPI.svelte';
 import { PluginRegistry } from '$core/PluginRegistry';
 import { HookManager } from '$core/HookManager';
@@ -8,11 +7,9 @@ import { TabStore } from './internal/stores/TabStore.svelte';
 import { UIAPI } from './internal/UIAPI.svelte';
 import type { FileEntry } from '$types/files';
 import type { EntryModification } from '$types/modification';
-import { createFileCmd, createFileIfNotExists } from '$lib/remotes/files.remote';
 
 
 class CoreAPI {
-	readonly #openFilesStore: OpenFilesStore;
 	readonly #hookManager: HookManager;
 	readonly #tabStore: TabStore;
 
@@ -23,20 +20,27 @@ class CoreAPI {
 
 	constructor() {
 		// Internal
-		this.#openFilesStore = new OpenFilesStore(this);
 		this.#hookManager = new HookManager();
 		this.#tabStore = new TabStore(this);
 
 		this.ui = new UIAPI(this);
 		this.pluginRegistry = new PluginRegistry(this, this.#hookManager);
-		this.files = new FileAPI(this, this.#openFilesStore, this.#hookManager);
-		this.entries = new EntryAPI(this, this.#openFilesStore);
+		this.files = new FileAPI(this, this.#hookManager);
+		this.entries = new EntryAPI(this);
 	}
 
+	/**
+	 * @reactive Needs to be call inside a $derived or $effect
+	 * or read in a reactive context
+	 */
 	get tabs() {
 		return this.#tabStore.tabs;
 	}
 
+	/**
+	 * @reactive Needs to be call inside a $derived or $effect
+	 * or read in a reactive context
+	 */
 	get activeTab() {
 		return this.#tabStore.activeTab;
 	}
@@ -49,7 +53,7 @@ class CoreAPI {
 		// Open file in store (UI)
 		if (!this.#tabStore.tabs.find(t => t.kind === 'file' && t.id === file.path)) {
 			// Load content
-			const content = await this.files.loadFile(file);
+			const content = await this.files.readFile(file);
 			file.content = content;
 
 			const tabEntry = {
@@ -97,7 +101,7 @@ class CoreAPI {
 		this.#tabStore.activeTabId = tab.id;
 
 		if (tab.kind === 'file') {
-			const content = await this.files.loadFile(tab.file);
+			const content = await this.files.readFile(tab.file);
 			tab.file.content = content;
 			// Trigger hooks
 			await this.#hookManager.trigger('onFileActive', tab.file);
@@ -115,25 +119,15 @@ class CoreAPI {
 		await this.#hookManager.trigger('onTabClose', tab);
 	}
 
-	async syncStates(modifications: EntryModification[]) {
-		// TODO: extract from openFilesStore
-		await this.#openFilesStore.syncModifications(modifications);
-	}
-
-	async createFile(filePath: string): Promise<FileEntry> {
-		return await createFileCmd({filePath});
-	}
-
 	/**
-	 * Creates a file if it does not exist and opens it in a new tab.
-	 * @fires {@linkcode CoreAPI.tabs} – a new tab is created for the file
-	 * @fires {@linkcode CoreAPI.activeTab} – switch to the newly created file's tab
+	 * Method to sync changes between the server and the client
+	 * @fires {@linkcode CoreAPI.tabs}
+	 * @fires {@linkcode CoreAPI.activeTab}
 	 */
-	async createAndOpenFile(filePath: string): Promise<FileEntry> {
-		const file = await createFileIfNotExists({filePath});
-		await this.openFile(file);
-		return file;
+	async syncStates(modifications: EntryModification[]) {
+		await this.#tabStore.syncModifications(modifications);
 	}
+
 }
 
 export type { CoreAPI };

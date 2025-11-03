@@ -3,7 +3,7 @@
 	import { coreAPI } from '$core/CoreAPI.svelte';
 	import { FilePlus, FolderPlus, Plus, Settings, X } from '@lucide/svelte';
 
-	const { openFile } = coreAPI.files;
+	const { openFile } = coreAPI;
 
 	let newFileInput: HTMLInputElement | null = $state(null);
 

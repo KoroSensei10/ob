@@ -21,7 +21,7 @@
 		timeout = setTimeout(async () => {
 			try {
 				if (file.content === null) return;
-				await coreAPI.files.writeFileContent(file, file.content);
+				await coreAPI.files.writeFile(file, file.content);
 			} catch (error) {
 				_saveError = String(error);
 				console.error('Error saving file:', error);

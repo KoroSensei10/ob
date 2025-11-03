@@ -35,7 +35,7 @@
 	async function handleEntryClick(e: MouseEvent, file: FileEntry) {
 		e.preventDefault();
 		e.stopImmediatePropagation();
-		await coreAPI.files.openFile(file);
+		await coreAPI.openFile(file);
 		searchBarOpen = false;
 		query = '';
 	}

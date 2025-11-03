@@ -7,7 +7,7 @@
 
 	async function handleClick() {
 		const name = `${new Date().toISOString().split('T')[0]}`;
-		await coreAPI.createAndOpenFile(`/daily-notes/${name}.md`);
+		await coreAPI.files.createAndOpenFile(`/daily-notes/${name}.md`);
 	}
 </script>
 

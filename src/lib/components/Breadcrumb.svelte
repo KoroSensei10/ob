@@ -2,10 +2,10 @@
 	import { ChevronRight } from '@lucide/svelte';
 	import { coreAPI } from '$core/CoreAPI.svelte';
 
-	const {getActiveFile} = coreAPI.files;
+	const activeTab = $derived(coreAPI.activeTab);
 
 	let activeFilePath = $derived(
-		getActiveFile()?.path.split('/') ?? [],
+		activeTab?.kind === 'file' ? activeTab?.file.path.split('/') : [],
 	);
 
 	let nbSegment = $derived(activeFilePath?.length);
