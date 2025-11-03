@@ -14,27 +14,48 @@ export class PluginRegistry {
 
 	async init(): Promise<void> {
 		// Load plugins from external plugins directory
-		// This will be dynamically loaded from the plugins directory
+		// Import plugins dynamically
 		await this.loadExternalPlugins();
 	}
 
 	private async loadExternalPlugins(): Promise<void> {
-		// For now, we'll import from the plugins directory
-		// In the future, this could be made more dynamic
+		// Load plugins from the external plugins directory
+		// Using dynamic imports with explicit paths
 		try {
-			// Import all plugin modules from the plugins directory
-			const pluginModules = import.meta.glob('/plugins/**/*.ts', { eager: false });
-			
-			for (const path in pluginModules) {
+			// Load editor plugins
+			const editorPlugins = [
+				() => import('../../../plugins/editors/live-markdown/index')
+			];
+
+			for (const pluginImport of editorPlugins) {
 				try {
-					const module = await pluginModules[path]() as { default?: new () => Plugin };
+					const module = await pluginImport();
 					if (module.default && typeof module.default === 'function') {
 						const PluginClass = module.default;
 						const plugin = new PluginClass();
 						await this.register(plugin);
 					}
 				} catch (error) {
-					console.error(`Failed to load plugin from ${path}:`, error);
+					console.error('Failed to load editor plugin:', error);
+				}
+			}
+
+			// Load service plugins
+			const servicePlugins = [
+				() => import('../../../plugins/services/logger/index'),
+				() => import('../../../plugins/services/daily-note/index')
+			];
+
+			for (const pluginImport of servicePlugins) {
+				try {
+					const module = await pluginImport();
+					if (module.default && typeof module.default === 'function') {
+						const PluginClass = module.default;
+						const plugin = new PluginClass();
+						await this.register(plugin);
+					}
+				} catch (error) {
+					console.error('Failed to load service plugin:', error);
 				}
 			}
 		} catch (error) {
