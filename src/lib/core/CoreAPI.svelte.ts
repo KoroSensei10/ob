@@ -41,6 +41,10 @@ class CoreAPI {
 		return this.#tabStore.activeTab;
 	}
 
+	isActiveTab(tabId: string) {
+		return this.#tabStore.activeTabId === tabId;
+	}
+
 	async openFile(file: FileEntry) {
 		// Open file in store (UI)
 		if (!this.#tabStore.tabs.find(t => t.kind === 'file' && t.id === file.path)) {

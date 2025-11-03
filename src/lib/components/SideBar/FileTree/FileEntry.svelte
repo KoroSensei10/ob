@@ -29,7 +29,7 @@
 	ondblclick={(e) => {
 		e.stopPropagation();
 	}}
-	className={activeTab && 'file' in activeTab && activeTab.file.path === entry.path
+	className={coreAPI.isActiveTab(entry.path)
 		? ' bg-green-400/10'
 		: ''}
 >
