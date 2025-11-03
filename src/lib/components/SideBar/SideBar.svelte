@@ -16,6 +16,7 @@
 
 <span class={[
 	'overflow-auto overscroll-none flex flex-col justify-between',
+	'shadow-lg m-2 rounded-xl',
 	className ?? '',
 ]}>
     <div class="h-full">

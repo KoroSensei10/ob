@@ -14,7 +14,13 @@
 {#if activeFilePath.length}
 	<div
 		data-testid="breadcrumb"
-		class="flex gap-1 px-2 text-sm items-center text-gray-400"
+		class={[
+			'flex gap-1 px-2 w-fit',
+			'text-sm',
+			'items-center',
+			'text-gray-400',
+			'bg-gray-800 rounded-b',
+		]}
 	>
 		{#each activeFilePath || '' as segment, index (index)}
 			{#if index !== nbSegment - 1}
