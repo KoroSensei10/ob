@@ -5,8 +5,13 @@
 		plugin,
 		coreAPI
 	}: SideBarComponentProps = $props();
+
+	async function handleClick() {
+		await coreAPI.openPluginView(plugin.id, 'Snoup c\'est la best');
+	}
+
 </script>
 
-<button onclick={() => coreAPI.openPluginView(plugin.id, 'Snoup c\'est la best')}>
+<button onclick={handleClick}>
 	Logger Side Bar
 </button>

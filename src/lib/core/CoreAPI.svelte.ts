@@ -8,6 +8,7 @@ import { TabStore } from './internal/stores/TabStore.svelte';
 import { UIAPI } from './internal/UIAPI.svelte';
 import type { FileEntry } from '$types/files';
 import type { EntryModification } from '$types/modification';
+import { createFileCmd, createFileIfNotExists } from '$lib/remotes/files.remote';
 
 
 class CoreAPI {
@@ -63,14 +64,19 @@ class CoreAPI {
 		await this.#hookManager.trigger('onFileOpen', file);
 	}
 
-	async openPluginView(pluginId: string, title: string) {
+	async openPluginView(pluginId: string, tabTitle?: string) {
 		// Open plugin view in store (UI)
 		if (!this.#tabStore.tabs.find(t => t.kind === 'plugin' && t.id === pluginId)) {
+			const component = this.ui.viewItems.get(pluginId);
+			if (!component) {
+				throw new Error(`Plugin view component not found for plugin ID: ${pluginId}`);
+			}
+			
 			const tabEntry = {
 				kind: 'plugin' as const,
 				id: pluginId,
-				title: title,
-				component: this.ui.viewItems[pluginId]
+				title: tabTitle || pluginId,
+				component: component
 			};
 			await this.#tabStore.openTab(tabEntry);
 		} else {
@@ -108,6 +114,21 @@ class CoreAPI {
 	async syncStates(modifications: EntryModification[]) {
 		// TODO: extract from openFilesStore
 		await this.#openFilesStore.syncModifications(modifications);
+	}
+
+	async createFile(filePath: string): Promise<FileEntry> {
+		return await createFileCmd({filePath});
+	}
+
+	/**
+	 * Creates a file if it does not exist and opens it in a new tab.
+	 * @fires {@linkcode CoreAPI.tabs} – a new tab is created for the file
+	 * @fires {@linkcode CoreAPI.activeTab} – switch to the newly created file's tab
+	 */
+	async createAndOpenFile(filePath: string): Promise<FileEntry> {
+		const file = await createFileIfNotExists({filePath});
+		await this.openFile(file);
+		return file;
 	}
 }
 

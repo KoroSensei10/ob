@@ -1,6 +1,3 @@
-import * as defaultEditors from '$plugins/Editors';
-import * as defaultServices from '$plugins/Services';
-
 import type { CoreAPI } from '$core/CoreAPI.svelte';
 import type { PluginDefinition, PluginKind } from './types';
 import type { HookManager } from './HookManager';
@@ -18,10 +15,12 @@ export class PluginRegistry {
 	async init(): Promise<void> {
 		// Register default editors and services
 
+		const defaultEditors = await import('$plugins/Editors');
 		for (const pluginKey in defaultEditors) {
 			const plugin = (defaultEditors as Record<string, PluginDefinition>)[pluginKey];
 			this.register(plugin);
 		}
+		const defaultServices = await import('$plugins/Services');
 		for (const pluginKey in defaultServices) {
 			const plugin = (defaultServices as Record<string, PluginDefinition>)[pluginKey];
 			this.register(plugin);

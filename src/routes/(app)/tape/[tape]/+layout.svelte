@@ -6,11 +6,9 @@
 
 	let { children } = $props();
 
-	await coreAPI.pluginRegistry.init();
-
-
-	onMount(() => {
+	onMount(async () => {
 		viewportStore.updateDimensions();
+		await coreAPI.pluginRegistry.init();
 	});
 </script>
 

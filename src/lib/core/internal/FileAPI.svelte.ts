@@ -24,7 +24,7 @@ export class FileAPI {
 	 * Read file content from disk.
 	 * No update of the FileEntry content in the store.
 	 */
-	loadFile = async (file: FileEntry): Promise<string> => {
+	loadFile = async (file: { path: string }): Promise<string> => {
 		return await getFileContent(file.path);
 	};
 	/**

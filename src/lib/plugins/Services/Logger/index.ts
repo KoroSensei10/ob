@@ -8,8 +8,8 @@ export default definePlugin({
 	kind: 'service',
 	name: 'Logger Service',
 	async init({coreAPI}) {
-		coreAPI.ui.registerSideBarComponent('logger-service', LoggerSideBar);
 		coreAPI.ui.registerViewComponent('logger-service', LoggerView);
+		coreAPI.ui.registerSideBarComponent('logger-service', LoggerSideBar);
 	},
 	hooks: {
 		async onFileOpen(file) {

@@ -13,7 +13,7 @@
 		{:else if tab.kind === 'plugin'}
 			{@const plugin = coreAPI.pluginRegistry.getPlugin(tab.id)}
 			{#if plugin}
-				{@const ViewComponent = coreAPI.ui.viewItems[plugin?.id]}
+				{@const ViewComponent = coreAPI.ui.viewItems.get(plugin?.id)}
 				{#if ViewComponent}
 					<ViewComponent {coreAPI} {tab} {plugin} />
 				{:else}

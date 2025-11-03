@@ -88,8 +88,8 @@ export const createFile = form(z.object({
 });
 
 export const createFileCmd = command(z.object({
-	fileName: z.string()
-}), async ({ fileName }): Promise<FileEntry> => {
+	filePath: z.string()
+}), async ({ filePath: fileName }): Promise<FileEntry> => {
 	// 1. Sanitize and validate file name
 	const filePath = getValidPathInTape(fileName);
 
@@ -109,6 +109,32 @@ export const createFileCmd = command(z.object({
 
 	// 5. Refresh the file tree
 	await getFileTree().refresh();
+
+	return {
+		name: path.basename(filePath),
+		path: getRelativePathFromTape(filePath),
+		type: 'file',
+		content: '',
+		childs: null
+	};
+});
+
+export const createFileIfNotExists = command(z.object({
+	filePath: z.string()
+}), async ({ filePath: fileName }): Promise<FileEntry> => {
+	const filePath = getValidPathInTape(fileName);
+
+	if (!existsSync(filePath)) {
+		// Create necessary directories
+		await mkdir(dirname(filePath), { recursive: true });
+	
+		// Create the file
+		await writeFile(filePath, '', 'utf-8');
+		console.log(`Creating file at ${filePath}`);
+	
+		// Refresh the file tree
+		await getFileTree().refresh();
+	}
 
 	return {
 		name: path.basename(filePath),

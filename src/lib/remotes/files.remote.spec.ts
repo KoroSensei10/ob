@@ -88,5 +88,11 @@ describe('files.remote', () => {
 			const content = await getFileContent('file.txt');
 			expect(content).toBe('file content');
 		});
+		it('should throw an error if file does not exist', async () => {
+			vol.fromJSON({});
+			await getFileContent('non_existent_file.txt').catch((err) => {
+				expect(err.code).toBe('ENOENT');
+			});
+		});
 	});
 });
