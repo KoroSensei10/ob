@@ -1,15 +1,21 @@
 <script lang="ts">
 	import { ChevronRight } from '@lucide/svelte';
-	import { openFilesStore } from '$stores/OpenFiles.svelte';
+	import { coreAPI } from '$core/CoreAPI.svelte';
+
+	const {getActiveFile} = coreAPI.files;
 
 	let activeFilePath = $derived(
-		openFilesStore.activeFile?.path.split('/') ?? [],
+		getActiveFile()?.path.split('/') ?? [],
 	);
+
 	let nbSegment = $derived(activeFilePath?.length);
 </script>
 
 {#if activeFilePath.length}
-	<div data-testid="breadcrumb" class="flex gap-1 px-2 text-sm items-center text-gray-400">
+	<div
+		data-testid="breadcrumb"
+		class="flex gap-1 px-2 text-sm items-center text-gray-400"
+	>
 		{#each activeFilePath || '' as segment, index (index)}
 			{#if index !== nbSegment - 1}
 				<span class="text-gray-400">{segment}</span>

@@ -13,14 +13,12 @@
     	className
     }: Props = $props();
 </script>
-<!-- <span class="py-4">
-    <Header />
-</span> -->
+
 <span class={[
 	'overflow-auto overscroll-none flex flex-col justify-between',
 	className ?? '',
 ]}>
-    <div class="">
+    <div class="h-full">
         {@render header?.()}
         <FileTreeComp />
     </div>

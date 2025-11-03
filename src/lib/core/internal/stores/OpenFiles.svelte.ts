@@ -1,10 +1,13 @@
-import { getFileContent } from '$lib/remotes/files.remote';
-import { viewportStore } from './Viewport.svelte';
+import { type CoreAPI } from '../../CoreAPI.svelte';
 import type { FileEntry } from '$types/files';
 import type { EntryModification } from '$types/modification';
 
-
-class OpenFilesStore {
+/**
+ * Store managing for open files in the client (tabs).
+ * * Will evolve into "TabsStore", with more features (last modification, settings tabs, plugins tabs, etc...).
+ * @internal You should not use this store directly, but use {@linkcode CoreAPI} instead.
+ */
+export class OpenFilesStore {
 	openFiles: FileEntry[] = $state([]);
 	activeFilePath: string | null = $state(null);
 	activeFile: FileEntry | null = $derived.by(() => {
@@ -14,32 +17,34 @@ class OpenFilesStore {
 		return null;
 	});
 
+	coreAPI: CoreAPI;
+	constructor(coreAPI: CoreAPI) {
+		this.coreAPI = coreAPI;
+	}
+
 	async openFile(file: FileEntry) {
-		// todo: save file before switch
-		await this.#getFileContent(file);
+		// todo: save file before switch if auto save is on
 		if (!this.openFiles.find(f => f.path === file.path)) {
 			this.openFiles.push(file);
 		}
 		this.activeFilePath = file.path;
-
-		// Ui update
-		viewportStore.isMobileSidebarOpen = false;
 	}
-	closeFile(file: { path: string }) {
-		this.openFiles = this.openFiles.filter(f => f.path !== file.path);
+	async closeFile(file: { path: string }) {
+		const afterFiles = this.openFiles.filter(f => f.path !== file.path);
 		if (this.activeFilePath === file.path) {
-			this.activeFilePath = this.openFiles.length > 0 ? this.openFiles[0].path : null;
+			const newActiveFile = afterFiles.length > 0 ? afterFiles[0] : null;
+			if (newActiveFile) {
+				await this.coreAPI.files.openFile(newActiveFile);
+			}
 		}
-	}
-	async #getFileContent(entry: FileEntry) {
-		entry.content = await getFileContent(entry.path);
+		this.openFiles = afterFiles;
 	}
 
 	/**
 	 * Apply server fs modifications to open files since the client don't knows
 	 * about moved/renamed files.
 	 */
-	applyModifications(changes: EntryModification[]) {
+	async syncModifications(changes: EntryModification[]) {
 		for (const change of changes) {
 			if (change.type === 'moved' || (change.type === 'renamed' && change.isFolder)) {
 				const files = this.openFiles.filter(f => f.path.startsWith(change.oldPath));
@@ -64,12 +69,12 @@ class OpenFilesStore {
 			} else if (change.type === 'removed') {
 				if (change.isFolder) {
 					if (this.activeFilePath?.startsWith(change.oldPath)) {
-						this.closeFile({ path: this.activeFilePath });
+						await this.closeFile({ path: this.activeFilePath });
 					}
 					this.openFiles = this.openFiles.filter(f => !f.path.startsWith(change.oldPath));
 				} else {
 					if (this.activeFilePath === change.oldPath) {
-						this.closeFile({ path: this.activeFilePath });
+						await this.closeFile({ path: this.activeFilePath });
 					}
 					this.openFiles = this.openFiles.filter(f => f.path !== change.oldPath);
 				}
@@ -77,5 +82,3 @@ class OpenFilesStore {
 		}
 	}
 }
-
-export const openFilesStore = new OpenFilesStore();

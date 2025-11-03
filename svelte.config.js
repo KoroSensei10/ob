@@ -15,6 +15,8 @@ const config = {
 			$stores: 'src/stores',
 			$types: 'src/types',
 			$utils: 'src/utils',
+			$client: 'src/client',
+			$core: 'src/lib/core'
 		}
 	},
 	vitePlugin: {
