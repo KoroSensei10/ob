@@ -14,13 +14,6 @@ const liveMarkdownEditorPlugin: PluginDefinition = {
 		fileExtensions: ['.md', '.markdown'],
 		editor: Editor
 	},
-	hooks: {
-		onFileOpen: async (file) => {
-			if (file.path.endsWith('.md') || file.path.endsWith('.markdown')) {
-				console.log(`Markdown editor opened file: ${file.path}`);
-			}
-		}
-	}
 };
 
 export default definePlugin(liveMarkdownEditorPlugin);

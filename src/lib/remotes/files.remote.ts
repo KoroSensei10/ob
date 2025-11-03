@@ -1,12 +1,13 @@
 import z from 'zod';
+import path, { dirname, join } from 'node:path';
 import { existsSync } from 'node:fs';
 import { writeFile, mkdir, readFile, rm, lstat } from 'node:fs/promises';
 import { move } from 'fs-extra/esm';
-import path, { dirname, join } from 'node:path';
 import { command, form, getRequestEvent, query } from '$app/server';
 import { error } from '@sveltejs/kit';
 import { createFileTree } from '$lib';
 import { NOTE_DIR } from '../../server/consts';
+import { getRelativePathFromTape, getValidPathInTape, sanitizeFileName } from './files.utils';
 import type { FileEntry, FileTree } from '$types/files';
 import type { EntryModification } from '$types/modification';
 
@@ -40,8 +41,7 @@ export const getCurrentTape = query(async (): Promise<string> => {
 
 
 export const getFileContent = query(z.string(), async (filePath): Promise<string> => {
-	// TODO: Validate request.fileName to prevent directory traversal attacks
-	const path = join(NOTE_DIR, await getCurrentTape(), filePath);
+	const path = getValidPathInTape(filePath);
 	const file = await readFile(path, {
 		encoding: 'utf-8',
 	});
@@ -51,35 +51,26 @@ export const getFileContent = query(z.string(), async (filePath): Promise<string
 export const createFile = form(z.object({
 	fileName: z.string()
 }), async ( {fileName}, invalid): Promise<FileEntry> => {
-	// TODO: Valider request.fileName pour prévenir les attaques de directory traversal
-	const filePathParts: string[] = fileName.split('/');
-	// On remplace les caractères non autorisés dans le nom de fichier
-	const sanitizedParts = filePathParts.map((part) => part.replace(/[^a-zA-Z0-9._-]/g, '_').trim());
-	const saneFilePath = sanitizedParts.join('/');
-	const newFilename = sanitizedParts.pop();
-
-	if (!newFilename) {
+	if (!fileName.trim() || /[<>:"|?*]/.test(fileName)) {
 		return invalid(invalid.fileName(`Invalid file name: ${fileName}`));
 	}
 
-	if (fileName.trim() === '') {
-		return invalid(invalid.fileName('File name cannot be empty'));
-	}
+	const saneFilePath = getValidPathInTape(fileName);
+	const newFilename = sanitizeFileName(fileName);
 
 	const {params} = getRequestEvent();
 	if (!params.tape) {
 		throw error(400, 'Tape parameter is missing');
 	}
 
-	const filePath = join(NOTE_DIR, params.tape, saneFilePath);
-	if (existsSync(filePath)) {
+	if (existsSync(saneFilePath)) {
 		return invalid(invalid.fileName('File already exists'));
 	}
 	try {
 		// Créer le dossier s'il n'existe pas
-		await mkdir(dirname(filePath), { recursive: true });
+		await mkdir(dirname(saneFilePath), { recursive: true });
 		// Créer le fichier
-		await writeFile(filePath, '', 'utf-8');
+		await writeFile(saneFilePath, '', 'utf-8');
 	} catch (err) {
 		console.error('Error creating file:', err);
 		return invalid(invalid.fileName('Error creating file'));
@@ -89,58 +80,86 @@ export const createFile = form(z.object({
 
 	return {
 		name: newFilename,
-		path: saneFilePath,
+		path: getRelativePathFromTape(saneFilePath),
 		type: 'file',
 		content: '',
 		childs: null
 	};
 });
 
+export const createFileCmd = command(z.object({
+	fileName: z.string()
+}), async ({ fileName }): Promise<FileEntry> => {
+	// 1. Sanitize and validate file name
+	const filePath = getValidPathInTape(fileName);
+
+	// 2. Check if file already exists
+	if (existsSync(filePath)) {
+		throw new Error('File already exists');
+	}
+
+	// 3. Create necessary directories (supports nested paths like "folder/subfolder/file.txt")
+	await mkdir(dirname(filePath), { recursive: true });
+
+	// TODO: change "writeFile" for a safer stream-based method
+	// If two request arrive at the same time, data can be lost
+	// 4. Create the file
+	await writeFile(filePath, '', 'utf-8');
+	console.log(`Creating file at ${filePath}`);
+
+	// 5. Refresh the file tree
+	await getFileTree().refresh();
+
+	return {
+		name: path.basename(filePath),
+		path: getRelativePathFromTape(filePath),
+		type: 'file',
+		content: '',
+		childs: null
+	};
+});
+
+export const createFolder = command(z.object({
+	folderName: z.string()
+}), async ({ folderName }): Promise<void> => {
+	const folderPath = getValidPathInTape(folderName);
+	await mkdir(folderPath, { recursive: true });
+	console.log(`Creating folder at ${folderPath}`);
+});
+
 export const writeFileContent = command(z.object({
 	filePath: z.string(),
 	content: z.string()
 }), async ({ filePath, content }) => {
-	// Créer le dossier parent s'il n'existe pas
-	// ? pas sûre
-	// await mkdir(dirname(filePath), { recursive: true });
-
-	console.log(`Writing content to ${path.join(NOTE_DIR, filePath)}`);
+	const path = getValidPathInTape(filePath);
 	// TODO: change "writeFile" for a safer stream-based method
 	// If two request arrive at the same time, data can be lost
-	await writeFile(path.join(NOTE_DIR, await getCurrentTape(), filePath), content.trim(), 'utf-8');
+	await writeFile(path, content.trim(), 'utf-8');
+	console.log(`Writing content to ${path}`);
 });
 
 export const moveEntry = command(z.object({
 	entryPath: z.string(),
 	destFolder: z.string()
 }), async ({ entryPath, destFolder }): Promise<EntryModification[]> => {
-	const entryName = path.basename(entryPath);
+	const saneEntryPath = getValidPathInTape(entryPath);
+	const saneDestFolder = getValidPathInTape(destFolder);
 
-	if (entryPath === destFolder) {
+	const entryName = path.basename(saneEntryPath);
+	const newEntryPath = path.resolve(saneDestFolder, entryName);
+
+	if (saneEntryPath === newEntryPath) {
 		return [];
 	}
 
-	const oldPath = path.resolve(NOTE_DIR, await getCurrentTape(), entryPath);
-	const newPath = path.resolve(NOTE_DIR, await getCurrentTape(), destFolder, entryName);
-
-	// Validate paths are within DATA_DIR
-	const dataDir = path.resolve(NOTE_DIR);
-	if (!oldPath.startsWith(dataDir) || !newPath.startsWith(dataDir)) {
-		throw error(400, 'Invalid path');
-	}
-
-	if (oldPath === newPath) {
-		return [];
-	}
-
-	await move(oldPath, newPath);
-	getFileTree().refresh();
-
-	const isFolder = await lstat(newPath).then(stats => stats.isDirectory()).catch(() => false);
+	await move(saneEntryPath, newEntryPath);
+	await getFileTree().refresh();
+	
+	const isFolder = await lstat(newEntryPath).then(stats => stats.isDirectory()).catch(() => false);
 	const modifications = [{
 		type: 'moved',
-		oldPath: isFolder ? path.join(entryPath, '/') : entryPath,
-		newPath: isFolder ? path.join(destFolder, entryName, '/') : path.join(destFolder, entryName),
+		oldPath: path.join(getRelativePathFromTape(saneEntryPath), isFolder ? '/' : ''),
+		newPath: path.join(getRelativePathFromTape(saneDestFolder), entryName, isFolder ? '/' : ''),
 		isFolder
 	}] satisfies EntryModification[];
 	console.log(modifications);
@@ -152,30 +171,23 @@ export const renameEntry = command(z.object({
 	entryPath: z.string(),
 	newName: z.string()
 }), async ({ entryPath, newName }): Promise<EntryModification[]> => {
-	const sanitizedName = newName.replace(/[^a-zA-Z0-9._-]/g, '_').trim();
+	const saneEntryPath = getValidPathInTape(entryPath);
+	const sanitizedName = sanitizeFileName(newName);
+	const targetFolder = path.dirname(saneEntryPath);
+	const newPath = path.resolve(targetFolder, sanitizedName);
 
-	if (!sanitizedName) {
-		throw error(400, 'New name cannot be empty');
-	}
-
-	const oldPath = path.resolve(NOTE_DIR, await getCurrentTape(), entryPath);
-	const targetFolder = path.dirname(entryPath);
-	const newPath = path.resolve(NOTE_DIR, await getCurrentTape(), targetFolder, sanitizedName);
-
-	if (oldPath === newPath) {
+	if (saneEntryPath === newPath) {
 		return [];
 	}
 
-	await move(oldPath, newPath);
+	await move(saneEntryPath, newPath);
 	await getFileTree().refresh();
 
 	const isFolder = await lstat(newPath).then(stats => stats.isDirectory()).catch(() => false);
 	const modifications = [{
-		type: 'renamed', 
-		oldPath: isFolder ? path.join(entryPath, '/') : entryPath,
-		newPath: isFolder ? 
-			path.join(targetFolder, sanitizedName, '/') :
-			path.join(targetFolder, sanitizedName),
+		type: 'renamed',
+		oldPath: path.join(getRelativePathFromTape(saneEntryPath), isFolder ? '/' : ''),
+		newPath: path.join(getRelativePathFromTape(newPath), isFolder ? '/' : ''),
 		isFolder
 	}] satisfies EntryModification[];
 	console.log(modifications);
@@ -186,21 +198,16 @@ export const renameEntry = command(z.object({
 export const removeEntry = command(z.object({
 	entryPath: z.string()
 }), async ({ entryPath }): Promise<EntryModification[]> => {
-	const fullPath = path.resolve(NOTE_DIR, await getCurrentTape(), entryPath);
+	const saneEntryPath = getValidPathInTape(entryPath);
+	const stats = await lstat(saneEntryPath);
+	const isFolder = stats.isDirectory();
 
-	// Validate path is within DATA_DIR
-	const dataDir = path.resolve(NOTE_DIR);
-	if (!fullPath.startsWith(dataDir)) {
-		throw error(400, 'Invalid path');
-	}
-
-	const isFolder = await lstat(fullPath).then(stats => stats.isDirectory()).catch(() => false);
-	await rm(fullPath, { recursive: true, force: true });
+	await rm(saneEntryPath, { recursive: true, force: true });
 	await getFileTree().refresh();
 
 	const modifications = [{
 		type: 'removed',
-		oldPath: isFolder ? path.join(entryPath, '/') : entryPath,
+		oldPath: path.join(getRelativePathFromTape(saneEntryPath), isFolder ? '/' : ''),
 		newPath: '',
 		isFolder
 	}] satisfies EntryModification[];
