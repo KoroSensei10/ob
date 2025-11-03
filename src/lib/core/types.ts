@@ -3,7 +3,7 @@ import type { FileEntry } from '$types/files';
 import type { CoreAPI } from '$core/CoreAPI.svelte';
 import type { PluginHooks } from './HookManager';
 
-export type PluginKind = 'editor' | 'core' | 'ui' | 'service';
+export type PluginKind = 'editor' | 'core' | 'ui' | 'service' | 'theme';
 
 export type InitContext = {
 	coreAPI: CoreAPI;
@@ -24,8 +24,13 @@ export type PluginDefinition =
 			editor: EditorPlugin;
 	  })
 	| (BasePluginDefinition & {
+			kind: 'theme';
+			theme: ThemePlugin;
+	  })
+	| (BasePluginDefinition & {
 			kind: 'core' | 'ui' | 'service';
 			editor?: never;
+			theme?: never;
 	  });
 
 
@@ -41,4 +46,18 @@ export interface EditorPluginProps {
 	file: FileEntry;
 	coreAPI: CoreAPI;
 	handleContentChange: (e: Event, file: FileEntry) => Promise<void>;
+}
+
+/**
+ * Theme plugin definition
+ */
+export interface ThemePlugin {
+	/**
+	 * CSS content for the theme
+	 */
+	styles: string;
+	/**
+	 * Whether this theme is a dark theme
+	 */
+	isDark?: boolean;
 }

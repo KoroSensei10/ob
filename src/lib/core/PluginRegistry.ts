@@ -25,6 +25,14 @@ export class PluginRegistry {
 			const plugin = (defaultServices as Record<string, PluginDefinition>)[pluginKey];
 			this.register(plugin);
 		}
+		const defaultThemes = await import('$plugins/Themes');
+		for (const pluginKey in defaultThemes) {
+			const plugin = (defaultThemes as Record<string, PluginDefinition>)[pluginKey];
+			this.register(plugin);
+		}
+		
+		// Apply default theme
+		this.core.theme.applyTheme('default-light-theme');
 	}
 
 	register(plugin: PluginDefinition): void {
@@ -32,6 +40,11 @@ export class PluginRegistry {
 			console.warn(`Plugin with id '${plugin.id}' is already registered. Overwriting.`);
 		}
 		this.plugins.set(plugin.id, plugin);
+
+		// Register theme plugins with ThemeAPI
+		if (plugin.kind === 'theme') {
+			this.core.theme.registerTheme(plugin);
+		}
 
 		// Initialize plugin
 		plugin.init?.({ coreAPI: this.core });

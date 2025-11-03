@@ -34,8 +34,8 @@
 	function resolveEditorPlugin() {
 		const plugins = coreAPI.pluginRegistry.getPluginsByKind('editor');
 		for (const plugin of plugins) {
-			if (
-				plugin.editor?.fileExtensions?.some((ext) => entry.path.endsWith(ext))
+			if (plugin.kind === 'editor' &&
+				plugin.editor?.fileExtensions?.some((ext: string) => entry.path.endsWith(ext))
 			) {
 				return plugin;
 			}
@@ -46,7 +46,7 @@
 </script>
 
 <div class="relative w-full h-full">
-		{#if plugin}
+		{#if plugin && plugin.kind === 'editor'}
 			{@const PluginComponent = plugin.editor.editor}
 			<PluginComponent
 				{coreAPI}

@@ -6,6 +6,7 @@ import { PluginRegistry } from '$core/PluginRegistry';
 import { HookManager } from '$core/HookManager';
 import { TabStore } from './internal/stores/TabStore.svelte';
 import { UIAPI } from './internal/UIAPI.svelte';
+import { ThemeAPI } from './internal/ThemeAPI.svelte';
 import type { FileEntry } from '$types/files';
 import type { EntryModification } from '$types/modification';
 import { createFileCmd, createFileIfNotExists } from '$lib/remotes/files.remote';
@@ -17,6 +18,7 @@ class CoreAPI {
 	readonly #tabStore: TabStore;
 
 	readonly ui: UIAPI;
+	readonly theme: ThemeAPI;
 	readonly pluginRegistry: PluginRegistry;
 	readonly files: FileAPI;
 	readonly entries: EntryAPI;
@@ -28,6 +30,7 @@ class CoreAPI {
 		this.#tabStore = new TabStore(this);
 
 		this.ui = new UIAPI(this);
+		this.theme = new ThemeAPI(this);
 		this.pluginRegistry = new PluginRegistry(this, this.#hookManager);
 		this.files = new FileAPI(this, this.#openFilesStore, this.#hookManager);
 		this.entries = new EntryAPI(this, this.#openFilesStore);
