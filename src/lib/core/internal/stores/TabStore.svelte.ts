@@ -47,6 +47,8 @@ export class TabStore {
 			const newActiveTab = afterTabs.length > 0 ? afterTabs[0] : null;
 			if (newActiveTab) {
 				this.core.activateTab(newActiveTab.id);
+			} else {
+				this.activeTabId = null;
 			}
 		}
 		this.tabs = afterTabs;

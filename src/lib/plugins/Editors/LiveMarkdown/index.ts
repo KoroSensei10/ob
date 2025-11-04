@@ -1,19 +1,12 @@
 import Editor from './LiveMarkdown.svelte';
-import { definePlugin } from '$core/PluginRegistry';
-import type { PluginDefinition } from '$core/types';
+import { definePlugin } from '$plugins/define';
 
-/**
- * Markdown editor plugin
- * Handles markdown files
- */
-const liveMarkdownEditorPlugin: PluginDefinition = {
+export default definePlugin({
 	id: 'markdown-editor',
 	name: 'Markdown Editor',
 	kind: 'editor',
 	editor: {
-		fileExtensions: ['.md', '.markdown'],
+		fileExtensions: ['*', '.md', '.markdown'],
 		editor: Editor
 	},
-};
-
-export default definePlugin(liveMarkdownEditorPlugin);
+});

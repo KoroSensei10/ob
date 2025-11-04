@@ -1,7 +1,7 @@
 import { FileAPI } from './internal/FileAPI.svelte';
 
 import { EntryAPI } from './internal/EntryAPI.svelte';
-import { PluginRegistry } from '$core/PluginRegistry';
+import { PluginRegistry } from '$core/PluginRegistry.svelte';
 import { HookManager } from '$core/HookManager';
 import { TabStore } from './internal/stores/TabStore.svelte';
 import { UIAPI } from './internal/UIAPI.svelte';

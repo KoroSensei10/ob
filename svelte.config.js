@@ -25,7 +25,7 @@ const config = {
 			toggleKeyCombo: 'meta-shift',
 			showToggleButton: 'always',
 			holdMode: false,
-			toggleButtonPos: 'bottom-right'
+			toggleButtonPos: 'top-right'
 		},
 	},
 	compilerOptions: {

@@ -5,8 +5,6 @@
 	import { dragStore } from '$stores/Drag.svelte';
 	import type { FileEntry } from '$types/files';
 
-	const { activeTab } = $derived(coreAPI);
-
 	type Props = {
 		entry: FileEntry;
 	};
@@ -37,9 +35,6 @@
 		<span class="">
 			<Disc3 strokeWidth={1.2} class={[
 				'w-4',
-				activeTab?.id === entry.path
-					? 'stroke-gray-700 hover:stroke-gray-900'
-					: 'stroke-gray-200',
 			]} />
 		</span>
 	{/snippet}

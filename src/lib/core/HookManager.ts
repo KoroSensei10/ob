@@ -5,7 +5,6 @@ import type { PluginDefinition } from './types';
 export interface PluginHooks {
 	onFileOpen?(file: FileEntry): Promise<void>;
 	onFileSave?(file: FileEntry): Promise<void>;
-	onAppStart?(): Promise<void>;
 	onFileActive?(file: FileEntry): Promise<void>;
 	onPluginTabActive?(plugin: PluginDefinition, tab: TabEntry): Promise<void>;
 	onTabClose?(tab: TabEntry): Promise<void>;

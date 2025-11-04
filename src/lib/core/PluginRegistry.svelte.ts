@@ -1,11 +1,13 @@
+import { SvelteMap } from 'svelte/reactivity';
 import type { CoreAPI } from '$core/CoreAPI.svelte';
 import type { PluginDefinition, PluginKind } from './types';
 import type { HookManager } from './HookManager';
 
 export class PluginRegistry {
-	private plugins: Map<string, PluginDefinition> = new Map();
+	private plugins: Map<string, PluginDefinition> = new SvelteMap();
 	readonly core: CoreAPI;
 	readonly hookManager: HookManager;
+	public initialized: boolean = $state(false);
 
 	constructor(core: CoreAPI, hookManager: HookManager) {
 		this.core = core;
@@ -25,6 +27,8 @@ export class PluginRegistry {
 			const plugin = (defaultServices as Record<string, PluginDefinition>)[pluginKey];
 			this.register(plugin);
 		}
+
+		this.initialized = true;
 	}
 
 	register(plugin: PluginDefinition): void {
@@ -56,13 +60,21 @@ export class PluginRegistry {
 		return Array.from(this.plugins.values());
 	}
 
-	getPluginsByKind<T extends PluginKind>(kind: T): PluginDefinition[] {
+	getPluginsByKind<T extends PluginKind>(kind: T): (PluginDefinition & { kind: T })[] {
 		return Array.from(this.plugins.values())
-			.filter(plugin => plugin.kind === kind)
-			.map(plugin => plugin);
+			.filter(plugin => plugin.kind === kind) as (PluginDefinition & { kind: T })[];
 	}
-}
 
-export function definePlugin(plugin: PluginDefinition): PluginDefinition {
-	return plugin;
+	resolveEditorPlugin(extensions: string): PluginDefinition & { kind: 'editor' } | undefined {
+		let starPlugin: PluginDefinition & { kind: 'editor' } | undefined;
+
+		for (const plugin of this.getPluginsByKind('editor')) {
+			if (plugin.editor.fileExtensions.some(ext => ext === extensions)) {
+				return plugin;
+			} else if (plugin.editor.fileExtensions.includes('*') && !starPlugin) {
+				starPlugin = plugin;
+			}
+		}
+		return starPlugin;
+	}
 }
