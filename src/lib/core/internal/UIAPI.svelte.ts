@@ -15,9 +15,16 @@ export type ViewComponentProps = {
 	tab: TabEntry;
 }
 
+export type StatusBarComponentProps = {
+	coreAPI: CoreAPI;
+	plugin: PluginDefinition;
+}
+
 export class UIAPI {
 	sideBarItems: SvelteMap<string, Component<SideBarComponentProps>> = new SvelteMap();
 	viewItems: SvelteMap<string, Component<ViewComponentProps>> = new SvelteMap();
+	statusBarItems: SvelteMap<string, Component<StatusBarComponentProps>> = new SvelteMap();
+
 	constructor(private coreAPI: CoreAPI) {}
 
 	registerSideBarComponent(id: string, comp: Component<SideBarComponentProps>) {
@@ -26,5 +33,9 @@ export class UIAPI {
 
 	registerViewComponent(id: string, comp: Component<ViewComponentProps>) {
 		this.viewItems.set(id, comp);
+	}
+
+	registerStatusBarComponent(id: string, comp: Component<StatusBarComponentProps>) {
+		this.statusBarItems.set(id, comp);
 	}
 }

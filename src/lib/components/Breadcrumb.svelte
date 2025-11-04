@@ -19,7 +19,7 @@
 			'text-sm',
 			'items-center',
 			'text-gray-400',
-			'bg-gray-800 rounded-b',
+			'bg-gray-800 rounded-b-lg',
 		]}
 	>
 		{#each activeFilePath || '' as segment, index (index)}
