@@ -1,5 +1,5 @@
 import Editor from './LiveMarkdown.svelte';
-import { definePlugin } from '$core/PluginRegistry';
+import { definePlugin } from '$core/PluginRegistry.svelte';
 import type { PluginDefinition } from '$core/types';
 
 /**

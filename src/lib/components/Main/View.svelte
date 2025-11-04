@@ -9,7 +9,7 @@
 		class="w-full h-full"
 	>
 		{#if tab.kind === 'file'}
-			<EditorRenderer bind:entry={tab.file} />
+			<EditorRenderer bind:entry={tab} />
 		{:else if tab.kind === 'plugin'}
 			{@const plugin = coreAPI.pluginRegistry.getPlugin(tab.id)}
 			{#if plugin}

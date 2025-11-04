@@ -1,4 +1,4 @@
-import { definePlugin } from '../../../core/PluginRegistry';
+import { definePlugin } from '../../../core/PluginRegistry.svelte';
 import LoggerSideBar from './LoggerSideBar.svelte';
 import LoggerView from './LoggerView.svelte';
 

@@ -29,17 +29,14 @@
 	ondblclick={(e) => {
 		e.stopPropagation();
 	}}
-	className={coreAPI.isActiveTab(entry.path)
+	className={activeTab?.id === entry.path
 		? ' bg-green-400/10'
 		: ''}
 >
 	{#snippet icon()}
 		<span class="">
 			<Disc3 strokeWidth={1.2} class={[
-				'w-4',
-				activeTab?.id === entry.path
-					? 'stroke-gray-700 hover:stroke-gray-900'
-					: 'stroke-gray-200',
+				'w-4'
 			]} />
 		</span>
 	{/snippet}

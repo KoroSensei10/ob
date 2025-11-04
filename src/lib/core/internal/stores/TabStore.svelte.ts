@@ -47,6 +47,8 @@ export class TabStore {
 			const newActiveTab = afterTabs.length > 0 ? afterTabs[0] : null;
 			if (newActiveTab) {
 				this.core.activateTab(newActiveTab.id);
+			} else {
+				this.activeTabId = null;
 			}
 		}
 		this.tabs = afterTabs;
@@ -72,7 +74,9 @@ export class TabStore {
 				const tabName = change.newPath.split('/').pop();
 				if (tab && tabName) {
 					tab.id = change.newPath;
+					tab.title = tabName;
 					if (tab.kind === 'file') {
+						tab.file.path = change.newPath;
 						tab.file.name = tabName;
 					}
 					if (this.activeTabId === change.oldPath) {

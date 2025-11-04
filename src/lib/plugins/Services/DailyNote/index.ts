@@ -1,4 +1,4 @@
-import { definePlugin } from '$core/PluginRegistry';
+import { definePlugin } from '$core/PluginRegistry.svelte';
 import DailyNoteSideBar from './DailyNoteSideBar.svelte';
 
 export default definePlugin({

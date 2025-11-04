@@ -1,9 +1,10 @@
+import { SvelteMap } from 'svelte/reactivity';
 import type { CoreAPI } from '$core/CoreAPI.svelte';
 import type { PluginDefinition, PluginKind } from './types';
 import type { HookManager } from './HookManager';
 
 export class PluginRegistry {
-	private plugins: Map<string, PluginDefinition> = new Map();
+	private plugins: SvelteMap<string, PluginDefinition> = new SvelteMap();
 	readonly core: CoreAPI;
 	readonly hookManager: HookManager;
 

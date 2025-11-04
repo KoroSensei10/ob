@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { coreAPI } from '$core/CoreAPI.svelte';
+	import type { TabEntry } from '$core/internal/stores/TabStore.svelte';
 	import { proxiedSettings } from '$stores/Settings.svelte';
 	import type { FileEntry } from '$types/files';
 
 	let {
 		entry = $bindable()
-	}: { entry: FileEntry } = $props();
+	}: { entry: TabEntry & { file: FileEntry } } = $props();
 
 	let _saving = $state(false);
 	let _saveError: string | null = $state(null);
@@ -35,7 +36,7 @@
 		const plugins = coreAPI.pluginRegistry.getPluginsByKind('editor');
 		for (const plugin of plugins) {
 			if (
-				plugin.editor?.fileExtensions?.some((ext) => entry.path.endsWith(ext))
+				plugin.editor?.fileExtensions?.some((ext) => entry.file.path.endsWith(ext))
 			) {
 				return plugin;
 			}
@@ -50,7 +51,7 @@
 			{@const PluginComponent = plugin.editor.editor}
 			<PluginComponent
 				{coreAPI}
-				bind:file={entry}
+				bind:file={entry.file}
 				{handleContentChange}
 			/>
 		{:else}

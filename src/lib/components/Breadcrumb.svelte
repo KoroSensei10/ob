@@ -11,7 +11,7 @@
 	let nbSegment = $derived(activeFilePath?.length);
 </script>
 
-{#if activeFilePath.length}
+{#if activeFilePath.length && nbSegment > 1}
 	<div
 		data-testid="breadcrumb"
 		class={[
