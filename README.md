@@ -17,7 +17,6 @@ Open source software made with open source tools.
 - Multiple notebooks support
 - User authentication and management via [Better Auth](https://better-auth.com)
 - Responsive design for every usage (mobile, tablet, desktop)
-- Plugin extensibility
 
 ## Roadmap
 
