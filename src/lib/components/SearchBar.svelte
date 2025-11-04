@@ -1,92 +1,55 @@
 <script lang="ts">
-	import { getFileTree } from '$lib/remotes/files.remote';
 	import { coreAPI } from '$core/CoreAPI.svelte';
+	import * as Command from '$lib/components/ui/command';
+	import { getFileTree } from '$lib/remotes/files.remote';
 	import type { FileEntry, FileTree } from '$types/files';
 
-	let {
-		searchBarOpen = $bindable(false),
-	}: {
+	interface Props {
 		searchBarOpen: boolean;
-	} = $props();
-
-	let query: string = $state('');
-
-	let results = $derived.by(async () => {
-		const q = query.toLowerCase();
-		const files: FileEntry[] = [];
-		const tree = await getFileTree();
-		tree.forEach((t) => flatTree(t, files));
-		return files.filter((file) => {
-			return (
-				file.name.toLowerCase().includes(q) ||
-				file.path.toLowerCase().includes(q)
-			);
-		});
-	});
-
-	function flatTree(tree: FileTree, arr: FileEntry[]) {
-		if (tree.type === 'file') {
-			arr.push(tree);
-		} else if (tree.type === 'dir' && tree.childs) {
-			tree.childs.forEach((child) => flatTree(child, arr));
-		}
 	}
+	let {
+		searchBarOpen = $bindable(),
+	}: Props = $props();
 
-	async function handleEntryClick(e: MouseEvent, file: FileEntry) {
-		e.preventDefault();
-		e.stopImmediatePropagation();
-		await coreAPI.openFile(file);
-		searchBarOpen = false;
-		query = '';
+	let open = $derived(searchBarOpen);
+	let files = $derived(flattenFiles((await getFileTree()) ?? []));
+
+	// TODO: move to a utility file
+	function flattenFiles(files: FileTree[], parentPath: string = ''): FileEntry[] {
+		let flatList: FileEntry[] = [];
+		for (const file of files) {
+			const currentPath = parentPath ? `${parentPath}/${file.name}` : file.name;
+			if (file.type === 'file') {
+				flatList.push({ ...file, path: currentPath });
+			} else if (file.type === 'dir' && file.childs) {
+				flatList = flatList.concat(flattenFiles(file.childs, currentPath));
+			}
+		}
+		return flatList;
 	}
 </script>
 
-<svelte:window
-	onkeydown={(e) => {
-		if (e.key === 'Escape' && searchBarOpen) {
-			e.preventDefault();
-			e.stopImmediatePropagation();
-			searchBarOpen = false;
-		}
-	}}
-/>
-
-<div
-	class="fixed w-2/3 max-h-2/3 top-22 left-1/2 -translate-x-1/2 bg-gray-800 border border-gray-700 rounded-md shadow-lg p-4 z-50
-         text-gray-200
-        "
-	{@attach (element) => {
-		document.addEventListener('click', (e) => {
-			if (!element.contains(e.target as Node)) {
-				searchBarOpen = false;
-			}
-		});
-		return () => {
-			document.removeEventListener('click', (e) => {
-				if (!element.contains(e.target as Node)) {
-					searchBarOpen = false;
-				}
-			});
-		};
-	}}
->
-	<input
-		{@attach (element) => {
-			element.focus();
-		}}
-		type="text"
-		placeholder="Search files..."
-		class="w-full p-2 bg-gray-700 text-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-		bind:value={query}
-	/>
-	<div class="overflow-y-auto flex flex-col items-start">
-		{#each await results as entry (entry.path)}
-			<button
-				class="mt-2 p-2 bg-gray-700 rounded-md hover:bg-gray-600 cursor-pointer"
-				onclick={(e) => handleEntryClick(e, entry)}
-			>
-				{entry.name} - {entry.path}
-			</button>
-		{/each}
-	</div>
-</div>
+<Command.Dialog bind:open>
+	<Command.Input placeholder="Search a file" />
+	<Command.List>
+		<Command.Empty>No results found.</Command.Empty>
+		<Command.Group heading="Files">
+			{#each files as entry (entry.path)}
+				{#if entry.type === 'file'}
+					<Command.Item onSelect={() => {
+						open = false;
+						coreAPI.openFile(entry);
+					}}>
+						{entry.name}
+					</Command.Item>
+				{/if}
+			{/each}
+		</Command.Group>
+		<!-- <Command.Separator />
+		<Command.Group heading="Settings">
+			<Command.Item>Profile</Command.Item>
+			<Command.Item>Billing</Command.Item>
+			<Command.Item>Settings</Command.Item>
+		</Command.Group> -->
+	</Command.List>
+</Command.Dialog>

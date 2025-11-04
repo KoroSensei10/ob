@@ -30,5 +30,9 @@
 				<div class="p-4">Unknown Tab Type</div>
 			{/if}
 		</div>
+	{:else}
+		<div class="w-full h-full flex items-center justify-center text-gray-500">
+			<div>No open tabs</div>
+		</div>
 	{/each}
 {/if}

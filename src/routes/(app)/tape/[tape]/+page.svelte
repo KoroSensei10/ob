@@ -26,7 +26,7 @@
 
 <svelte:window onkeydown={handleKeys} />
 
-{#if !viewportStore.isMobile && searchBarOpen}
+{#if !viewportStore.isMobile}
     <SearchBar bind:searchBarOpen />
 {/if}
 
