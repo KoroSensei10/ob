@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 
 function createHandler(type: string, schemaOrHandler: unknown, arg2?: unknown) {
 	// TODO: Fixme: This is a temporary workaround to mock SvelteKit's form function
@@ -21,3 +22,8 @@ export const command = (schemaOrHandler: unknown, arg2?: unknown) => {
 	return createHandler('command', schemaOrHandler, arg2);
 };
 
+export const getRequestEvent = vi.fn().mockReturnValue({
+	params: {
+		tape: 'testing_tape',
+	}
+});

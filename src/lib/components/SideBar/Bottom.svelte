@@ -3,7 +3,7 @@
 	import { coreAPI } from '$core/CoreAPI.svelte';
 	import { FilePlus, FolderPlus, Plus, Settings, X } from '@lucide/svelte';
 
-	const { openFile } = coreAPI.files;
+	const { openFile } = coreAPI;
 
 	let newFileInput: HTMLInputElement | null = $state(null);
 
@@ -35,6 +35,22 @@
 </script>
 
 <div class="text-sm">
+	<!-- Plugin Section -->
+	<section class="flex flex-col gap-2 px-2 mb-2 text-gray-200">
+		{#each coreAPI.ui.sideBarItems.entries() as [id, Comp] (id)}
+			{console.log('Rendering sidebar plugin:', id)}
+			{@const plugin = coreAPI.pluginRegistry.getPlugin(id)}
+			{#if plugin}
+				<div>
+					<Comp
+					{plugin}
+					coreAPI={coreAPI}
+					/>
+				</div>
+			{/if}
+		{/each}
+	</section>
+
 	<form
 		{...createFile.enhance(enhanceForm)}
 		class="flex flex-col w-full"

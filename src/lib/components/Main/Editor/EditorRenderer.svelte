@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { coreAPI } from '$core/CoreAPI.svelte';
 	import { proxiedSettings } from '$stores/Settings.svelte';
-	import CodeMirror from './CodeMirror.svelte';
 	import type { FileEntry } from '$types/files';
+
+	let { entry = $bindable() }: { entry: FileEntry } = $props();
 
 	let _saving = $state(false);
 	let _saveError: string | null = $state(null);
 
-	let openFiles = $derived(coreAPI.files.getOpenFiles());
+	let plugin = $derived(coreAPI.pluginRegistry.resolveEditorPlugin(entry.path.split('.').pop() || ''));
 
 	// Debounce the writeToFile calls
 	let timeout: NodeJS.Timeout | null = null;
@@ -20,7 +21,7 @@
 		timeout = setTimeout(async () => {
 			try {
 				if (file.content === null) return;
-				await coreAPI.files.writeFileContent(file, file.content);
+				await coreAPI.files.writeFile(file, file.content);
 			} catch (error) {
 				_saveError = String(error);
 				console.error('Error saving file:', error);
@@ -29,18 +30,17 @@
 			}
 		}, 500);
 	}
-
-
 </script>
 
 <div class="relative w-full h-full">
-	{#each openFiles as file, i (file.path)}
-		<CodeMirror bind:file={openFiles[i]} {handleContentChange} />
+	{#if plugin}
+		{@const PluginComponent = plugin.editor.editor}
+		<PluginComponent {coreAPI} bind:file={entry} {handleContentChange} />
 	{:else}
 		<div
 			class="flex h-full items-center justify-center text-gray-400 font-medium opacity-60 p-4"
 		>
-			Ouvrez un fichier pour commencer à éditer...
+			No editor plugin found for this file type
 		</div>
-	{/each}
+	{/if}
 </div>

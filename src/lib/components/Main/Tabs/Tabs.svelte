@@ -3,12 +3,12 @@
 	import { coreAPI } from '$core/CoreAPI.svelte';
 </script>
 
-{#if coreAPI.files.getOpenFiles().length}
+{#if coreAPI.tabs.length > 0}
 	<div
 		class="bg-gray-900 border-b border-gray-800 h-12 relative overflow-x-auto overscroll-none scrollbar-hide"
 	>
 		<div class="flex h-full">
-			{#each coreAPI.files.getOpenFiles() as tab (tab.path)}
+			{#each coreAPI.tabs as tab (tab.id)}
 				<TabEntry entry={tab} />
 			{/each}
 		</div>

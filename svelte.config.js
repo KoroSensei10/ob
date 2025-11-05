@@ -16,7 +16,8 @@ const config = {
 			$types: 'src/types',
 			$utils: 'src/utils',
 			$client: 'src/client',
-			$core: 'src/lib/core'
+			$core: 'src/lib/core',
+			$plugins: 'src/lib/plugins',
 		}
 	},
 	vitePlugin: {
@@ -24,7 +25,7 @@ const config = {
 			toggleKeyCombo: 'meta-shift',
 			showToggleButton: 'always',
 			holdMode: false,
-			toggleButtonPos: 'bottom-right'
+			toggleButtonPos: 'top-right'
 		},
 	},
 	compilerOptions: {

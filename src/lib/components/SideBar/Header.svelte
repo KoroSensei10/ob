@@ -14,6 +14,7 @@
 </script>
 
 <a class={[
+	'w-full',
 	'flex items-center gap-3 px-3 h-12 text-gray-200', 
 	'bg-linear-to-tl from-gray-800 to-green-900 from-90%',
 	'border-b border-transparent hover:border-gray-700',

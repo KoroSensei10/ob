@@ -5,8 +5,6 @@
 	import { dragStore } from '$stores/Drag.svelte';
 	import type { FileEntry } from '$types/files';
 
-	const { getActiveFile, openFile } = coreAPI.files;
-
 	type Props = {
 		entry: FileEntry;
 	};
@@ -24,21 +22,19 @@
 	onclick={async (e) => {
 		e.preventDefault();
 		e.stopPropagation();
-		await openFile(entry);
+		await coreAPI.openFile(entry);
 	}}
 	ondblclick={(e) => {
 		e.stopPropagation();
 	}}
-	className={getActiveFile()?.path === entry.path
-		? ' bg-green-400 text-gray-700 hover:bg-green-400 hover:text-gray-900'
-		: ''}>
+	className={coreAPI.isActiveTab(entry.path)
+		? ' bg-green-400/10'
+		: ''}
+>
 	{#snippet icon()}
 		<span class="">
 			<Disc3 strokeWidth={1.2} class={[
 				'w-4',
-				getActiveFile()?.path === entry.path
-					? 'stroke-gray-700 hover:stroke-gray-900'
-					: 'stroke-gray-200',
 			]} />
 		</span>
 	{/snippet}
