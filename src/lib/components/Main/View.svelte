@@ -1,13 +1,15 @@
 <script lang="ts">
 	import { coreAPI } from '$core/CoreAPI.svelte';
+	import { LoaderCircle } from '@lucide/svelte';
 	import EditorRenderer from './Editor/EditorRenderer.svelte';
 </script>
 
 {#if !coreAPI.pluginRegistry.initialized}
-	<div class="w-full h-full flex items-center justify-center">
-		<div
-			class="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-900"
-		></div>
+	<div class="w-full h-full flex flex-col items-center justify-center">
+		<div class="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-900">
+			<LoaderCircle strokeWidth={1.5} class="w-16 h-16 text-gray-600" />
+		</div>
+		Loading editor plugins...
 	</div>
 {:else}
 	{#each coreAPI.tabs as tab (tab.id)}
