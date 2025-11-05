@@ -2,8 +2,8 @@
 	import { coreAPI } from '$core/CoreAPI.svelte';
 	import * as Command from '$lib/components/ui/command';
 	import { getFileTree } from '$lib/remotes/files.remote';
-	import type { FileEntry, FileTree } from '$types/files';
 	import { computeCommandScore } from 'bits-ui';
+	import type { FileEntry, FileTree } from '$types/files';
 
 	interface Props {
 		searchBarOpen: boolean;
@@ -51,6 +51,18 @@
 
 		return score;
 	}
+
+	function openFile(entry: FileEntry) {
+		open = false;
+		coreAPI.openFile(entry);
+		query = '';
+	}
+
+	function createAndOpenFile(fileName: string) {
+		open = false;
+		coreAPI.files.createAndOpenFile(fileName);
+		query = '';
+	}
 </script>
 
 <Command.Dialog bind:open {filter}>
@@ -61,10 +73,7 @@
 				{#if entry.type === 'file'}
 					<Command.Item
 						value={entry.path}
-						onSelect={() => {
-							open = false;
-							coreAPI.openFile(entry);
-						}}
+						onSelect={() => openFile(entry)}
 					>
 						<div class="flex justify-between w-full">
 							<span>
@@ -87,10 +96,7 @@
 					class="font-medium mb-2"
 					value="__new_file__"
 					disabled={queryInFiles}
-					onSelect={() => {
-						open = false;
-						coreAPI.files.createAndOpenFile(query);
-					}}
+					onSelect={() => createAndOpenFile(query)}
 				>
 					<span> Create File: </span>
 					<span class="font-bold">
