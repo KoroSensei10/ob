@@ -6,24 +6,62 @@
 	import Header from '$components/SideBar/Header.svelte';
 	import SideBar from '$components/SideBar/SideBar.svelte';
 	import * as Resizable from '$components/ui/resizable';
+	import * as Tooltip from '$lib/components/ui/tooltip';
+	import { ArrowLeftToLine, ArrowRightFromLine } from '@lucide/svelte';
 
 	let paneSize: number = $state(25);
 	let isCollapsed: boolean = $derived(paneSize <= 0);
 
 	let sidebarPane: ReturnType<typeof Resizable.Pane>;
+
+	function handleKeyDown(event: KeyboardEvent) {
+		if (event.key === 'b' && (event.metaKey || event.ctrlKey)) {
+			event.preventDefault();
+			if (isCollapsed) {
+				sidebarPane.expand();
+			} else {
+				sidebarPane.collapse();
+			}
+		}
+	}
 </script>
 
-{#if isCollapsed}
-	<button
-		class="fixed top-2 text-sm shadow-lg left-0 z-50 bg-gray-700 text-white p-1 rounded-r
-		hover:bg-gray-600 transition-opacity cursor-pointer"
-		onclick={() => sidebarPane.expand()}
-	>
-		&#x25B6;
-	</button>
-{/if}
+<svelte:window onkeydown={handleKeyDown} />
 
 <Resizable.PaneGroup class="hidden md:block" direction="horizontal">
+	{#if isCollapsed}
+		<div
+			class="w-fit p-2 h-full flex flex-col group"
+			ondblclick={() => sidebarPane.expand()}
+			role="button"
+			tabindex="0"
+		>
+			<Tooltip.TooltipProvider delayDuration={200}>
+				<Tooltip.Root>
+					<Tooltip.Trigger>
+						<button
+							class="p-3 flex items-center justify-center
+				bg-gray-800 rounded-lg shadow-lg cursor-pointer
+				hover:bg-gray-700 transition-opacity
+				opacity-50 group-hover:opacity-100"
+							onclick={() => sidebarPane.expand()}
+						>
+							<span class="w-6">
+								<ArrowRightFromLine strokeWidth={1.2} />
+							</span>
+						</button>
+					</Tooltip.Trigger>
+					<Tooltip.Content
+						class={['bg-gray-800 text-gray-200']}
+						sideOffset={8}
+						arrow={false}
+					>
+						Expand Sidebar (⌘B)
+					</Tooltip.Content>
+				</Tooltip.Root>
+			</Tooltip.TooltipProvider>
+		</div>
+	{/if}
 	<Resizable.Pane
 		bind:this={sidebarPane}
 		collapsible={true}
@@ -39,15 +77,30 @@
 			<!-- Desktop Only-->
 			<SideBar className="h-full bg-gray-800">
 				{#snippet header()}
-					<div class="flex justify-between">
+					<div class="flex justify-between h-12">
 						<Header />
-						<button
-							class="text-sm text-white p-4
+						<Tooltip.TooltipProvider delayDuration={200}>
+							<Tooltip.Root>
+								<Tooltip.Trigger>
+									<button
+										class="w-full h-full text-sm text-white px-4
 						hover:bg-gray-700 transition-opacity cursor-pointer"
-							onclick={() => sidebarPane.collapse()}
-						>
-							&#x25C0;
-						</button>
+										onclick={() => sidebarPane.collapse()}
+									>
+										<span class="w-4 h-4">
+											<ArrowLeftToLine strokeWidth={1.2} />
+										</span>
+									</button>
+								</Tooltip.Trigger>
+								<Tooltip.Content
+									class={['bg-gray-800 text-gray-200']}
+									sideOffset={8}
+									arrow={false}
+								>
+									Collapse Sidebar (⌘B)
+								</Tooltip.Content>
+							</Tooltip.Root>
+						</Tooltip.TooltipProvider>
 					</div>
 				{/snippet}
 				{#snippet bottom()}
