@@ -3,9 +3,10 @@ node_modules
 
 # User Data
 data/
-db/
-!src/db/
+notes/
+# SQLite
 *.sqlite
+*.db
 
 # Test Data
 test-data/

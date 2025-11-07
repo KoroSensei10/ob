@@ -55,10 +55,9 @@ describe('files.utils', () => {
 
 	describe('getValidPathInTape', () => {
 		vi.mock('$app/server');
-		vi.mock('../../server/consts');
 		it('should return a valid path', () => {
 			let input = ' snup/<<<dap/t@pe.md';
-			let expected ='unit_test_dir/testing_tape/snup/___dap/t_pe.md'; 
+			let expected ='test-data/testing_tape/snup/___dap/t_pe.md'; 
 			expect(getValidPathInTape(input)).toBe(expected);
 
 			input = '../../../im@silly';
@@ -66,14 +65,14 @@ describe('files.utils', () => {
 			expect(() => getValidPathInTape(input)).toThrow('Invalid path');
 
 			input = 'valid_path/file.txt';
-			expected = 'unit_test_dir/testing_tape/valid_path/file.txt';
+			expected = 'test-data/testing_tape/valid_path/file.txt';
 			expect(getValidPathInTape(input)).toBe(expected);
 		});
 	});
 
 	describe('getRelativePathFromTape', () => {
 		it('should return the correct relative path', () => {
-			const input = 'unit_test_dir/testing_tape/snup/___dap/t_pe.md';
+			const input = 'test-data/testing_tape/snup/___dap/t_pe.md';
 			const expected = 'snup/___dap/t_pe.md';
 			expect(getRelativePathFromTape(input)).toBe(expected);
 		});

@@ -1,4 +1,6 @@
-## BUILD Layer
+##################
+## BUILD LAYER ###
+##################
 FROM node:24 AS build
 
 WORKDIR /app
@@ -6,41 +8,46 @@ WORKDIR /app
 COPY . .
 
 ENV CI=true
+ENV NODE_ENV=production
+# relative paths for env vars (app doesn't support absolute paths yet)
+ENV NOTE_DIR=./data/
+ENV DATABASE_URL=./data/.database.db
 
-# Build args for better-auth
-ARG BETTER_AUTH_URL
-ARG BETTER_AUTH_SECRET
-ARG NOTE_DIR
-ARG DB_PATH
-ENV BETTER_AUTH_URL=$BETTER_AUTH_URL
-ENV BETTER_AUTH_SECRET=$BETTER_AUTH_SECRET
-ENV NOTE_DIR=$NOTE_DIR
-ENV DB_PATH=$DB_PATH
+# absolute paths for volumes
+VOLUME /app/data/
 
 RUN npm install -g pnpm
 RUN pnpm i
 
-# Handle BETTER_AUTH_SECRET generation / retrieval
 RUN pnpm build
 
-# Create admin user if not exists
-RUN node scripts/setup-db.ts
 
-
-### RUN LAYER
+#################
+### RUN LAYER ###
+#################
 FROM node:24-alpine AS run
 
 WORKDIR /app
 
+# Build artifacts
 COPY --from=build /app/build /app/build
 COPY --from=build /app/package.json /app/package.json
 COPY --from=build /app/*.lock /app/
+# Drizzle migrations
+COPY --from=build /app/drizzle /app/drizzle
 
 RUN npm install -g pnpm
 RUN pnpm install --production
 
-# Crate data folders
-# Run migrations
+ENV NODE_ENV=production
+ENV NOTE_DIR=./data/
+ENV DATABASE_URL=./data/.database.db
+
+VOLUME /app/data/
+
+
+# TODO: Create data folders
+# TODO: Run migrations
 
 EXPOSE 3000
 

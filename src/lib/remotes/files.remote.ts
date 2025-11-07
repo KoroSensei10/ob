@@ -3,13 +3,15 @@ import path, { dirname, join } from 'node:path';
 import { existsSync } from 'node:fs';
 import { writeFile, mkdir, readFile, rm, lstat } from 'node:fs/promises';
 import { move } from 'fs-extra/esm';
-import { command, form, getRequestEvent, query } from '$app/server';
 import { error } from '@sveltejs/kit';
+import { command, form, getRequestEvent, query } from '$app/server';
 import { createFileTree } from '$lib';
-import { NOTE_DIR } from '../../server/consts';
+import { env } from '$env/dynamic/private';
 import { getRelativePathFromTape, getValidPathInTape, sanitizeFileName } from './files.utils';
 import type { FileEntry, FileTree } from '$types/files';
 import type { EntryModification } from '$types/modification';
+
+const NOTE_DIR = env.NOTE_DIR;
 
 export const getFileTree = query(async (): Promise<FileTree[]> => {
 	const { params } = getRequestEvent();
