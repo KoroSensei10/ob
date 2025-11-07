@@ -6,14 +6,6 @@ Open source software made with open source tools.
 
 ## Super simple, self-hosted, live markdown note-taking web application
 
-- [The tape project](#the-tape-project)
-	- [Super simple, self-hosted, live markdown note-taking web application](#super-simple-self-hosted-live-markdown-note-taking-web-application)
-	- [Features](#features)
-	- [Roadmap](#roadmap)
-	- [Get started](#get-started)
-	- [The stack](#the-stack)
-	- [License](#license)
-
 ## Features
 
 - Markdown note-taking with live preview
