@@ -1,9 +1,15 @@
 import { mkdir, readdir, rm } from 'node:fs/promises';
-import { NOTE_DIR } from '../../server/consts';
 import { form, query } from '$app/server';
 import z from 'zod';
 import path from 'node:path';
 import { error } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
+
+const NOTE_DIR = env.NOTE_DIR;
+
+if (!NOTE_DIR) {
+	throw new Error('NOTE_DIR environment variable is not set');
+}
 
 export const getExistingTapes = query(async () => {
 	const entries = await readdir(NOTE_DIR, { withFileTypes: true });

@@ -3,7 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
 	fullyParallel: true,
 	webServer: {
-		command: 'pnpm build --mode test && pnpm preview',
+		command: 'pnpm build --mode test && pnpm preview --mode test',
 		port: 4173,
 		reuseExistingServer: false
 	},

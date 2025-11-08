@@ -83,7 +83,7 @@ describe('files.remote', () => {
 		});
 		it('should return the content of a file', async () => {
 			vol.fromJSON({
-				'unit_test_dir/testing_tape/file.txt': 'file content',
+				'test-data/testing_tape/file.txt': 'file content',
 			});
 			const content = await getFileContent('file.txt');
 			expect(content).toBe('file content');

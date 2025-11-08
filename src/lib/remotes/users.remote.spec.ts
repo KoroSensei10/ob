@@ -1,19 +1,20 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import * as usersRemote from './users.remote';
-import { getUserCount } from '../../server/__mocks__/db';
 
 vi.mock('$app/server');
 vi.mock('@sveltejs/kit');
-vi.mock('../../server/db');
+vi.mock('../server/db');
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const createUserMock = vi.spyOn((await import('../../server/auth')).auth.api, 'createUser').mockResolvedValue({} as any);
+const insertNewUserMock = vi.spyOn((await import('../server/db/users.utils')), 'insertNewUser').mockResolvedValue({} as any);
+const getUserCount = vi.spyOn((await import('../server/db/users.utils')), 'getUserCount');
+vi.spyOn((await import('../server/db/roles.utils')), 'createRoleIfNotExists').mockResolvedValue({ id: 1, role: 'admin', description: 'Administrator with full access' });
 
 describe('users.remote', () => {
-	const formData = { 
-		name: 'Admin',
+	const formData = {
+		username: 'Admin',
 		email: 'admin@example.com',
-		password: 'password'
+		_password: 'password'
 	};
 
 	afterEach(() => {
@@ -28,12 +29,12 @@ describe('users.remote', () => {
 		await usersRemote.createInitialUser(formData);
 
 		// Expect createUser to have been called with correct parameters
-		expect(createUserMock).toHaveBeenCalledWith({
-			body: { 
-				...formData,
-				role: 'admin' 
-			}
-		});
+		expect(insertNewUserMock).toHaveBeenCalledWith(
+			formData.username,
+			formData.email,
+			formData._password,
+			1
+		);
 
 		// Expect redirect to have been called to /login
 		expect((await import('@sveltejs/kit')).redirect).toHaveBeenCalledWith(303, '/login');
@@ -47,7 +48,7 @@ describe('users.remote', () => {
 		await usersRemote.createInitialUser(formData);
 
 		// Expect createUser not to have been called
-		expect(createUserMock).not.toHaveBeenCalled();
+		expect(insertNewUserMock).not.toHaveBeenCalled();
 
 		// Expect redirect to have been called to /login
 		expect((await import('@sveltejs/kit')).redirect).toHaveBeenCalledWith(303, '/login');

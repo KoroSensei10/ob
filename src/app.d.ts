@@ -4,13 +4,11 @@ declare global {
 	namespace App {
 		// interface Error {}
 		interface Locals {
-			session: import('better-auth').Session | null;
-			user: import('better-auth').User | null;
+			user: import('$lib/server/auth').SessionValidationResult['user'];
+			session: import('$lib/server/auth').SessionValidationResult['session']
 		}
-		// interface PageData {}
-		// interface PageState {}
-		// interface Platform {}
-	}
-}
+	} // interface PageData {}
+	// interface PageState {}
+} // interface Platform {}
 
-export {};
+export { };

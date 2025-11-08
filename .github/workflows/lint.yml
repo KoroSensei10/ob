@@ -18,13 +18,16 @@ jobs:
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v1
+      - uses: pnpm/action-setup@v4
         with:
+          run_install: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          cache: 'pnpm'
           node-version: 24
-
       - name: Install Dependencies
-        run: npm i -g pnpm && pnpm install
+        run: pnpm install
 
       - name: Run linter
         run: pnpm lint

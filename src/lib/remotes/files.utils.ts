@@ -1,7 +1,12 @@
 import path from 'node:path';
+import { env } from '$env/dynamic/private';
 import { getRequestEvent } from '$app/server';
-import { NOTE_DIR } from '../../server/consts';
 
+const NOTE_DIR = env.NOTE_DIR;
+
+if (!NOTE_DIR) {
+	throw new Error('NOTE_DIR environment variable is not set');
+}
 
 export function sanitizeFileName(name: string): string {
 	return name.trim().replace(/[^a-zA-Z0-9._-]/g, '_');
@@ -46,7 +51,7 @@ export function getValidPathInTape(p: string): string {
 	}
 	const sanePath = path.join(NOTE_DIR, params.tape, sanitizeFilePath(p));
 	if (!isValidPath(sanePath)) {
-		throw new Error('Invalid path');
+		throw new Error(`Invalid path: ${sanePath}`);
 	}
 	return sanePath;
 }

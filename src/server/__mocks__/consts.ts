@@ -1,1 +1,0 @@
-export const NOTE_DIR = 'unit_test_dir';
